@@ -458,7 +458,7 @@ namespace DW2Randomizer
                     }
                     else {
                         int test = (monsterZones[lnJ] >= 128 ? monsterZones[lnJ] - 128 : monsterZones[lnJ]);
-                        if (test + randomModifier <= 0)
+                        if (test + randomModifier <= 0 || test + randomModifier >= 78) // You shouldn't randomly run into Atlas, Bazuzu, Zarlox, Hargon, or Malroth
                             romData[byteToUse + lnJ] = (byte)(monsterZones[lnJ] > 128 ? 255 : 127);
                         else
                             romData[byteToUse + lnJ] = (byte)(monsterZones[lnJ] + randomModifier);
