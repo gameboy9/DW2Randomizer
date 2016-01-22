@@ -54,7 +54,7 @@
             this.txtFileName.Name = "txtFileName";
             this.txtFileName.Size = new System.Drawing.Size(320, 20);
             this.txtFileName.TabIndex = 0;
-            this.txtFileName.Text = "C:\\bizhawk\\dw2 test\\Dragon Warrior II (U) [!].nes";
+            this.txtFileName.Leave += new System.EventHandler(this.txtFileName_Leave);
             // 
             // label1
             // 
@@ -256,6 +256,7 @@
             this.Controls.Add(this.txtFileName);
             this.Name = "Form1";
             this.Text = "Dragon Warrior 2 Randomizer";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -28,12 +28,17 @@ namespace DW2Randomizer
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 txtFileName.Text = openFileDialog1.FileName;
-                using (var md5 = SHA1.Create())
+                runChecksum();
+            }
+        }
+
+        private void runChecksum()
+        {
+            using (var md5 = SHA1.Create())
+            {
+                using (var stream = File.OpenRead(txtFileName.Text))
                 {
-                    using (var stream = File.OpenRead(txtFileName.Text))
-                    {
-                        lblSHAChecksum.Text = BitConverter.ToString(md5.ComputeHash(stream)).ToLower().Replace("-", "");
-                    }
+                    lblSHAChecksum.Text = BitConverter.ToString(md5.ComputeHash(stream)).ToLower().Replace("-", "");
                 }
             }
         }
@@ -75,6 +80,19 @@ namespace DW2Randomizer
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            try
+            {
+                using (TextReader reader = File.OpenText("lastFile.txt"))
+                {
+                    txtFileName.Text = reader.ReadLine();
+                    runChecksum();
+                }
+            }
+            catch
+            {
+                // ignore error
+            }
+
             radSlightIntensity_CheckedChanged(null, null);
         }
 
@@ -174,7 +192,7 @@ namespace DW2Randomizer
                     { 60, 74, 29, 52, 81, 83 }, // Hibabango
                     { 60, 65, 24, 49, 48, 30 }, // Graboopi
                     { 100, 80, 56, 57, 83, 255 }, // Gold Orc
-                    { 67, 73, 28, 75, 10, 132 }, // Evil Clown
+                    { 67, 73, 28, 75, 132, 10 }, // Evil Clown
                     { 80, 103, 19, 21, 91, 100 }, // Ghoul
                     { 57, 75, 25, 48, 95, 83 }, // Vampirus
                     { 72, 83, 28, 53, 115, 80 }, // Mega Knight
@@ -226,8 +244,8 @@ namespace DW2Randomizer
                 romData[byteValStart + 6] = def;
                 romData[byteValStart + 4] = agi;
                 romData[byteValStart + 3] = xp1;
-                romData[byteValStart + 8] = (byte)((romData[byteValStart + 8] % 64) + (xp2 * 64));
-                romData[byteValStart + 9] = (byte)((romData[byteValStart + 9] % 64) + (xp3 * 64));
+                romData[byteValStart + 8] = (byte)((romData[byteValStart + 8] % 64) + xp2);
+                romData[byteValStart + 9] = (byte)((romData[byteValStart + 9] % 64) + xp3);
                 romData[byteValStart + 2] = gp;
             }
 
@@ -482,10 +500,11 @@ namespace DW2Randomizer
             byte[] stats = { romData[0x13dd1 + 0], romData[0x13dd1 + 1], romData[0x13dd1 + 2], romData[0x13dd1 + 3],
                 romData[0x13dd1 + 4], romData[0x13dd1 + 5], romData[0x13dd1 + 6], romData[0x13dd1 + 7],
                 romData[0x13dd1 + 8], romData[0x13dd1 + 9], romData[0x13dd1 + 10], romData[0x13dd1 + 11] };
-
-
-            for (int lnI = 0; lnI < 11; lnI++)
+            
+            for (int lnI = 0; lnI < 12; lnI++)
             {
+                if (lnI == 3) // Midenhall starts with 0 MP.
+                    continue;
                 if (lnI % 4 >= 2)
                     randomModifier = (intensity == 1 ? (r1.Next() % 7) - 3 : (intensity == 2 ? (r1.Next() % 13) - 6 : (r1.Next() % 25) - 12));
                 else
@@ -550,6 +569,30 @@ namespace DW2Randomizer
                     spellLevel = (byte)(spellLevel + randomModifier);
                 romData[0x13edb + lnI] = spellLevel;
             }
+
+            for (int lnI = 8; lnI < 15; lnI++)
+                for (int lnJ = lnI + 1; lnJ < 15; lnJ++)
+                {
+                    if (romData[0x13edb + lnJ] < romData[0x13edb + lnI])
+                    { // swap the two bytes, then restart lnJ <--- THIS DOES NOT WORK; SPELLS GET ALL SCREWED UP.  Instead, make the better spell be learned one level higher.
+                        //swap(0x13edb + lnI, 0x13edb + lnJ);
+                        //swap(0x1ae76 + lnI - 8, 0x1ae76 + lnJ - 8);
+                        romData[0x13edb + lnJ - 8] = (byte)(romData[0x13edb + lnI - 8] + 1);
+                        lnJ = lnI;
+                    }
+                }
+
+            for (int lnI = 24; lnI < 31; lnI++)
+                for (int lnJ = lnI + 1; lnJ < 31; lnJ++)
+                {
+                    if (romData[0x13edb + lnJ] < romData[0x13edb + lnI])
+                    { // swap the two bytes, then restart lnJ <--- THIS DOES NOT WORK; SPELLS GET ALL SCREWED UP.  Instead, make the better spell be learned one level higher.
+                        //swap(0x13edb + lnI, 0x13edb + lnJ);
+                        //swap(0x1ae76 + lnI - 16, 0x1ae76 + lnJ - 16);
+                        romData[0x13edb + lnJ - 16] = (byte)(romData[0x13edb + lnI - 16] + 1);
+                        lnJ = lnI;
+                    }
+                }
         }
 
         private List<int> addTreasure(List<int> currentList, int[] treasureData)
@@ -634,6 +677,7 @@ namespace DW2Randomizer
                 compareComposeString("statStart", writer, 0x13dd1, 12);
                 compareComposeString("statUps", writer, 0x13ddd, 260);
                 compareComposeString("spellLearning", writer, 0x13edb, 32);
+                compareComposeString("spellsLearned", writer, 0x1ae76, 32);
             }
             lblIntensityDesc.Text = "Comparison complete!  (DW2Compare.txt)";
         }
@@ -652,6 +696,18 @@ namespace DW2Randomizer
             writer.WriteLine(final2);
             writer.WriteLine();
             return writer;
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (txtFileName.Text != "")
+                using (StreamWriter writer = File.CreateText("lastFile.txt"))
+                    writer.WriteLine(txtFileName.Text);
+        }
+
+        private void txtFileName_Leave(object sender, EventArgs e)
+        {
+            runChecksum();
         }
     }
 }
