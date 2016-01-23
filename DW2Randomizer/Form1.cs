@@ -46,26 +46,21 @@ namespace DW2Randomizer
         private void radSlightIntensity_CheckedChanged(object sender, EventArgs e)
         {
             if (radSlightIntensity.Checked)
-                lblIntensityDesc.Text = "Small changes to monster zones and boss fights will occur.  Expect the same final three bosses, " +
-                    "and slight changes of difficulty to other boss fights.  No changes to treasures or shops will occur, and the stats for all three party members will remain the same.";
+                lblIntensityDesc.Text = "Small changes to monster zones, boss fights, character stats, and spell learning.  No changes to treasures or shops will occur.";
         }
 
         private void radModerateIntensity_CheckedChanged(object sender, EventArgs e)
         {
             if (radModerateIntensity.Checked)
-                lblIntensityDesc.Text = "Moderate changes to monster zones and boss fights will occur.  Expect the same final three bosses, " +
-                    "but significant changes to the other boss fights.  Substantial shop changes to treasures and shops will occur, but all of them will stay in their respective zones.  " +
-                    "Finally, expect slight stat modifications to all three party members.(+/- 5 HP/MP, 2 Str/Agi to start, +/- 1 point to all for stat ups, +/- 3 levels for spell learning)";
+                lblIntensityDesc.Text = "Moderate changes to monster zones, boss fights, character stats, and spell learning.  Substantial shop changes to treasures and shops will occur, but all of them will stay in their respective zones.";
 
         }
 
         private void radHeavyIntensity_CheckedChanged(object sender, EventArgs e)
         {
             if (radHeavyIntensity.Checked)
-                lblIntensityDesc.Text = "Major changes to monster zones and boss fights will occur.  Expect some differences with the final three bosses, " +
-                    "and big changes to the other boss fights.  Expect major shop changes and treasure scrambling(key items will stay in their respective zones), but you will still be able to buy anything " +
-                    "that you would normally buy at a shop and find that you normally would find in a treasure box.  Finally, expect significant stat changes to all three party members.  " + 
-                    "(+/- 15 HP/MP, 5 Str/Agi to start, +/- 3 points to all for level ups, +/- 10 levels for spell learning, but no higher than level 30(Cannock)/25(Moonbrooke))";
+                lblIntensityDesc.Text = "Major changes to monster zones, boss fights, character stats, and spell learning.  Expect major shop changes and treasure scrambling(key items will stay in their respective zones), but you will still be able to buy anything " +
+                    "that you would normally buy at a shop and find that you normally would find in a treasure box.";
 
         }
 
@@ -186,7 +181,7 @@ namespace DW2Randomizer
                     { 90, 51, 2, 20, 61, 51 }, // Hork
                     { 60, 75, 27, 41, 64, 45 }, // Hawk Man
                     { 55, 61, 28, 43, 72, 110 }, // Sorcerer
-                    { 5, 37, 255, 100, 1015, 90 }, // Metal Slime
+                    { 25, 37, 255, 100, 1015, 90 }, // Metal Slime <- Typically 5 HP, but due to the high EXP output and the ease of taking HP off, I made it 25.
                     { 65, 82, 25, 57, 77, 97 }, // Hunter
                     { 50, 67, 30, 45, 92, 88 }, // Evil Eye
                     { 60, 74, 29, 52, 81, 83 }, // Hibabango
@@ -204,7 +199,7 @@ namespace DW2Randomizer
                     { 110, 99, 80, 60, 204, 181 }, // Orc King
                     { 82, 77, 47, 79, 182, 103 }, // Magic Vampirus
                     { 78, 109, 63, 55, 147, 123 }, // Berzerker
-                    { 50, 75, 255, 200, 10150, 255 }, // Metal Babble
+                    { 90, 75, 255, 200, 10150, 255 }, // Metal Babble <- Typically 35 HP, but due to the high EXP output and the ease of taking HP off, I made it 90.
                     { 77, 115, 72, 65, 201, 135 }, // Hargon's Knight
                     { 115, 121, 42, 43, 257, 99 }, // Cyclops
                     { 90 , 115, 150, 80, 554, 120 }, // Attackbot
@@ -416,14 +411,26 @@ namespace DW2Randomizer
             int[] allItems = weaponTemp.ToArray();
             weaponTemp.Clear();
 
-            if (intensity == 2)
+            bool jailorsClear = false;
+            while (!jailorsClear)
             {
-                shuffle(weaponAddrZ1, r1);
-                shuffle(weaponAddrZ2, r1);
-                shuffle(itemAddrZ1, r1);
-                shuffle(itemAddrZ2, r1);
-            } else if (intensity == 3)
-                shuffle(allItems, r1, false);
+                if (intensity == 2)
+                {
+                    shuffle(weaponAddrZ1, r1);
+                    shuffle(weaponAddrZ2, r1);
+                    shuffle(itemAddrZ1, r1);
+                    shuffle(itemAddrZ2, r1);
+                }
+                else if (intensity == 3)
+                    shuffle(allItems, r1, false);
+
+                // Need to make sure the Jailor's key is in an item store, or the acquisition of such key won't occur.
+                for (int lnI = 0; lnI < 60; lnI++)
+                {
+                    if (romData[0x19fca + lnI] == 0x39)
+                        jailorsClear = true;
+                }
+            }
 
             // Finally, go through each six item block to find duplicates.  Any duplicates found -> 00.  108 items total.
             for (int lnI = 0; lnI < 18; lnI++)
@@ -455,6 +462,7 @@ namespace DW2Randomizer
                 int byteToUse = 0x10519 + (lnI * 6);
                 byte[] monsterZones = { romData[byteToUse + 0], romData[byteToUse + 1], romData[byteToUse + 2], romData[byteToUse + 3], romData[byteToUse + 4], romData[byteToUse + 5] };
                 int sum = 0;
+                int count = 0;
                 for (int lnJ = 0; lnJ < 6; lnJ++)
                 {
                     if (!(monsterZones[lnJ] == 127 || monsterZones[lnJ] == 255))
@@ -463,9 +471,10 @@ namespace DW2Randomizer
                             sum += (monsterZones[lnJ] - 128);
                         else
                             sum += monsterZones[lnJ];
+                        count++;
                     }
                 }
-                int average = sum / 6;
+                int average = (count == 0 ? 16 : sum / count);
                 for (int lnJ = 0; lnJ < 6; lnJ++)
                 {
                     randomModifier = (intensity == 1 ? (r1.Next() % 5) - 2 : (intensity == 2 ? (r1.Next() % 9) - 4 : (r1.Next() % 17) - 8));
@@ -490,6 +499,111 @@ namespace DW2Randomizer
                         break;
                     else if (lnJ == 5)
                         romData[byteToUse + lnJ] = (byte)(monsterZones[lnJ] > 128 ? average + 128 : average);
+                }
+            }
+
+            // rearrange "special bouts".  There are 19 "special bouts" that can be defined in each of the zones.
+            for (int lnI = 0; lnI < 19; lnI++)
+            {
+                int byteToUse = 0x106b1 + (lnI * 4);
+                byte[] monsterZones = { romData[byteToUse + 0], romData[byteToUse + 1], romData[byteToUse + 2], romData[byteToUse + 3] };
+                int sum = 0;
+                int count = 0;
+                for (int lnJ = 0; lnJ < 4; lnJ++)
+                {
+                    if (!(monsterZones[lnJ] == 255))
+                    {
+                        sum += monsterZones[lnJ];
+                        count++;
+                    }
+                        
+                }
+                int average = sum / count;
+                for (int lnJ = 0; lnJ < 4; lnJ++)
+                {
+                    randomModifier = (intensity == 1 ? (r1.Next() % 5) - 2 : (intensity == 2 ? (r1.Next() % 9) - 4 : (r1.Next() % 17) - 8));
+                    if (monsterZones[lnJ] == 255 && randomModifier != 0)
+                    {
+                        if (average + randomModifier > 0)
+                            romData[byteToUse + lnJ] = (byte)(average + randomModifier);
+                    }
+                    else {
+                        int test = (monsterZones[lnJ]);
+                        if (test + randomModifier <= 0 || test + randomModifier >= 78) // You shouldn't randomly run into Atlas, Bazuzu, Zarlox, Hargon, or Malroth
+                            romData[byteToUse + lnJ] = 255;
+                        else
+                            romData[byteToUse + lnJ] = (byte)(monsterZones[lnJ] + randomModifier);
+                    }
+                }
+
+                // Assure there is at least one monster available in each zone.
+                for (int lnJ = 0; lnJ < 4; lnJ++)
+                {
+                    if (romData[byteToUse + lnJ] != 255)
+                        break;
+                    else if (lnJ == 3)
+                        romData[byteToUse + lnJ] = (byte)(average);
+                }
+            }
+
+            // rearrange "boss fights".  There are 13 "boss fights".  Boss fights 9-13 will stay the same, except it might have more monsters showing up to make things even more fun!
+            for (int lnI = 0; lnI < 13; lnI++)
+            {
+                int byteToUse = 0x10356 + (lnI * 4);
+                // "Zone" order:  monster, quantity, monster, quantity.  The first pairing has priority...
+                byte[] monsterZones = { romData[byteToUse + 0], romData[byteToUse + 2] };
+                byte[] monsterQuantity = { romData[byteToUse + 3], romData[byteToUse + 1] }; // The two groups are going to be swapped mid-routine.
+                int sum = ((monsterZones[0] == 255 ? 0 : monsterZones[0]) + (monsterZones[1] == 255 ? 0 : monsterZones[1]));
+                int average = sum / ((monsterZones[0] == 255 ? 0 : 1) + (monsterZones[1] == 255 ? 0 : 1));
+
+                if (lnI < 8)
+                {
+                    for (int lnJ = 0; lnJ < 2; lnJ++)
+                    {
+                        if (monsterZones[lnJ] == 255) continue;
+
+                        randomModifier = (intensity == 1 ? (r1.Next() % 5) - 2 : (intensity == 2 ? (r1.Next() % 9) - 4 : (r1.Next() % 17) - 8));
+                        int test = (monsterZones[lnJ]);
+                        if (!(test + randomModifier <= 0 || test + randomModifier >= 78)) // You shouldn't randomly run into Atlas, Bazuzu, Zarlox, Hargon, or Malroth
+                            romData[byteToUse + (lnJ * 2)] = (byte)(monsterZones[lnJ] + randomModifier);
+                    }
+                }
+
+                // Make the main boss the first two bytes instead of the second, like all of the bouts programmed...
+                swap(byteToUse + 2, byteToUse + 0);
+                swap(byteToUse + 3, byteToUse + 1);
+
+                // Now let's see if we can get a second group into the picture...
+                for (int lnJ = 0; lnJ < 2; lnJ++)
+                {
+                    randomModifier = (intensity == 1 ? (r1.Next() % 5) - 2 : (intensity == 2 ? (r1.Next() % 9) - 4 : (r1.Next() % 17) - 8));
+                    if (monsterQuantity[lnJ] + randomModifier < 1 && lnJ == 1) // only remove the second group.  NEVER remove the first.
+                    {
+                        romData[byteToUse + 2] = 255;
+                        romData[byteToUse + 3] = 0;
+                    }
+                    else if (monsterQuantity[lnJ] + randomModifier < 1 && lnJ == 0)
+                        romData[byteToUse + 1] = 1;
+                    else if (monsterQuantity[lnJ] + randomModifier > monsterSize[monsterZones[1] - 1] && lnJ == 0) // monsterZones[1] is now the first entry, not the second as before.
+                        // We have to max the first group in hopes to squeeze in a second.  We don't need to limit the second group... the battle code will take care of that.
+                        romData[byteToUse + 1] = monsterSize[monsterZones[1] - 1]; 
+                    else
+                    {
+                        romData[byteToUse + 1 + (lnJ * 2)] = (byte)(monsterQuantity[lnJ] + randomModifier);
+                        if (lnJ == 1 && romData[byteToUse + 2] == 255)
+                        { // We'll need to figure out a monster to join the others...
+                            randomModifier = (intensity == 1 ? (r1.Next() % 5) - 2 : (intensity == 2 ? (r1.Next() % 9) - 4 : (r1.Next() % 17) - 8));
+                            int test = (average + randomModifier);
+                            if (test >= 1 && test <= 78) // You shouldn't randomly run into Atlas, Bazuzu, Zarlox, Hargon, or Malroth
+                                romData[byteToUse + 2] = (byte)(test);
+                            else
+                                romData[byteToUse + 2] = (byte)(average - randomModifier); // Reverse direction of the modifier to guarantee a second group.
+                        } else if (lnJ == 0 && romData[byteToUse + 2] == 255) // reswap to avoid three Bazuzus
+                        {
+                            swap(byteToUse + 2, byteToUse + 0);
+                            swap(byteToUse + 3, byteToUse + 1);
+                        }
+                    }
                 }
             }
 
@@ -573,11 +687,11 @@ namespace DW2Randomizer
             for (int lnI = 8; lnI < 15; lnI++)
                 for (int lnJ = lnI + 1; lnJ < 15; lnJ++)
                 {
-                    if (romData[0x13edb + lnJ] < romData[0x13edb + lnI])
+                    if (romData[0x13edb + lnJ] <= romData[0x13edb + lnI])
                     { // swap the two bytes, then restart lnJ <--- THIS DOES NOT WORK; SPELLS GET ALL SCREWED UP.  Instead, make the better spell be learned one level higher.
                         //swap(0x13edb + lnI, 0x13edb + lnJ);
                         //swap(0x1ae76 + lnI - 8, 0x1ae76 + lnJ - 8);
-                        romData[0x13edb + lnJ - 8] = (byte)(romData[0x13edb + lnI - 8] + 1);
+                        romData[0x13edb + lnJ] = (byte)(romData[0x13edb + lnI] + 1);
                         lnJ = lnI;
                     }
                 }
@@ -585,14 +699,21 @@ namespace DW2Randomizer
             for (int lnI = 24; lnI < 31; lnI++)
                 for (int lnJ = lnI + 1; lnJ < 31; lnJ++)
                 {
-                    if (romData[0x13edb + lnJ] < romData[0x13edb + lnI])
+                    if (romData[0x13edb + lnJ] <= romData[0x13edb + lnI])
                     { // swap the two bytes, then restart lnJ <--- THIS DOES NOT WORK; SPELLS GET ALL SCREWED UP.  Instead, make the better spell be learned one level higher.
                         //swap(0x13edb + lnI, 0x13edb + lnJ);
                         //swap(0x1ae76 + lnI - 16, 0x1ae76 + lnJ - 16);
-                        romData[0x13edb + lnJ - 16] = (byte)(romData[0x13edb + lnI - 16] + 1);
+                        romData[0x13edb + lnJ] = (byte)(romData[0x13edb + lnI] + 1);
                         lnJ = lnI;
                     }
                 }
+
+            for (int lnI = 0; lnI < 31; lnI++) // Don't exceed level 29 for any spell.  I'd rather not wait 65,536+ points to get neccessary spells.
+            {
+                if (lnI == 15) continue;
+                if (romData[0x13edb + lnI] > 29)
+                    romData[0x13edb + lnI] = 29;
+            }
         }
 
         private List<int> addTreasure(List<int> currentList, int[] treasureData)
@@ -674,6 +795,10 @@ namespace DW2Randomizer
                     compareComposeString("shopContents" + lnI.ToString("X2"), writer, 0x19f9a + (6 * lnI), 6);
                 for (int lnI = 0; lnI < 68; lnI++)
                     compareComposeString("monsterZones" + lnI.ToString("X2"), writer, (0x10519 + (6 * lnI)), 6);
+                for (int lnI = 0; lnI < 19; lnI++)
+                    compareComposeString("monsterSpecial" + lnI.ToString("X2"), writer, (0x106b1 + (4 * lnI)), 4);
+                for (int lnI = 0; lnI < 13; lnI++)
+                    compareComposeString("monsterBoss" + lnI.ToString("X2"), writer, (0x10356 + (4 * lnI)), 4);
                 compareComposeString("statStart", writer, 0x13dd1, 12);
                 compareComposeString("statUps", writer, 0x13ddd, 260);
                 compareComposeString("spellLearning", writer, 0x13edb, 32);
