@@ -75,6 +75,8 @@ namespace DW2Randomizer
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            txtSeed.Text = (DateTime.Now.Ticks % 2147483647).ToString();
+
             try
             {
                 using (TextReader reader = File.OpenText("lastFile.txt"))
@@ -94,23 +96,72 @@ namespace DW2Randomizer
         private void btnRandomize_Click(object sender, EventArgs e)
         {
             loadRom();
-            if (chkChangeStatsToRemix.Checked && !radInsaneIntensity.Checked) changeStatsToRemix(); // Don't bother if insane random is checked, since all of the stats will change anyway!
-            if (chkHalfExpGoldReq.Checked) halfExpAndGoldReq();
-            randomize();
+            if (txtSeed.Text == "test1")
+                halfExpAndGoldReq(true);
+            else if (txtSeed.Text == "textGet")
+            {
+                textGet();
+                return;
+            }
+            else
+            {
+                if (chkChangeStatsToRemix.Checked) changeStatsToRemix(); // Don't bother if insane random is checked, since all of the stats will change anyway!
+                if (chkHalfExpGoldReq.Checked) halfExpAndGoldReq();
+                if (radSlightIntensity.Checked || radModerateIntensity.Checked || radHeavyIntensity.Checked)
+                    randomize();
+                else
+                    superRandomize();
+            }
 
             saveRom();
+        }
+
+        private void textGet()
+        {
+            List<string> txtStrings = new List<string>();
+            string tempWord = "";
+            for (int lnI = 0; lnI < 1913; lnI++)
+            {
+                int starter = 0x1b2da;
+                if (romData[starter + lnI] == 255)
+                {
+                    txtStrings.Add(tempWord);
+                    tempWord = "";
+                }
+                else if (romData[starter + lnI] >= 0 && romData[starter + lnI] <= 9)
+                {
+                    tempWord += (char)(romData[starter + lnI] + 39);
+                }
+                else if (romData[starter + lnI] >= 10 && romData[starter + lnI] <= 35)
+                {
+                    tempWord += (char)(romData[starter + lnI] + 87);
+                }
+                else if (romData[starter + lnI] >= 36 && romData[starter + lnI] <= 61)
+                {
+                    tempWord += (char)(romData[starter + lnI] + 29);
+                }
+            }
+            using (StreamWriter writer = File.CreateText(Path.Combine(Path.GetDirectoryName(txtFileName.Text), "DW2Strings.txt")))
+            {
+                int lnJ = 1;
+                foreach (string word in txtStrings)
+                {
+                    writer.WriteLine(lnJ.ToString("X3") + "-" + word);
+                    lnJ++;
+                }
+            }
         }
 
         private void loadRom(bool extra = false)
         {
             romData = File.ReadAllBytes(txtFileName.Text);
             if (extra)
-                romData2 = File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(txtFileName.Text), "DW2Rando.nes"));
+                romData2 = File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(txtFileName.Text), "DW2Rando_" + txtSeed.Text + ".nes"));
         }
 
         private void saveRom()
         {
-            string finalFile = Path.Combine(Path.GetDirectoryName(txtFileName.Text), "DW2Rando.nes");
+            string finalFile = Path.Combine(Path.GetDirectoryName(txtFileName.Text), "DW2Rando_" + txtSeed.Text + ".nes");
             File.WriteAllBytes(finalFile, romData);
             lblIntensityDesc.Text = "ROM hacking complete!  (" + finalFile + ")";
         }
@@ -142,7 +193,7 @@ namespace DW2Randomizer
                     { 25, 15, 10, 20, 15, 5 }, // Healer
                     { 12, 18, 10, 8, 6, 6 }, // Ghost Mouse
                     { 13, 16, 13, 9, 8, 4 }, // Babble
-                    { 12, 19, 13, 8, 4, 2 }, // Army Ant
+                    { 12, 19, 13, 8, 6, 7 }, // Army Ant (deliberatly changed from 4XP/2GP to 6XP/7GP to make it more in line with other monsters in its class)
                     { 15, 17, 11, 11, 10, 10 }, // Magician
                     { 16, 19, 11, 15, 7, 5 }, // Big Rat
                     { 14, 22, 10, 11, 9, 9 }, // Big Cobra
@@ -181,7 +232,7 @@ namespace DW2Randomizer
                     { 90, 51, 2, 20, 61, 51 }, // Hork
                     { 60, 75, 27, 41, 64, 45 }, // Hawk Man
                     { 55, 61, 28, 43, 72, 110 }, // Sorcerer
-                    { 25, 37, 255, 100, 1015, 90 }, // Metal Slime <- Typically 5 HP, but due to the high EXP output and the ease of taking HP off, I made it 25.
+                    { 10, 37, 255, 100, 1015, 90 }, // Metal Slime <- Typically 5 HP, but due to the high EXP output and the ease of taking HP off, I made it 10.
                     { 65, 82, 25, 57, 77, 97 }, // Hunter
                     { 50, 67, 30, 45, 92, 88 }, // Evil Eye
                     { 60, 74, 29, 52, 81, 83 }, // Hibabango
@@ -199,7 +250,7 @@ namespace DW2Randomizer
                     { 110, 99, 80, 60, 204, 181 }, // Orc King
                     { 82, 77, 47, 79, 182, 103 }, // Magic Vampirus
                     { 78, 109, 63, 55, 147, 123 }, // Berzerker
-                    { 90, 75, 255, 200, 10150, 255 }, // Metal Babble <- Typically 35 HP, but due to the high EXP output and the ease of taking HP off, I made it 90.
+                    { 50, 75, 255, 200, 10150, 255 }, // Metal Babble <- Typically 35 HP, but due to the high EXP output and the ease of taking HP off, I made it 50.
                     { 77, 115, 72, 65, 201, 135 }, // Hargon's Knight
                     { 115, 121, 42, 43, 257, 99 }, // Cyclops
                     { 90 , 115, 150, 80, 554, 120 }, // Attackbot
@@ -269,10 +320,11 @@ namespace DW2Randomizer
         {
             // We'll divide all of these by two later...
             int[] weaponcost = new int[] { 20, 200, 2500, 26000, 60, 100, 330, 770, 25000, 1500, 4000, 15000, 8000, 16000, 4000, 500 };
-            int[] armorcost = new int[] { 30, 1250, 70, 32767, 150, 390, 6400, 1250, 1000, 50, 50 };
-            int[] shieldcost = new int[] { 90, 21500, 2000, 8800, 90 };
-            int[] helmetcost = new int[] { 20000, 3150, 20 };
-            int[] itemcost = new int[] { 10, 0, 300, 0, 0, 6, 400, 0, 40, 30, 70, 1500, 640, 10000, 500, 70, 40, 80, 2, 2, 2, 2000, 0, 8, 15, 2600, 2, 2 };
+            int[] armorcost = new int[] { 30, 1250, 70, 32767, 150, 390, 6400, 1250, 1000, 32000, 48000 };
+            int[] shieldcost = new int[] { 90, 21500, 2000, 8800, 15000 };
+            int[] helmetcost = new int[] { 20000, 3150, 15000 };
+            // Adjusting item costs for the super randomizer, where they could be made available for purchasing in a store!
+            int[] itemcost = new int[] { 10, 300, 300, 0, 0, 5000, 600, 0, 8000, 8000, 1000, 1500, 640, 10000, 50000, 70, 40, 80, 2, 3000, 1500, 2000, 0, 8, 15, 10000, 2, 2 };
 
             int[] midenhallExpReq = new int[] { 12, 20, 40, 68, 140, 280, 440, 800, 1000,
                   1100, 1400, 2300, 2400, 3000, 4000, 4000, 5000, 6000, 8000,
@@ -341,9 +393,709 @@ namespace DW2Randomizer
             }
         }
 
+        private void superRandomize()
+        {
+            int randomModifier = 0;
+            Random r1 = new Random((int)DateTime.Now.Ticks % 2147483647);
+
+            // Totally randomize monsters (13805-13cd2)
+            for (int lnI = 0; lnI < 80; lnI++) // Do not adjust Hargon or Malroth.
+            {
+                //0 - All Bits used for Maximum Hit Points
+                //1 - Bits 0 - 3 unused, Bits 4 - 7 used for chance to evade attack out of 64
+                //2 - All Bits used for Maximum Gold Dropped
+                //3 - All Bits used for Experience Points Given
+                //4 - All Bits used for Agility
+                //5 - All Bits used for Attack Power
+                //6 - All Bits used for Defense Power
+                //7 - Bits 0, 1, 2 used for Damage Causing Spells Resistance out of 7
+                //  ---- Bits 3, 4, 5 used for Sleep Resistance out of 7
+                //  ---- Bits 6 and 7 used for Attack Pattern Probabilities
+                //      List 1 Pattern 1 32 / 256, Pattern 2 32 / 256, Pattern 3 32 / 256, Pattern 4 32 / 256, Pattern 5 32 / 256, Pattern 6 32 / 256, Pattern 7 32 / 256, Pattern 8 32 / 256
+                //      List 2 Pattern 1 38 / 256, Pattern 2 39 / 256, Pattern 3 33 / 256, Pattern 4 34 / 256, Pattern 5 30 / 256, Pattern 6 30 / 256, Pattern 7 26 / 256, Pattern 8 26 / 256
+                //      List 3 Pattern 1 46 / 256, Pattern 2 42 / 256, Pattern 3 38 / 256, Pattern 4 34 / 256, Pattern 5 30 / 256, Pattern 6 26 / 256, Pattern 7 22 / 256, Pattern 8 18 / 256
+                //      List 4 Pattern 1 100 / 256, Pattern 2 50 / 256, Pattern 3 28 / 256, Pattern 4 24 / 256, Pattern 5 19 / 256, Pattern 6 15 / 256, Pattern 7 12 / 256, Pattern 8 08 / 256
+                //8 - Bits 0, 1, 2 used for Stopspell resistance out of 7
+                //  ---- Bits 3, 4, 5 used for Defeat resistance out of 7
+                //  ---- Bits 6 and 7 used for Experience Points Given in Multiples of 256
+                //9 - Bits 0, 1, 2 used for Surround Resistance out of 7
+                //  ---- Bits 3, 4, 5 used for Defense Resistance out of 7
+                //  ---- Bits 6 and 7 used for Experience Points Given in Multiples of 1024
+                //10 - Bits 0 - 3 used for Attack Pattern 1, Bits 4 - 7 used for Attack Pattern 2
+                //11 - Bits 0 - 3 used for Attack Pattern 3, Bits 4 - 7 used for Attack Pattern 4
+                //12 - Bits 0 - 3 used for Attack Pattern 5, Bits 4 - 7 used for Attack Pattern 6
+                //13 - Bits 0 - 3 used for Attack Pattern 7, Bits 4 - 7 used for Attack Pattern 8
+                //14 - Attack Pattern Second Page
+                //  ---- Bit 0 Pattern 1, Bit 1 Pattern 2, Bit 2 Pattern 3, Bit 3 Pattern 4
+                //  ---- Bit 4 Pattern 5, Bit 5 Pattern 6, Bit 6 Pattern 7, Bit 7 Pattern 8
+
+                //First page
+                //#$0 Attack, #$1 Heroic Attack, #$2 Poison Attack, #$3 Faint Attack, #$4 Parry, #$5 Run Away,
+                //#$6 Firebal, #$7 Firebane, #$8 Explodet, #$9 Heal*, #$A Healmore*, #$B Heal All*, #$C Heal**,
+                //#$D Healmore**, #$E Heal All**, #$F Revive
+
+                //Second page
+                //#$0 Defence, #$1 Increase, #$2 Sleep, #$3 Stopspell, #$4 Surround, #$5 Defeat, $6 Sacrifice***,
+                //#$7 Weak Flames, #$8 Strong Flames, #$9 Deadly Flames, #$A Poison Breath, #$B Sweet Breath,
+                //#$C Call For Help, #$D Two Attacks, #$E concentration byte, #$F Dance Strange Jig
+                byte[] enemyStats = { romData[0x13805 + (lnI * 15) + 0], romData[0x13805 + (lnI * 15) + 1], romData[0x13805 + (lnI * 15) + 2], romData[0x13805 + (lnI * 15) + 3], romData[0x13805 + (lnI * 15) + 4],
+                    romData[0x13805 + (lnI * 15) + 5], romData[0x13805 + (lnI * 15) + 6], romData[0x13805 + (lnI * 15) + 7], romData[0x13805 + (lnI * 15) + 8], romData[0x13805 + (lnI * 15) + 9],
+                    romData[0x13805 + (lnI * 15) + 10], romData[0x13805 + (lnI * 15) + 11], romData[0x13805 + (lnI * 15) + 12], romData[0x13805 + (lnI * 15) + 13], romData[0x13805 + (lnI * 15) + 14] };
+
+                int byteValStart = 0x13805 + (15 * lnI);
+
+                enemyStats[1] = (byte)((r1.Next() % 16) * 16);
+                int gp = enemyStats[2] + (r1.Next() % (3 * (lnI + 1)));
+                enemyStats[2] = (byte)(lnI == 0x33 || gp > 255 ? 255 : gp); // Gold Orc gold = 255
+                float xp = romData[byteValStart + 3] + ((romData[byteValStart + 8] / 64) * 256) + ((romData[byteValStart + 8] / 64) * 1024);
+
+                enemyStats[4] = (byte)(r1.Next() % 256);
+                enemyStats[5] += (byte)(r1.Next() % (enemyStats[5] * 3 / 2) - (enemyStats[5] / 2));
+                enemyStats[7] = (byte)(r1.Next() % 256);
+                enemyStats[8] = (byte)(r1.Next() % 64);
+                enemyStats[9] = (byte)(r1.Next() % 64);
+
+                byte[] enemyPatterns = { 0, 0, 0, 0, 0, 0, 0, 0 };
+                bool[] enemyPage2 = { false, false, false, false, false, false, false, false };
+                bool concentration = false;
+
+                if (r1.Next() % 100 < 40) // 40% chance of being a basic attack monster
+                {
+                    // ... but do place a 50% chance for "funny" attacks...
+                    if (r1.Next() % 2 == 1)
+                    {
+                        for (int lnJ = 0; lnJ < 8; lnJ++)
+                        {
+                            // 37.5% chance of setting a different attack.
+                            byte random = (byte)(r1.Next() % 12);
+                            switch (random)
+                            {
+                                case 1:
+                                    enemyPatterns[lnJ] = 1;
+                                    break;
+                                case 2:
+                                    enemyPatterns[lnJ] = 2;
+                                    break;
+                                case 3:
+                                    enemyPatterns[lnJ] = 3;
+                                    break;
+                                case 4:
+                                    enemyPatterns[lnJ] = 4;
+                                    break;
+                                case 5:
+                                    enemyPatterns[lnJ] = 13;
+                                    enemyPage2[lnJ] = true;
+                                    break;
+                                case 6:
+                                    if (!concentration)
+                                    {
+                                        enemyPatterns[lnJ] = 14;
+                                        enemyPage2[lnJ] = true;
+                                        concentration = true;
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                } else
+                {
+                    for (int lnJ = 0; lnJ < 8; lnJ++)
+                    {
+                        // 50% chance of setting a different attack.
+                        byte random = (byte)(r1.Next() % 64);
+                        if (random >= 1 && random <= 31) // 0 would be fine, but it's already set.
+                        {
+                            if (random == 30 && concentration)
+                                continue; // do NOT set the concentration bit again.  Maintain regular attack.
+                            if (random >= 16)
+                                enemyPage2[lnJ] = true;
+                            enemyPatterns[lnJ] = (byte)(random % 16);
+                        }
+                    }
+                }
+                if (lnI == 0x2f || lnI == 0x41) // Metal slime, Metal Babble
+                    enemyPatterns[0] = 5; // run away
+
+                enemyStats[10] = (byte)(enemyPatterns[0] + (enemyPatterns[1] * 16));
+                enemyStats[11] = (byte)(enemyPatterns[2] + (enemyPatterns[3] * 16));
+                enemyStats[12] = (byte)(enemyPatterns[4] + (enemyPatterns[5] * 16));
+                enemyStats[13] = (byte)(enemyPatterns[6] + (enemyPatterns[7] * 16));
+                enemyStats[14] = (byte)((enemyPage2[0] ? 1 : 0) + (enemyPage2[1] ? 2 : 0) + (enemyPage2[2] ? 4 : 0) + (enemyPage2[3] ? 8 : 0) + 
+                    (enemyPage2[4] ? 16 : 0) + (enemyPage2[5] ? 32 : 0) + (enemyPage2[6] ? 64 : 0) + (enemyPage2[7] ? 128 : 0));
+
+                // Set XP value using a special formula.  Set bits 3, 8, and 9
+
+                //First page
+                //#$0 Attack, #$1 Heroic Attack, #$2 Poison Attack, #$3 Faint Attack, #$4 Parry, #$5 Run Away,
+                //#$6 Firebal, #$7 Firebane, #$8 Explodet, #$9 Heal*, #$A Healmore*, #$B Heal All*, #$C Heal**,
+                //#$D Healmore**, #$E Heal All**, #$F Revive
+
+                float atkMult = 1;
+                float atkBonus = 0;
+                for (int lnJ = 0; lnJ < 8; lnJ++)
+                {
+                    if (!enemyPage2[lnJ])
+                    {
+                        switch (enemyPatterns[lnJ])
+                        {
+                            case 1:
+                                atkMult *= (float)1.05;
+                                atkBonus += (float)0.25;
+                                break;
+                            case 2:
+                                atkMult *= (float)1.02;
+                                atkBonus += (float)0.1;
+                                break;
+                            case 3:
+                                atkMult *= (float)1.02;
+                                atkBonus += (float)0.1;
+                                break;
+                            case 6: // Really depends on an all vs. none attack, as well as strength, but for now...
+                                atkMult *= (float)1.01;
+                                atkBonus += (float)0.05;
+                                break;
+                            case 7: // Really depends on an all vs. none attack, as well as strength, but for now...
+                                atkMult *= (float)1.03;
+                                atkBonus += (float)0.5;
+                                break;
+                            case 8: // Really depends on an all vs. none attack, as well as strength, but for now...
+                                atkMult *= (float)1.05;
+                                atkBonus += (float)1.0;
+                                break;
+                            case 9: // Really depends on an all vs. none attack, as well as strength, but for now...
+                            case 12:
+                                atkMult *= (float)1.01;
+                                atkBonus += (float)0.05;
+                                break;
+                            case 10: // Really depends on an all vs. none attack, as well as strength, but for now...
+                            case 13:
+                                atkMult *= (float)1.02;
+                                atkBonus += (float)0.25;
+                                break;
+                            case 11: // Really depends on an all vs. none attack, as well as strength, but for now...
+                            case 14:
+                                atkMult *= (float)1.04;
+                                atkBonus += (float)0.5;
+                                break;
+                            case 15:
+                                atkMult *= (float)1.04;
+                                atkBonus += (float)0.5;
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        //Second page
+                        //#$0 Defence, #$1 Increase, #$2 Sleep, #$3 Stopspell, #$4 Surround, #$5 Defeat, $6 Sacrifice***,
+                        //#$7 Weak Flames, #$8 Strong Flames, #$9 Deadly Flames, #$A Poison Breath, #$B Sweet Breath,
+                        //#$C Call For Help, #$D Two Attacks, #$E concentration byte, #$F Dance Strange Jig
+
+                        switch (enemyPatterns[lnJ])
+                        {
+                            case 0:
+                                atkMult *= (float)1.005;
+                                atkBonus += (float)0.05;
+                                break;
+                            case 1:
+                                atkMult *= (float)1.005;
+                                atkBonus += (float)0.05;
+                                break;
+                            case 2:
+                                atkMult *= (float)1.02;
+                                atkBonus += (float)0.2;
+                                break;
+                            case 3:
+                                atkMult *= (float)1.01;
+                                atkBonus += (float)0.05;
+                                break;
+                            case 4:
+                                atkMult *= (float)1.01;
+                                atkBonus += (float)0.05;
+                                break;
+                            case 5:
+                                atkMult *= (float)1.06;
+                                atkBonus += (float)1.0;
+                                break;
+                            case 6:
+                                atkMult *= (float)1.06;
+                                atkBonus += (float)1.0;
+                                break;
+                            case 7:
+                                atkMult *= (float)1.01;
+                                atkBonus += (float)0.1;
+                                break;
+                            case 8:
+                                atkMult *= (float)1.03;
+                                atkBonus += (float)0.5;
+                                break;
+                            case 9:
+                                atkMult *= (float)1.06;
+                                atkBonus += (float)1.0;
+                                break;
+                            case 10:
+                                atkMult *= (float)1.01;
+                                atkBonus += (float)0.1;
+                                break;
+                            case 11:
+                                atkMult *= (float)1.02;
+                                atkBonus += (float)0.2;
+                                break;
+                            case 12:
+                                //atkMult *= (float)1.005;
+                                break;
+                            case 13:
+                                atkMult *= (float)1.03;
+                                atkBonus += (float)0.25;
+                                break;
+                            case 14:
+                                //atkMult *= (float)1.01;
+                                break;
+                            case 15:
+                                atkMult *= (float)1.02;
+                                atkBonus += (float)0.1;
+                                break;
+                        }
+                    }
+                }
+                xp += atkBonus;
+                xp *= atkMult;
+
+                float resMult = 1;
+                for (int lnJ = 7; lnJ <= 9; lnJ++)
+                {
+                    int p1 = enemyStats[lnJ] % 8;
+                    int p2 = (enemyStats[lnJ] % 64) / 8;
+                    float resSingle = 1;
+                    resSingle = (float)(p1 == 0 ? 1 : p1 == 1 ? 1 : p1 == 2 ? 2 : p1 == 3 ? 4 : p1 == 4 ? 6 : p1 == 5 ? 9 : p1 == 6 ? 12 : 15);
+                    resSingle *= (float)(lnJ == 7 ? 1 : lnJ == 8 ? .95 : .95);
+                    resMult *= (1 + (resSingle / 100));
+                    resSingle = (float)(p2 == 0 ? 1 : p2 == 1 ? 1 : p2 == 2 ? 2 : p2 == 3 ? 4 : p2 == 4 ? 6 : p2 == 5 ? 9 : p2 == 6 ? 12 : 15);
+                    resSingle *= (float)(lnJ == 7 ? 1 : lnJ == 8 ? .85 : .85);
+                    resMult *= (1 + (resSingle / 100));
+                }
+                xp *= resMult;
+
+                xp = (float)Math.Round(xp, 0);
+                byte xp1 = (byte)(xp > 4095 ? 255 : (xp % 256));
+                byte xp2 = (byte)(xp > 4095 ? 192 : (Math.Floor(xp / 256) % 4) * 64);
+                byte xp3 = (byte)(xp > 4095 ? 192 : (Math.Floor(xp / 1024)) * 64);
+
+                enemyStats[3] = xp1;
+                enemyStats[8] = (byte)(enemyStats[8] + xp2);
+                enemyStats[9] = (byte)(enemyStats[9] + xp3);
+
+                for (int lnJ = 0; lnJ < 15; lnJ++)
+                    romData[byteValStart + lnJ] = enemyStats[lnJ];
+            }
+
+            byte[] monsterRank = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+                41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60,
+                61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80 };
+            // Rank each monster by experience value
+            for (int lnI = 0; lnI < 80; lnI++) {
+                if (lnI == 0x30 || lnI == 0x42) continue; // do not rearrange the metal slime or the metal babble.
+                int byteValStart = 0x13805 + (15 * lnI);
+                int xp1 = romData[byteValStart + 3] + ((romData[byteValStart + 8] / 64) * 256) + ((romData[byteValStart + 8] / 64) * 1024);
+                for (int lnJ = lnI; lnJ < 80; lnJ++)
+                {
+                    if (lnJ == 0x30 || lnJ == 0x42) continue; // do not rearrange the metal slime or the metal babble.
+                    int byteValStart2 = 0x13805 + (15 * lnI);
+                    int xp2 = romData[byteValStart2 + 3] + ((romData[byteValStart2 + 8] / 64) * 256) + ((romData[byteValStart2 + 8] / 64) * 1024);
+                    if (xp2 > xp1)
+                    {
+                        int bubble = lnI;
+                        monsterRank[lnI] = monsterRank[lnJ];
+                        monsterRank[lnJ] = (byte)lnI;
+                    }
+                }
+            }
+
+            // Totally randomize monster zones (but make sure the first 20 zones have easier monsters) (10356-10389, 10519-10680, )
+            for (int lnI = 0; lnI < 68; lnI++)
+            {
+                int byteToUse = 0x10519 + (lnI * 6);
+                bool zone = false;
+                for (int lnJ = 0; lnJ < 6; lnJ++)
+                {
+                    // First 11 zones have a 50% chance of a monster in each byte.  All 6 bytes will be at least 128... we don't want any "special fights" in these zones.
+                    if (lnI < 11)
+                    {
+                        if (r1.Next() % 2 == 0)
+                        {
+                            zone = true;
+                            romData[byteToUse + lnJ] = (monsterRank[r1.Next() % (lnI + 6)]);
+                        }
+                        else
+                            romData[byteToUse + lnJ] = 127;
+                    }
+                    else if (lnI < 20) // For the next 9 zones, it's a 33% chance.  Still no special fights.
+                    {
+                        if (r1.Next() % 3 < 2)
+                        {
+                            zone = true;
+                            romData[byteToUse + lnJ] = (monsterRank[r1.Next() % (lnI + 10)]);
+                        }
+                        else
+                            romData[byteToUse + lnJ] = 127;
+                    }
+                    else // Finally, a 20% chance.  Also introduce a 50% chance of the 19 "special bouts".
+                    {
+                        if (r1.Next() % 5 < 4)
+                        {
+                            zone = true;
+                            romData[byteToUse + lnJ] = (monsterRank[r1.Next() % 78]);
+                        } else
+                            romData[byteToUse + lnJ] = 127;
+                    }
+                }
+                if (!zone)
+                {
+                    romData[byteToUse + 5] = (monsterRank[r1.Next() % (lnI < 11 ? lnI + 6 : lnI < 20 ? lnI + 10 : 78)]);
+                }
+                byte specialBout = (byte)(r1.Next() % 38);
+                if (lnI >= 20 && specialBout < 19)
+                {
+                    romData[byteToUse + 0] += 128;
+                    romData[byteToUse + 1] += (byte)(specialBout >= 16 ? 0 : 128);
+                    romData[byteToUse + 2] += (byte)(specialBout % 16 >= 8 ? 0 : 128);
+                    romData[byteToUse + 3] += (byte)(specialBout % 8 >= 4 ? 0 : 128);
+                    romData[byteToUse + 4] += (byte)(specialBout % 4 >= 2 ? 0 : 128);
+                    romData[byteToUse + 5] += (byte)(specialBout % 2 >= 1 ? 0 : 128);
+                }
+                else
+                {
+                    for (int lnJ = 0; lnJ < 6; lnJ++) {
+                        romData[byteToUse + lnJ] += 128;
+                    }
+                }
+            }
+
+            // Randomize the 19 special battles (106b1-106fc)
+            for (int lnI = 0; lnI < 19; lnI++)
+            {
+                int byteToUse = 0x106b1 + (4 * lnI);
+                for (int lnJ = 0; lnJ < 4; lnJ++)
+                {
+                    if (r1.Next() % 2 == 1 || lnJ == 3)
+                        romData[byteToUse + lnJ] = monsterRank[r1.Next() % 78];
+                }
+            }
+
+            // Randomize which items equate to which effects (except the Wizard's Ring, Medical Herb, and Antidote Herb) (13537-1353b)
+            for (int lnI = 0; lnI < 5; lnI++)
+            {
+                // randomize from 1-35
+                romData[0x13537 + lnI] = (byte)((r1.Next() % 35) + 1);
+            }
+
+            // Totally randomize weapons, armor, shields, helmets (13efb-13f1d, 1a00c-1a08b for pricing)
+            byte[] maxPower = { 0, 0, 0, 0 };
+            for (int lnI = 0; lnI < 35; lnI++)
+            {
+                byte power = (byte)(r1.Next() % (lnI < 16 ? (7 * (lnI + 1)) : lnI < 27 ? (7 * (lnI - 15)) : lnI < 31 ? (7 * (lnI - 26)) : (7 * (lnI - 30))));
+                maxPower[(lnI < 16 ? 0 : lnI < 27 ? 1 : lnI < 31 ? 2 : 3)] = (power > maxPower[(lnI < 16 ? 0 : lnI < 27 ? 1 : lnI < 31 ? 2 : 3)] ? power : 
+                    maxPower[(lnI < 16 ? 0 : lnI < 27 ? 1 : lnI < 31 ? 2 : 3)]);
+                romData[0x13efb + lnI] = power;
+
+                double price = Math.Round((lnI < 16 ? Math.Pow(power, 2.3) : lnI < 27 ? Math.Pow(power, 2.4) : lnI < 31 ? Math.Pow(power, 2.8) : Math.Pow(power, 3.0)), 0);
+                romData[0x1a00c + (lnI * 2) + 0] = (byte)(price % 256);
+                romData[0x1a00c + (lnI * 2) + 1] = (byte)(price / 256);
+            }
+
+            // Totally randomize who can equip (1a3ce-1a3f0).  At least one person can equip something...
+            for (int lnI = 0; lnI < 35; lnI++)
+            {
+                if (lnI == 0 || lnI == 16) romData[0x1a3ce + lnI] = 7;
+                else romData[0x1a3ce + lnI] = (byte)((r1.Next() % 7) + 1);
+            }
+
+            // Totally randomize spell strengths (18be0, 13be8, 13bf0, 127d5-1286a for strength, 134fa-13508 for cost, 13509-13517 for 3/4 cost)
+            // No need to do this right now because we really can't adjust the spells to begin with.
+            //for (int lnI = 0; lnI < 30; lnI++)
+            //{
+            //    if (lnI == 28) continue; // Skip the antidote herb
+
+            //}
+
+            // Randomize field item strengths (124b2(Wizard's Ring), 18be0(Heal), 18be8(Healmore), 18bf0(Healall), 19602(Medical Herb) only)
+
+            // Totally randomize spell learning (13edb-13eea, 13eeb-13efa, 1ae76-1ae95, 1b63c-1b727(text), separate the two casters with "ff ff")
+            // Text - 0 to 9 (00-09), a-z (0a-23), A-Z(24-3d)
+            byte level = 1;
+            for (int lnI = 0; lnI < 32; lnI++)
+            {
+                if (lnI == 4 || lnI == 8 || lnI == 20 || lnI == 24) continue; // Heal/Healmore MUST be learned at level 1, so leave that byte alone.
+                level += (byte)((r1.Next() % 7) + 1);
+                romData[0x13edb + lnI] = level;
+                if (lnI == 3 || lnI == 7 || lnI == 15 || lnI == 19 || lnI == 23) level = 1;
+            }
+
+            // Totally randomize treasures... but make sure key items exist before they are needed! (19e41-19f15, 19f1a-19f2a, 19c79, 19c84)
+            int[] treasureAddrZ0 = { 0x19e41, 0x19c79 }; // 2
+            int[] treasureAddrZ1 = { 0x19ed9, 0x19edd, 0x19ee1, 0x19e79, 0x19e7d,
+                                     0x19e81, 0x19e85, 0x19e89, 0x19e8d, 0x19e91,
+                                     0x19f0d, 0x19f11, 0x19f15, 0x19f1a }; // Cloak of wind/Mirror Of Ra and previous; 14
+            int[] treasureAddrZ2 = { 0x19f32, 0x19eb5, 0x19ef9, 0x19f01, 0x19f05,
+                                     0x19f09, 0x19f1e, 0x19f22, 0x19f2a, 0x19b5c }; // Pre-Golden key; 10
+            int[] treasureAddrZ3 = { 0x19e45, 0x19e49, 0x19e4d, 0x19e51, 0x19e55,
+                                     0x19e59, 0x19e5d, 0x19e61, 0x19e65, 0x19e69,
+                                     0x19e6d, 0x19e71, 0x19e75, 0x19ef9, 0x19f01,
+                                     0x19f05, 0x19f09 }; // Golden key to moon tower; Jailor's required by here; 17
+            int[] treasureAddrZ4 = { 0x19ee5, 0x19ee9, 0x19eed, 0x19ef1, 0x19ef5 }; // Moon Tower; 5
+            int[] treasureAddrZ5 = { 0x19e95, 0x19e99, 0x19e9d, 0x19ea1, 0x19ea5,
+                                     0x19ea9, 0x19ead, 0x19eb1 }; // Sea Cave; 8
+            int[] treasureAddrZ6 = { 0x19eb9, 0x19ebd, 0x19ec1, 0x19ec5, 0x19ec9,
+                                     0x19ecd, 0x19ed1, 0x19ed5 }; // Rhone Cave; 8
+            List<int> allTreasureList = new List<int>();
+
+            allTreasureList = addTreasure(allTreasureList, treasureAddrZ0);
+            allTreasureList = addTreasure(allTreasureList, treasureAddrZ1);
+            allTreasureList = addTreasure(allTreasureList, treasureAddrZ2);
+            allTreasureList = addTreasure(allTreasureList, treasureAddrZ3);
+            allTreasureList = addTreasure(allTreasureList, treasureAddrZ4);
+            allTreasureList = addTreasure(allTreasureList, treasureAddrZ5);
+            allTreasureList = addTreasure(allTreasureList, treasureAddrZ6);
+
+            int[] allTreasure = allTreasureList.ToArray();
+
+            //byte[] keyItems = { (byte)(r1.Next() % 16), (byte)(r1.Next() % 16), (byte)(r1.Next() % 26), (byte)(r1.Next() % 43),
+            //    (byte)(r1.Next() % 48), (byte)(r1.Next() % 56), (byte)(r1.Next() % 64), (byte)(r1.Next() % 64), (byte)(r1.Next() % 64),
+            //    (byte)(r1.Next() % 64), (byte)(r1.Next() % 64), (byte)(r1.Next() % 64) };
+            //byte[] KIRange = { 16, 16, 26, 43, 48, 56, 64, 64, 64 };
+            //for (int lnI = 0; lnI < 9; lnI++)
+            //{
+
+            //}
+            //byte cloakOfWind = (byte)(r1.Next() % 15);
+            //byte mirrorOfRa = (byte)(r1.Next() % 15);
+            //byte goldenKey = (byte)(r1.Next() % 25);
+            //byte jailorsKey = (byte)(r1.Next() % 42);
+            //byte moonFrag = (byte)(r1.Next() % 47);
+            //byte eyeOfMalroth = (byte)(r1.Next() % 55);
+            //byte lifeCrest = (byte)(r1.Next() % 63);
+            //byte waterCrest = (byte)(r1.Next() % 63);
+            //byte sunCrest = (byte)(r1.Next() % 64);
+
+            // randomize starting gold
+            romData[0x19c84] = (byte)(r1.Next() % 256);
+
+            List<byte> treasureList = new List<byte>();
+            for (int lnI = 0; lnI < 64; lnI++)
+            {
+                if (lnI == 1)
+                {
+                    romData[allTreasure[lnI]] = romData[allTreasure[0]]; // This is so the player can also get 50 gold.
+                    continue;
+                }
+                bool legal = false;
+                while (!legal)
+                {
+                    byte treasure = (byte)((r1.Next() % 62) + 1); // the last two items we can't get...
+                    if (!(treasure == 0x3A || treasure == 0x27 || treasure == 0x36))
+                    {
+                        if (!(treasureList.Contains(treasure) && ((treasure >= 0x24 && treasure <= 0x2e) || treasure == 0x32 || treasure == 0x37 || treasure == 0x38 || treasure == 0x39)))
+                        {
+                            legal = true;
+                            treasureList.Add(treasure);
+                            romData[allTreasure[lnI]] = treasure;
+                        }
+                    }
+                }
+            }
+            // Totally randomize stores (cannot have Jailor's Key in a weapons store) (19f9a-1a00b)
+            for (int lnI = 0; lnI < 18; lnI++)
+            {
+                int byteToUse = 0x19f9a + (lnI * 6);
+                // Always have one item in store.  Let chances of having another item = 90%/80%/70%/60%/50%
+                byte chance = 9;
+                for (int lnJ = 0; lnJ < 6; lnJ++)
+                {
+                    if (r1.Next() % 10 <= chance - lnJ)
+                    {
+                        // Add item
+                        byte treasure = (byte)((r1.Next() % 62) + 1); // the last two items we can't get...
+                        if (!(treasure == 0x3A || treasure == 0x27 || treasure == 0x36 || treasure == 0x28 || treasure == 0x2B))
+                        {
+                            romData[byteToUse + lnJ] = treasure;
+                        }
+                    }
+                }
+            }
+
+            // Verify that key items are available in either a store or a treasure chest in the right zone.
+            byte[] keyItems = { 0x2b, 0x2e, 0x37, 0x39, 0x26, 0x28 };
+            byte[] keyTreasure = { 16, 16, 26, 43, 48, 56 };
+            byte[] keyWStore = { 12, 12, 36, 48, 48, 48 };
+            byte[] keyIStore = { 24, 24, 54, 66, 66, 66 };
+            for (int lnI = 0; lnI < 6; lnI++)
+            {
+                for (int lnJ = 0; lnJ < keyTreasure[lnI]; lnJ++)
+                {
+                    if (romData[allTreasure[lnI]] == keyTreasure[lnI])
+                        continue;
+                }
+                for (int lnJ = 0; lnJ < keyWStore[lnI]; lnJ++)
+                {
+                    if (romData[0x19f9a + lnJ] == keyTreasure[lnI])
+                        continue;
+                }
+                for (int lnJ = 0; lnJ < keyIStore[lnI]; lnJ++)
+                {
+                    if (romData[0x19f9a + 48 + lnJ] == keyTreasure[lnI])
+                        continue;
+                }
+
+                // Item was not found, so we'll have to place it in a treasure somewhere...
+                bool legal = false;
+                while (!legal)
+                {
+                    byte tRand = (byte)(r1.Next() % keyTreasure[lnI]);
+                    if (romData[allTreasure[tRand]] != keyTreasure[0] && romData[allTreasure[tRand]] != keyTreasure[1] && romData[allTreasure[tRand]] != keyTreasure[2] &&
+                        romData[allTreasure[tRand]] != keyTreasure[3] && romData[allTreasure[tRand]] != keyTreasure[4] && romData[allTreasure[tRand]] != keyTreasure[5])
+                    {
+                        romData[allTreasure[tRand]] = keyItems[lnI];
+                        legal = true;
+                    }
+                }
+
+            }
+
+            // Randomize starting stats.  Do not exceed 16 strength and agility, and 40 HP/MP. (13dd1-13ddc)
+            byte[] stats = { romData[0x13dd1 + 0], romData[0x13dd1 + 1], romData[0x13dd1 + 2], romData[0x13dd1 + 3],
+                romData[0x13dd1 + 4], romData[0x13dd1 + 5], romData[0x13dd1 + 6], romData[0x13dd1 + 7],
+                romData[0x13dd1 + 8], romData[0x13dd1 + 9], romData[0x13dd1 + 10], romData[0x13dd1 + 11] };
+
+            for (int lnI = 0; lnI < 12; lnI++)
+            {
+                if (lnI == 3) // Midenhall starts with 0 MP.
+                    continue;
+                switch (lnI % 4)
+                {
+                    case 0:
+                    case 1:
+                    case 3:
+                        randomModifier = (r1.Next() % 16);
+                        break;
+                    case 2:
+                        randomModifier = 24 + (r1.Next() % 16);
+                        break;
+                }
+
+                if (romData[0x13dd1 + lnI] + randomModifier >= 0)
+                {
+                    romData[0x13dd1 + lnI] = (byte)(randomModifier);
+                    stats[lnI] = romData[0x13dd1 + lnI];
+                }
+            }
+
+            int maxStrength = 255 - maxPower[0];
+            int maxAgility = 510 - ((maxPower[1] + maxPower[2] + maxPower[3]) * 2);
+            maxAgility = (maxAgility > 255 ? 255 : maxAgility);
+            int avgStrength = ((maxStrength / 50));
+            int avgAgility = ((maxAgility / 50));
+            // Randomize stat gains... but don't put any stat above 255! (13ddd-13eda)
+            // 98 bytes for Midenhall, 88 bytes for Cannock, 68 bytes for Moonbrooke.  First break at 210, second break at 250.
+            for (int lnI = 0; lnI < 254; lnI++)
+            {
+                int byteToUse = 0x13ddd + lnI;
+
+                int statToUse1 = (lnI > 244 ? lnI % 2 : (lnI > 206 ? lnI % 4 : lnI % 6)) * 2;
+                int statToUse2 = (lnI > 244 ? lnI % 2 : (lnI > 206 ? lnI % 4 : lnI % 6)) * 2 + 1;
+
+                int randomModifier1 = 0;
+                int randomModifier2 = 0;
+
+                if (lnI % 2 == 0)
+                {
+                    randomModifier1 = (lnI == 0 || lnI == 1 ? (r1.Next() % (16 + (8 - avgStrength))) - (8 - avgStrength) :
+                        lnI == 2 || lnI == 3 ? (r1.Next() % (16 + (9 - avgStrength))) - (9 - avgStrength) : (r1.Next() % (16 + (10 - avgStrength)) - (10 - avgStrength)));
+                    randomModifier2 = (lnI == 0 || lnI == 1 ? r1.Next() % (16 + (10 - avgAgility)) - (10 - avgAgility) :
+                        lnI == 2 || lnI == 3 ? (r1.Next() % (16 + (9 - avgAgility))) - (9 - avgAgility) : (r1.Next() % (16 + (8 - avgAgility)) - (8 - avgAgility)));
+                }
+                else
+                {
+                    randomModifier1 = (lnI == 0 || lnI == 1 ? (r1.Next() % (16 + (8 - 5))) - (8 - 5) :
+                        lnI == 2 || lnI == 3 ? (r1.Next() % (16 + (9 - 5))) - (9 - 5) : (r1.Next() % (16 + (10 - 5))) - (10 - 5));
+                    randomModifier2 = (lnI == 0 || lnI == 1 ? 0 :
+                        lnI == 2 || lnI == 3 ? (r1.Next() % (16 + (10 - 5))) - (10 - 5) : (r1.Next() % (16 + (8 - 5))) - (8 - 5));
+                }
+
+                if (lnI % 2 == 0)
+                {
+                    if (stats[statToUse1] + randomModifier1 > maxStrength)
+                        randomModifier1 = (stats[statToUse1] + randomModifier1) - maxStrength;
+                    else
+                    if (stats[statToUse2] + randomModifier2 > maxAgility)
+                        randomModifier2 = (stats[statToUse2] + randomModifier2) - maxAgility;
+                }
+                else
+                {
+                    if (stats[statToUse1] + randomModifier1 > 255)
+                        randomModifier1 = (stats[statToUse1] + randomModifier1) - 255;
+                    else
+                    if (stats[statToUse2] + randomModifier2 > 255)
+                        randomModifier2 = (stats[statToUse2] + randomModifier2) - 255;
+                }
+
+                if (randomModifier1 < 0) randomModifier1 = 0;
+                else if (randomModifier1 > 15) randomModifier1 = 15;
+
+                if (randomModifier2 < 0) randomModifier2 = 0;
+                else if (randomModifier2 > 15) randomModifier2 = 15;
+
+                if (stats[statToUse2] + randomModifier2 > 255)
+                    randomModifier2 = (stats[statToUse2] + randomModifier2) - 255;
+
+                romData[byteToUse] = (byte)((randomModifier1 * 16) + randomModifier2);
+                stats[statToUse1] += (byte)randomModifier1;
+                stats[statToUse2] += (byte)randomModifier2;
+            }
+
+            // Randomize starting equipment. (3c79f-3c7b6)  Target range:  6-24 attack, 4-16 defense.  If it can't be reached, assign lowest weapon and armor.
+            // Remember to add 64 to the starting equipment!!!
+            List<byte> legalWeapon = new List<byte>();
+            List<byte> legalArmor = new List<byte>();
+            for (int lnI = 0; lnI < 3; lnI++)
+            {
+                int byteToUse = 0x3c79f + (8 * lnI);
+                romData[byteToUse + 0] = 64 + 1;
+                romData[byteToUse + 1] = 64 + 17;
+                //// Give it 30 randomizations.  If the attack doesn't go under 24, then give him the last randomized weapon.
+                //for (int lnJ = 0; lnJ < 30; lnJ++)
+                //{
+                //    int rand = r1.Next() % 16;
+                //    if (romData[0x13efb + rand] < 24 || lnJ >= 29)
+                //    {
+                //        romData[byteToUse + 0] = (byte)(64 + rand);
+                //        break;
+                //    }
+                //}
+
+                //// Give it 30 randomizations.  If the defense doesn't go under 16, then give him the last randomized armor.
+                //for (int lnJ = 0; lnJ < 30; lnJ++)
+                //{
+                //    int rand = (r1.Next() % 11) + 16;
+                //    if (romData[0x13efb + rand] < 16 || lnJ >= 29)
+                //    {
+                //        romData[byteToUse + 1] = (byte)(64 + rand);
+                //        break;
+                //    }
+                //}
+            }
+        }
+
         private void randomize()
         {
-            Random r1 = new Random((int)DateTime.Now.Ticks % 2147483647);
+            Random r1;
+            try
+            {
+                r1 = new Random(int.Parse(txtSeed.Text));
+            } catch
+            {
+                MessageBox.Show("Invalid seed.  It must be a number from 0 to 2147483648.");
+                return;
+            }
 
             int intensity = (radSlightIntensity.Checked ? 1 : (radModerateIntensity.Checked ? 2 : (radHeavyIntensity.Checked ? 3 : 4)));
             byte[] monsterSize = { 8, 5, 5, 7, 5, 8, 5, 7, 5, 4, 5, 4, 5, 7, 4,
@@ -673,8 +1425,8 @@ namespace DW2Randomizer
             // rearrange spell learning levels
             for (int lnI = 0; lnI < 31; lnI++) // Spell #32 is not learned.
             {
-                if (lnI == 15)
-                    continue; // Spell #16 is also not learned.
+                if (lnI == 4 || lnI == 8 || lnI == 15 || lnI == 20 || lnI == 24)
+                    continue; // Spell #16 is also not learned.  Also, heal/healmore MUST be learned at level 1.
                 randomModifier = (intensity == 1 ? (r1.Next() % 3) - 1 : (intensity == 2 ? (r1.Next() % 7) - 3 : (r1.Next() % 13) - 6));
                 byte spellLevel = romData[0x13edb + lnI];
                 if (spellLevel + randomModifier <= 0)
@@ -684,13 +1436,51 @@ namespace DW2Randomizer
                 romData[0x13edb + lnI] = spellLevel;
             }
 
+            for (int lnI = 0; lnI < 4; lnI++)
+                for (int lnJ = lnI + 1; lnJ < 31; lnJ++)
+                {
+                    if (romData[0x13edb + lnJ] <= romData[0x13edb + lnI])
+                    {
+                        romData[0x13edb + lnJ] = (byte)(romData[0x13edb + lnI] + 1);
+                        lnJ = lnI;
+                    }
+                }
+
+            for (int lnI = 4; lnI < 8; lnI++)
+                for (int lnJ = lnI + 1; lnJ < 15; lnJ++)
+                {
+                    if (romData[0x13edb + lnJ] <= romData[0x13edb + lnI])
+                    {
+                        romData[0x13edb + lnJ] = (byte)(romData[0x13edb + lnI] + 1);
+                        lnJ = lnI;
+                    }
+                }
+
             for (int lnI = 8; lnI < 15; lnI++)
                 for (int lnJ = lnI + 1; lnJ < 15; lnJ++)
                 {
                     if (romData[0x13edb + lnJ] <= romData[0x13edb + lnI])
-                    { // swap the two bytes, then restart lnJ <--- THIS DOES NOT WORK; SPELLS GET ALL SCREWED UP.  Instead, make the better spell be learned one level higher.
-                        //swap(0x13edb + lnI, 0x13edb + lnJ);
-                        //swap(0x1ae76 + lnI - 8, 0x1ae76 + lnJ - 8);
+                    { 
+                        romData[0x13edb + lnJ] = (byte)(romData[0x13edb + lnI] + 1);
+                        lnJ = lnI;
+                    }
+                }
+
+            for (int lnI = 16; lnI < 20; lnI++)
+                for (int lnJ = lnI + 1; lnJ < 31; lnJ++)
+                {
+                    if (romData[0x13edb + lnJ] <= romData[0x13edb + lnI])
+                    {
+                        romData[0x13edb + lnJ] = (byte)(romData[0x13edb + lnI] + 1);
+                        lnJ = lnI;
+                    }
+                }
+
+            for (int lnI = 20; lnI < 24; lnI++)
+                for (int lnJ = lnI + 1; lnJ < 31; lnJ++)
+                {
+                    if (romData[0x13edb + lnJ] <= romData[0x13edb + lnI])
+                    {
                         romData[0x13edb + lnJ] = (byte)(romData[0x13edb + lnI] + 1);
                         lnJ = lnI;
                     }
@@ -700,9 +1490,7 @@ namespace DW2Randomizer
                 for (int lnJ = lnI + 1; lnJ < 31; lnJ++)
                 {
                     if (romData[0x13edb + lnJ] <= romData[0x13edb + lnI])
-                    { // swap the two bytes, then restart lnJ <--- THIS DOES NOT WORK; SPELLS GET ALL SCREWED UP.  Instead, make the better spell be learned one level higher.
-                        //swap(0x13edb + lnI, 0x13edb + lnJ);
-                        //swap(0x1ae76 + lnI - 16, 0x1ae76 + lnJ - 16);
+                    { 
                         romData[0x13edb + lnJ] = (byte)(romData[0x13edb + lnI] + 1);
                         lnJ = lnI;
                     }
@@ -803,6 +1591,9 @@ namespace DW2Randomizer
                 compareComposeString("statUps", writer, 0x13ddd, 260);
                 compareComposeString("spellLearning", writer, 0x13edb, 32);
                 compareComposeString("spellsLearned", writer, 0x1ae76, 32);
+                compareComposeString("start1", writer, 0x3c79f, 8);
+                compareComposeString("start2", writer, 0x3c79f + 8, 8);
+                compareComposeString("start3", writer, 0x3c79f + 16, 8);
             }
             lblIntensityDesc.Text = "Comparison complete!  (DW2Compare.txt)";
         }

@@ -38,7 +38,6 @@
             this.chkChangeStatsToRemix = new System.Windows.Forms.CheckBox();
             this.chkHalfExpGoldReq = new System.Windows.Forms.CheckBox();
             this.radSlightIntensity = new System.Windows.Forms.RadioButton();
-            this.label3 = new System.Windows.Forms.Label();
             this.radModerateIntensity = new System.Windows.Forms.RadioButton();
             this.radHeavyIntensity = new System.Windows.Forms.RadioButton();
             this.radInsaneIntensity = new System.Windows.Forms.RadioButton();
@@ -46,6 +45,8 @@
             this.lblIntensityDesc = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.btnCompare = new System.Windows.Forms.Button();
+            this.txtSeed = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // txtFileName
@@ -148,15 +149,6 @@
             this.radSlightIntensity.UseVisualStyleBackColor = true;
             this.radSlightIntensity.CheckedChanged += new System.EventHandler(this.radSlightIntensity_CheckedChanged);
             // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 159);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(91, 13);
-            this.label3.TabIndex = 10;
-            this.label3.Text = "Random intensity:";
-            // 
             // radModerateIntensity
             // 
             this.radModerateIntensity.AutoSize = true;
@@ -182,7 +174,6 @@
             // radInsaneIntensity
             // 
             this.radInsaneIntensity.AutoSize = true;
-            this.radInsaneIntensity.Enabled = false;
             this.radInsaneIntensity.Location = new System.Drawing.Point(207, 185);
             this.radInsaneIntensity.Name = "radInsaneIntensity";
             this.radInsaneIntensity.Size = new System.Drawing.Size(68, 17);
@@ -231,11 +222,29 @@
             this.btnCompare.UseVisualStyleBackColor = true;
             this.btnCompare.Click += new System.EventHandler(this.btnCompare_Click);
             // 
+            // txtSeed
+            // 
+            this.txtSeed.Location = new System.Drawing.Point(69, 159);
+            this.txtSeed.Name = "txtSeed";
+            this.txtSeed.Size = new System.Drawing.Size(100, 20);
+            this.txtSeed.TabIndex = 19;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(12, 161);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(32, 13);
+            this.label3.TabIndex = 20;
+            this.label3.Text = "Seed";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(533, 313);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.txtSeed);
             this.Controls.Add(this.btnCompare);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.lblIntensityDesc);
@@ -243,7 +252,6 @@
             this.Controls.Add(this.radInsaneIntensity);
             this.Controls.Add(this.radHeavyIntensity);
             this.Controls.Add(this.radModerateIntensity);
-            this.Controls.Add(this.label3);
             this.Controls.Add(this.radSlightIntensity);
             this.Controls.Add(this.chkHalfExpGoldReq);
             this.Controls.Add(this.chkChangeStatsToRemix);
@@ -275,7 +283,6 @@
         private System.Windows.Forms.CheckBox chkChangeStatsToRemix;
         private System.Windows.Forms.CheckBox chkHalfExpGoldReq;
         private System.Windows.Forms.RadioButton radSlightIntensity;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.RadioButton radModerateIntensity;
         private System.Windows.Forms.RadioButton radHeavyIntensity;
         private System.Windows.Forms.RadioButton radInsaneIntensity;
@@ -283,6 +290,8 @@
         private System.Windows.Forms.Label lblIntensityDesc;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button btnCompare;
+        private System.Windows.Forms.TextBox txtSeed;
+        private System.Windows.Forms.Label label3;
     }
 }
 
