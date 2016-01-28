@@ -805,8 +805,11 @@ namespace DW2Randomizer
             {
                 int byteToUse = 0x10356 + (lnI * 4);
                 int boss1 = (lnI >= 9 ? 78 + (lnI - 9) : (r1.Next() % 78));
-                int quantity1 = (r1.Next() % monsterSize[boss1]) + 1;
-                int boss2 = (r1.Next() % 78);
+                boss1 = (lnI == 0 ? r1.Next() % 32 : boss1);
+                boss1 = (boss1 >= 80 ? boss1 + 1 : monsterRank[boss1]);
+                int quantity1 = (boss1 >= 80 ? 1 : (r1.Next() % monsterSize[boss1]) + 1);
+                int boss2 = (lnI == 0 ? r1.Next() % 32 : r1.Next() % 78);
+                boss2 = monsterRank[boss2];
                 romData[byteToUse + 0] = (byte)boss1;
                 romData[byteToUse + 1] = (byte)quantity1;
                 romData[byteToUse + 2] = (byte)boss2;
@@ -820,11 +823,12 @@ namespace DW2Randomizer
                 romData[0x13537 + lnI] = (byte)((r1.Next() % 35) + 1);
             }
 
-            // Totally randomize weapons, armor, shields, helmets (13efb-13f1d, 1a00c-1a08b for pricing)
+            // Totally randomize weapons, armor, shields, helmets (13efb-13f1d, 1a00e-1a08b for pricing)
             byte[] maxPower = { 0, 0, 0, 0 };
             for (int lnI = 0; lnI < 35; lnI++)
             {
                 byte power = (byte)(r1.Next() % (lnI < 16 ? (7 * (lnI + 1)) : lnI < 27 ? (7 * (lnI - 15)) : lnI < 31 ? (7 * (lnI - 26)) : (7 * (lnI - 30))));
+                power += 1; // To avoid 0 power... and a non-selling item...
                 maxPower[(lnI < 16 ? 0 : lnI < 27 ? 1 : lnI < 31 ? 2 : 3)] = (power > maxPower[(lnI < 16 ? 0 : lnI < 27 ? 1 : lnI < 31 ? 2 : 3)] ? power : 
                     maxPower[(lnI < 16 ? 0 : lnI < 27 ? 1 : lnI < 31 ? 2 : 3)]);
                 romData[0x13efb + lnI] = power;
@@ -832,8 +836,8 @@ namespace DW2Randomizer
                 double price = Math.Round((lnI < 16 ? Math.Pow(power, 2.3) : lnI < 27 ? Math.Pow(power, 2.4) : lnI < 31 ? Math.Pow(power, 2.8) : Math.Pow(power, 3.0)), 0);
                 price = (float)Math.Round(price, 0);
 
-                romData[0x1a00c + (lnI * 2) + 0] = (byte)(price % 256);
-                romData[0x1a00c + (lnI * 2) + 1] = (byte)(Math.Floor(price / 256));
+                romData[0x1a00e + (lnI * 2) + 0] = (byte)(price % 256);
+                romData[0x1a00e + (lnI * 2) + 1] = (byte)(Math.Floor(price / 256));
             }
 
             // Totally randomize who can equip (1a3ce-1a3f0).  At least one person can equip something...
@@ -896,6 +900,10 @@ namespace DW2Randomizer
             romData[0x19c84] = (byte)(r1.Next() % 256);
 
             List<byte> treasureList = new List<byte>();
+            byte[] legalTreasures = { 0x01, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
+                                      0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
+                                      0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2d, 0x2e, 0x2f,
+                                      0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x37, 0x38, 0x39, 0x3b, 0x3c, 0x3d, 0x40, 0x43, 0x44 };
             for (int lnI = 0; lnI < 64; lnI++)
             {
                 if (lnI == 1)
@@ -906,15 +914,13 @@ namespace DW2Randomizer
                 bool legal = false;
                 while (!legal)
                 {
-                    byte treasure = (byte)((r1.Next() % 62) + 1); // the last two items we can't get...
-                    if (!(treasure == 0x3A || treasure == 0x27 || treasure == 0x36))
+                    byte treasure = (byte)((r1.Next() % legalTreasures.Length)); // the last two items we can't get...
+                    treasure = legalTreasures[treasure];
+                    if (!(treasureList.Contains(treasure) && ((treasure >= 0x24 && treasure <= 0x2e) || treasure == 0x32 || treasure == 0x37 || treasure == 0x38 || treasure == 0x39)))
                     {
-                        if (!(treasureList.Contains(treasure) && ((treasure >= 0x24 && treasure <= 0x2e) || treasure == 0x32 || treasure == 0x37 || treasure == 0x38 || treasure == 0x39)))
-                        {
-                            legal = true;
-                            treasureList.Add(treasure);
-                            romData[allTreasure[lnI]] = treasure;
-                        }
+                        legal = true;
+                        treasureList.Add(treasure);
+                        romData[allTreasure[lnI]] = treasure;
                     }
                 }
             }
@@ -951,24 +957,24 @@ namespace DW2Randomizer
             byte[] keyIStore = { 24, 24, 54, 66, 66, 66 };
             for (int lnI = 0; lnI < 6; lnI++)
             {
+                bool legal = false;
                 for (int lnJ = 0; lnJ < keyTreasure[lnI]; lnJ++)
                 {
-                    if (romData[allTreasure[lnI]] == keyTreasure[lnI])
-                        continue;
+                    if (romData[allTreasure[lnJ]] == keyItems[lnI])
+                        legal = true;
                 }
                 for (int lnJ = 0; lnJ < keyWStore[lnI]; lnJ++)
                 {
-                    if (romData[0x19f9a + lnJ] == keyTreasure[lnI])
-                        continue;
+                    if (romData[0x19f9a + lnJ] == keyItems[lnI])
+                        legal = true;
                 }
                 for (int lnJ = 0; lnJ < keyIStore[lnI]; lnJ++)
                 {
-                    if (romData[0x19f9a + 48 + lnJ] == keyTreasure[lnI])
-                        continue;
+                    if (romData[0x19f9a + 48 + lnJ] == keyItems[lnI])
+                        legal = true;
                 }
 
-                // Item was not found, so we'll have to place it in a treasure somewhere...
-                bool legal = false;
+                // If legal = false, then the item was not found, so we'll have to place it in a treasure somewhere...
                 while (!legal)
                 {
                     byte tRand = (byte)(r1.Next() % keyTreasure[lnI]);
@@ -1589,11 +1595,25 @@ namespace DW2Randomizer
                 compareComposeString("goldReq", writer, 0x1a00e, 126);
 
                 compareComposeString("dewsyarn", writer, 0x19b5c, 1);
-                compareComposeString("treasures", writer, 0x19e41, 216, 4);
+                compareComposeString("treasuresMiden", writer, 0x19e41, 21, 4);
+                compareComposeString("treasuresCannock", writer, 0x19e59, 5, 4);
+                compareComposeString("treasuresOsterfair", writer, 0x19e5d, 9, 4);
+                compareComposeString("treasuresZahan", writer, 0x19e65, 5, 4);
+                compareComposeString("treasuresCharlock1", writer, 0x19eb5, 5, 4);
+                compareComposeString("treasuresCharlock2", writer, 0x19e69, 17, 4);
+                compareComposeString("treasuresLake", writer, 0x19e79, 29, 4);
+                compareComposeString("treasuresSea", writer, 0x19e95, 33, 4);
+                compareComposeString("treasuresRhone", writer, 0x19eb9, 33, 4);
+                compareComposeString("treasuresSpring", writer, 0x19ed9, 13, 4);
+                compareComposeString("treasuresMoon", writer, 0x19ee5, 21, 4);
+                compareComposeString("treasuresLighthouse", writer, 0x19ef9, 21, 4);
+                compareComposeString("treasuresWind", writer, 0x19f0d, 13, 4);
                 compareComposeString("oddTreasure(1/9/13/16)", writer, 0x19f1a, 20, 4);
 
-                for (int lnI = 0; lnI < 18; lnI++)
-                    compareComposeString("shopContents" + lnI.ToString("X2"), writer, 0x19f9a + (6 * lnI), 6);
+                for (int lnI = 0; lnI < 8; lnI++)
+                    compareComposeString("weaponContents" + lnI.ToString("X2"), writer, 0x19f9a + (6 * lnI), 6);
+                for (int lnI = 0; lnI < 10; lnI++)
+                    compareComposeString("itemContents" + lnI.ToString("X2"), writer, 0x19f9a + 48 + (6 * lnI), 6);
                 for (int lnI = 0; lnI < 68; lnI++)
                     compareComposeString("monsterZones" + lnI.ToString("X2"), writer, (0x10519 + (6 * lnI)), 6);
                 for (int lnI = 0; lnI < 19; lnI++)
@@ -1618,6 +1638,15 @@ namespace DW2Randomizer
                 compareComposeString("start1", writer, 0x3c79f, 8);
                 compareComposeString("start2", writer, 0x3c79f + 8, 8);
                 compareComposeString("start3", writer, 0x3c79f + 16, 8);
+                compareComposeString("weapons", writer, 0x13efb, 16);
+                compareComposeString("weaponcost (2.3)", writer, 0x1a00e, 32);
+                compareComposeString("armor", writer, 0x13efb + 16, 11);
+                compareComposeString("armorcost (2.4)", writer, 0x1a00e + 32, 22);
+                compareComposeString("shields", writer, 0x13efb + 27, 5);
+                compareComposeString("shieldcost (2.8)", writer, 0x1a00e + 54, 10);
+                compareComposeString("helmets", writer, 0x13efb + 32, 3);
+                compareComposeString("helmetcost (3.0)", writer, 0x1a00e + 64, 6);
+
             }
             lblIntensityDesc.Text = "Comparison complete!  (DW2Compare.txt)";
         }
