@@ -314,6 +314,9 @@ namespace DW2Randomizer
             // Replace equip data
             for (int lnI = 0; lnI < 35; lnI++)
                 romData[0x1a3ce + lnI] = equipwho[lnI];
+
+            // Change the Staff Of Thunder boss fight to the Mace Master
+            romData[0x10356 + (4 * 4) + 2] = 0x47;
         }
 
         private void halfExpAndGoldReq(bool special = false)
@@ -396,7 +399,22 @@ namespace DW2Randomizer
         private void superRandomize()
         {
             int randomModifier = 0;
-            Random r1 = new Random((int)DateTime.Now.Ticks % 2147483647);
+            Random r1;
+            try
+            {
+                r1 = new Random(int.Parse(txtSeed.Text));
+            }
+            catch
+            {
+                MessageBox.Show("Invalid seed.  It must be a number from 0 to 2147483648.");
+                return;
+            }
+
+            byte[] monsterSize = { 8, 5, 5, 7, 5, 8, 5, 7, 5, 4, 5, 4, 5, 7, 4,
+                                  8, 5, 4, 5, 5, 4, 4, 4, 5, 4, 2, 4, 4, 4, 4, 4,
+                                  4, 4, 4, 5, 4, 4, 4, 7, 2, 4, 4, 4, 5, 4, 2, 2,
+                                  8, 4, 5, 4, 7, 1, 2, 4, 4, 4, 4, 3, 4, 5, 1, 1,
+                                  4, 2, 7, 4, 3, 1, 4, 2, 4, 3, 4, 2, 3, 1, 2, 3, 1, 1, 1 };
 
             // Totally randomize monsters (13805-13cd2)
             for (int lnI = 0; lnI < 80; lnI++) // Do not adjust Hargon or Malroth.
@@ -445,7 +463,7 @@ namespace DW2Randomizer
                 int byteValStart = 0x13805 + (15 * lnI);
 
                 enemyStats[1] = (byte)((r1.Next() % 16) * 16);
-                int gp = enemyStats[2] + (r1.Next() % (3 * (lnI + 1)));
+                int gp = enemyStats[2] + (r1.Next() % (2 * (lnI + 1)));
                 enemyStats[2] = (byte)(lnI == 0x33 || gp > 255 ? 255 : gp); // Gold Orc gold = 255
                 float xp = romData[byteValStart + 3] + ((romData[byteValStart + 8] / 64) * 256) + ((romData[byteValStart + 8] / 64) * 1024);
 
@@ -666,11 +684,11 @@ namespace DW2Randomizer
                     int p1 = enemyStats[lnJ] % 8;
                     int p2 = (enemyStats[lnJ] % 64) / 8;
                     float resSingle = 1;
-                    resSingle = (float)(p1 == 0 ? 1 : p1 == 1 ? 1 : p1 == 2 ? 2 : p1 == 3 ? 4 : p1 == 4 ? 6 : p1 == 5 ? 9 : p1 == 6 ? 12 : 15);
-                    resSingle *= (float)(lnJ == 7 ? 1 : lnJ == 8 ? .95 : .95);
+                    resSingle = (float)(p1 == 0 ? 0 : p1 == 1 ? 1 : p1 == 2 ? 2 : p1 == 3 ? 3 : p1 == 4 ? 4 : p1 == 5 ? 6 : p1 == 6 ? 8 : 10);
+                    resSingle *= (float)(lnJ == 7 ? 1 : lnJ == 8 ? .9 : .9);
                     resMult *= (1 + (resSingle / 100));
-                    resSingle = (float)(p2 == 0 ? 1 : p2 == 1 ? 1 : p2 == 2 ? 2 : p2 == 3 ? 4 : p2 == 4 ? 6 : p2 == 5 ? 9 : p2 == 6 ? 12 : 15);
-                    resSingle *= (float)(lnJ == 7 ? 1 : lnJ == 8 ? .85 : .85);
+                    resSingle = (float)(p2 == 0 ? 0 : p2 == 1 ? 1 : p2 == 2 ? 2 : p2 == 3 ? 3 : p2 == 4 ? 4 : p2 == 5 ? 6 : p2 == 6 ? 8 : 10);
+                    resSingle *= (float)(lnJ == 7 ? 1 : lnJ == 8 ? .6 : .5);
                     resMult *= (1 + (resSingle / 100));
                 }
                 xp *= resMult;
@@ -782,6 +800,19 @@ namespace DW2Randomizer
                 }
             }
 
+            // Randomize 13 boss fights, but make sure the last four fights involve the highest exp monsters.
+            for (int lnI = 0; lnI < 13; lnI++)
+            {
+                int byteToUse = 0x10356 + (lnI * 4);
+                int boss1 = (lnI >= 9 ? 78 + (lnI - 9) : (r1.Next() % 78));
+                int quantity1 = (r1.Next() % monsterSize[boss1]) + 1;
+                int boss2 = (r1.Next() % 78);
+                romData[byteToUse + 0] = (byte)boss1;
+                romData[byteToUse + 1] = (byte)quantity1;
+                romData[byteToUse + 2] = (byte)boss2;
+                romData[byteToUse + 3] = 8; // It's too many monsters, but the width of the screen will trim the rest of the monsters off.
+            }
+
             // Randomize which items equate to which effects (except the Wizard's Ring, Medical Herb, and Antidote Herb) (13537-1353b)
             for (int lnI = 0; lnI < 5; lnI++)
             {
@@ -799,14 +830,16 @@ namespace DW2Randomizer
                 romData[0x13efb + lnI] = power;
 
                 double price = Math.Round((lnI < 16 ? Math.Pow(power, 2.3) : lnI < 27 ? Math.Pow(power, 2.4) : lnI < 31 ? Math.Pow(power, 2.8) : Math.Pow(power, 3.0)), 0);
+                price = (float)Math.Round(price, 0);
+
                 romData[0x1a00c + (lnI * 2) + 0] = (byte)(price % 256);
-                romData[0x1a00c + (lnI * 2) + 1] = (byte)(price / 256);
+                romData[0x1a00c + (lnI * 2) + 1] = (byte)(Math.Floor(price / 256));
             }
 
             // Totally randomize who can equip (1a3ce-1a3f0).  At least one person can equip something...
             for (int lnI = 0; lnI < 35; lnI++)
             {
-                if (lnI == 0 || lnI == 16) romData[0x1a3ce + lnI] = 7;
+                if (lnI == 0 || lnI == 16) romData[0x1a3ce + lnI] = 7; // everyone can equip the first weapon and armor.
                 else romData[0x1a3ce + lnI] = (byte)((r1.Next() % 7) + 1);
             }
 
@@ -859,24 +892,6 @@ namespace DW2Randomizer
 
             int[] allTreasure = allTreasureList.ToArray();
 
-            //byte[] keyItems = { (byte)(r1.Next() % 16), (byte)(r1.Next() % 16), (byte)(r1.Next() % 26), (byte)(r1.Next() % 43),
-            //    (byte)(r1.Next() % 48), (byte)(r1.Next() % 56), (byte)(r1.Next() % 64), (byte)(r1.Next() % 64), (byte)(r1.Next() % 64),
-            //    (byte)(r1.Next() % 64), (byte)(r1.Next() % 64), (byte)(r1.Next() % 64) };
-            //byte[] KIRange = { 16, 16, 26, 43, 48, 56, 64, 64, 64 };
-            //for (int lnI = 0; lnI < 9; lnI++)
-            //{
-
-            //}
-            //byte cloakOfWind = (byte)(r1.Next() % 15);
-            //byte mirrorOfRa = (byte)(r1.Next() % 15);
-            //byte goldenKey = (byte)(r1.Next() % 25);
-            //byte jailorsKey = (byte)(r1.Next() % 42);
-            //byte moonFrag = (byte)(r1.Next() % 47);
-            //byte eyeOfMalroth = (byte)(r1.Next() % 55);
-            //byte lifeCrest = (byte)(r1.Next() % 63);
-            //byte waterCrest = (byte)(r1.Next() % 63);
-            //byte sunCrest = (byte)(r1.Next() % 64);
-
             // randomize starting gold
             romData[0x19c84] = (byte)(r1.Next() % 256);
 
@@ -907,18 +922,24 @@ namespace DW2Randomizer
             for (int lnI = 0; lnI < 18; lnI++)
             {
                 int byteToUse = 0x19f9a + (lnI * 6);
-                // Always have one item in store.  Let chances of having another item = 90%/80%/70%/60%/50%
-                byte chance = 9;
+                // Always have one item in store.  Let chances of having another item = 91%/83%/75%/67%/58%
+                byte chance = 11;
+                bool fail = false;
                 for (int lnJ = 0; lnJ < 6; lnJ++)
                 {
-                    if (r1.Next() % 10 <= chance - lnJ)
+                    if (!fail && r1.Next() % 12 <= chance - lnJ)
                     {
                         // Add item
                         byte treasure = (byte)((r1.Next() % 62) + 1); // the last two items we can't get...
-                        if (!(treasure == 0x3A || treasure == 0x27 || treasure == 0x36 || treasure == 0x28 || treasure == 0x2B))
+                        if (!(treasure == 0x3A || treasure == 0x27 || treasure == 0x36 || treasure == 0x28 || treasure == 0x2B) && !(lnI < 8 && treasure == 0x39))
                         {
                             romData[byteToUse + lnJ] = treasure;
-                        }
+                        } else
+                            fail = true;
+                    } else
+                    {
+                        romData[byteToUse + lnJ] = 0;
+                        fail = true;
                     }
                 }
             }
@@ -993,7 +1014,10 @@ namespace DW2Randomizer
             int maxAgility = 510 - ((maxPower[1] + maxPower[2] + maxPower[3]) * 2);
             maxAgility = (maxAgility > 255 ? 255 : maxAgility);
             int avgStrength = ((maxStrength / 50));
-            int avgAgility = ((maxAgility / 50));
+            int[] avg7 = { 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 15 };
+            int[] avg5 = { 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+            int[] avg4 = { 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
+            int[] avg3 = { 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 5, 6, 7, 8, 9, 10 };
             // Randomize stat gains... but don't put any stat above 255! (13ddd-13eda)
             // 98 bytes for Midenhall, 88 bytes for Cannock, 68 bytes for Moonbrooke.  First break at 210, second break at 250.
             for (int lnI = 0; lnI < 254; lnI++)
@@ -1008,44 +1032,32 @@ namespace DW2Randomizer
 
                 if (lnI % 2 == 0)
                 {
-                    randomModifier1 = (lnI == 0 || lnI == 1 ? (r1.Next() % (16 + (8 - avgStrength))) - (8 - avgStrength) :
-                        lnI == 2 || lnI == 3 ? (r1.Next() % (16 + (9 - avgStrength))) - (9 - avgStrength) : (r1.Next() % (16 + (10 - avgStrength)) - (10 - avgStrength)));
-                    randomModifier2 = (lnI == 0 || lnI == 1 ? r1.Next() % (16 + (10 - avgAgility)) - (10 - avgAgility) :
-                        lnI == 2 || lnI == 3 ? (r1.Next() % (16 + (9 - avgAgility))) - (9 - avgAgility) : (r1.Next() % (16 + (8 - avgAgility)) - (8 - avgAgility)));
-                }
-                else
-                {
-                    randomModifier1 = (lnI == 0 || lnI == 1 ? (r1.Next() % (16 + (8 - 5))) - (8 - 5) :
-                        lnI == 2 || lnI == 3 ? (r1.Next() % (16 + (9 - 5))) - (9 - 5) : (r1.Next() % (16 + (10 - 5))) - (10 - 5));
-                    randomModifier2 = (lnI == 0 || lnI == 1 ? 0 :
-                        lnI == 2 || lnI == 3 ? (r1.Next() % (16 + (10 - 5))) - (10 - 5) : (r1.Next() % (16 + (8 - 5))) - (8 - 5));
-                }
-
-                if (lnI % 2 == 0)
-                {
+                    int r1Result = (r1.Next() % 30);
+                    r1Result = (r1Result < 0 ? 0 : r1Result);
+                    randomModifier1 = (avgStrength == 5 ? avg5[r1Result] : avgStrength == 4 ? avg4[r1Result] : avg3[r1Result]);
                     if (stats[statToUse1] + randomModifier1 > maxStrength)
-                        randomModifier1 = (stats[statToUse1] + randomModifier1) - maxStrength;
-                    else
-                    if (stats[statToUse2] + randomModifier2 > maxAgility)
-                        randomModifier2 = (stats[statToUse2] + randomModifier2) - maxAgility;
+                        randomModifier1 = 0;
+
+                    int r2Result = (r1.Next() % 30);
+                    r2Result = (r2Result < 0 ? 0 : r2Result);
+                    randomModifier2 = (statToUse2 == 3 ? 0 : statToUse2 == 7 ? avg5[r2Result] : avg7[r2Result]);
+                    if (stats[statToUse1] + randomModifier1 > maxAgility)
+                        randomModifier2 = 0;
                 }
                 else
                 {
+                    int r1Result = (r1.Next() % 30);
+                    r1Result = (r1Result < 0 ? 0 : r1Result);
+                    randomModifier1 = avg5[r1Result];
                     if (stats[statToUse1] + randomModifier1 > 255)
-                        randomModifier1 = (stats[statToUse1] + randomModifier1) - 255;
-                    else
+                        randomModifier1 = 0;
+
+                    int r2Result = (r1.Next() % 30);
+                    r2Result = (r2Result < 0 ? 0 : r2Result);
+                    randomModifier2 = (statToUse2 == 3 ? 0 : statToUse2 == 7 ? avg5[r2Result] : avg7[r2Result]);
                     if (stats[statToUse2] + randomModifier2 > 255)
-                        randomModifier2 = (stats[statToUse2] + randomModifier2) - 255;
+                        randomModifier2 = 0;
                 }
-
-                if (randomModifier1 < 0) randomModifier1 = 0;
-                else if (randomModifier1 > 15) randomModifier1 = 15;
-
-                if (randomModifier2 < 0) randomModifier2 = 0;
-                else if (randomModifier2 > 15) randomModifier2 = 15;
-
-                if (stats[statToUse2] + randomModifier2 > 255)
-                    randomModifier2 = (stats[statToUse2] + randomModifier2) - 255;
 
                 romData[byteToUse] = (byte)((randomModifier1 * 16) + randomModifier2);
                 stats[statToUse1] += (byte)randomModifier1;
@@ -1058,6 +1070,7 @@ namespace DW2Randomizer
             List<byte> legalArmor = new List<byte>();
             for (int lnI = 0; lnI < 3; lnI++)
             {
+                // Just give them the bamboo pole and the clothes for now.  We might randomize starting equipment later.
                 int byteToUse = 0x3c79f + (8 * lnI);
                 romData[byteToUse + 0] = 64 + 1;
                 romData[byteToUse + 1] = 64 + 17;
@@ -1576,8 +1589,8 @@ namespace DW2Randomizer
                 compareComposeString("goldReq", writer, 0x1a00e, 126);
 
                 compareComposeString("dewsyarn", writer, 0x19b5c, 1);
-                compareComposeString("treasures", writer, 0x19e41, 216);
-                compareComposeString("oddTreasure(1/9/13/16)", writer, 0x19f1a, 17);
+                compareComposeString("treasures", writer, 0x19e41, 216, 4);
+                compareComposeString("oddTreasure(1/9/13/16)", writer, 0x19f1a, 20, 4);
 
                 for (int lnI = 0; lnI < 18; lnI++)
                     compareComposeString("shopContents" + lnI.ToString("X2"), writer, 0x19f9a + (6 * lnI), 6);
@@ -1588,7 +1601,18 @@ namespace DW2Randomizer
                 for (int lnI = 0; lnI < 13; lnI++)
                     compareComposeString("monsterBoss" + lnI.ToString("X2"), writer, (0x10356 + (4 * lnI)), 4);
                 compareComposeString("statStart", writer, 0x13dd1, 12);
-                compareComposeString("statUps", writer, 0x13ddd, 260);
+                for (int lnI = 0; lnI < 35; lnI++)
+                {
+                    compareComposeString("statUps" + lnI.ToString(), writer, 0x13ddd + (6 * lnI), 6);
+                }
+                for (int lnI = 0; lnI < 10; lnI++)
+                {
+                    compareComposeString("statUps" + (lnI + 35).ToString(), writer, 0x13ddd + 210 + (4 * lnI), 4);
+                }
+                for (int lnI = 0; lnI < 5; lnI++)
+                {
+                    compareComposeString("statUps" + (lnI + 45).ToString(), writer, 0x13ddd + 250 + (2 * lnI), 2);
+                }
                 compareComposeString("spellLearning", writer, 0x13edb, 32);
                 compareComposeString("spellsLearned", writer, 0x1ae76, 32);
                 compareComposeString("start1", writer, 0x3c79f, 8);
@@ -1598,11 +1622,11 @@ namespace DW2Randomizer
             lblIntensityDesc.Text = "Comparison complete!  (DW2Compare.txt)";
         }
 
-        private StreamWriter compareComposeString(string intro, StreamWriter writer, int startAddress, int length)
+        private StreamWriter compareComposeString(string intro, StreamWriter writer, int startAddress, int length, int skip = 1)
         {
             string final = "";
             string final2 = "";
-            for (int lnI = 0; lnI < length; lnI++)
+            for (int lnI = 0; lnI < length; lnI += skip)
             {
                 final += romData[startAddress + lnI].ToString("X2") + " ";
                 final2 += romData2[startAddress + lnI].ToString("X2") + " ";
