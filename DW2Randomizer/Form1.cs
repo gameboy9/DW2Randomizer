@@ -107,6 +107,7 @@ namespace DW2Randomizer
             {
                 if (chkChangeStatsToRemix.Checked) changeStatsToRemix(); // Don't bother if insane random is checked, since all of the stats will change anyway!
                 if (chkHalfExpGoldReq.Checked) halfExpAndGoldReq();
+                if (chkDoubleXP.Checked) doubleExp();
                 if (radSlightIntensity.Checked || radModerateIntensity.Checked || radHeavyIntensity.Checked)
                     randomize();
                 else
@@ -319,6 +320,28 @@ namespace DW2Randomizer
             romData[0x10356 + (4 * 4) + 2] = 0x47;
         }
 
+        private void doubleExp()
+        {
+            // Replace monster data
+            for (int lnI = 0; lnI < 82; lnI++)
+            {
+                int byteValStart = 0x13805 + (15 * lnI);
+
+                int xp = romData[byteValStart + 3] + ((romData[byteValStart + 8] / 64) * 256) + ((romData[byteValStart + 8] / 64) * 1024);
+                if (lnI != 0x2f && lnI != 0x41)
+                    xp *= 2;
+
+                byte xp1 = (byte)(xp > 4095 ? 255 : (xp % 256));
+                byte xp2 = (byte)((xp > 4095 ? 192 : (xp / 256) % 4) * 64);
+                byte xp3 = (byte)((xp > 4095 ? 192 : (xp / 1024)) * 64);
+
+                romData[byteValStart + 3] = xp1;
+                romData[byteValStart + 8] = (byte)((romData[byteValStart + 8] % 64) + xp2);
+                romData[byteValStart + 9] = (byte)((romData[byteValStart + 9] % 64) + xp3);
+            }
+
+        }
+
         private void halfExpAndGoldReq(bool special = false)
         {
             // We'll divide all of these by two later...
@@ -462,6 +485,7 @@ namespace DW2Randomizer
 
                 int byteValStart = 0x13805 + (15 * lnI);
 
+                // evade rate...
                 enemyStats[1] = (byte)((r1.Next() % 16) * 16);
                 int gp = enemyStats[2] + (r1.Next() % (2 * (lnI + 1)));
                 enemyStats[2] = (byte)(lnI == 0x33 || gp > 255 ? 255 : gp); // Gold Orc gold = 255
@@ -469,15 +493,63 @@ namespace DW2Randomizer
 
                 enemyStats[4] = (byte)(r1.Next() % 256);
                 enemyStats[5] += (byte)(r1.Next() % (enemyStats[5] * 3 / 2) - (enemyStats[5] / 2));
-                enemyStats[7] = (byte)(r1.Next() % 256);
-                enemyStats[8] = (byte)(r1.Next() % 64);
-                enemyStats[9] = (byte)(r1.Next() % 64);
+
+                byte[] res1 = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7 };
+                byte[] res2 = { 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 4, 5, 6, 7 };
+                byte[] res3 = { 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5, 6, 7 };
+                byte[] res4 = { 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7 };
+                byte[] res5 = { 0, 1, 2, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7 };
+                byte[] res6 = { 0, 1, 2, 3, 4, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7 };
+                byte[] res7 = { 0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7 };
+                if (lnI < 12)
+                {
+                    enemyStats[7] = (byte)(((r1.Next() % 7) * 64) + (res1[r1.Next() % 16] * 8) + (res1[r1.Next() % 16]));
+                    enemyStats[8] = (byte)((res1[r1.Next() % 16] * 8) + (res1[r1.Next() % 16]));
+                    enemyStats[9] = (byte)((res1[r1.Next() % 16] * 8) + (res1[r1.Next() % 16]));
+                }
+                else if (lnI < 24)
+                {
+                    enemyStats[7] = (byte)(((r1.Next() % 7) * 64) + (res2[r1.Next() % 16] * 8) + (res2[r1.Next() % 16]));
+                    enemyStats[8] = (byte)((res2[r1.Next() % 16] * 8) + (res2[r1.Next() % 16]));
+                    enemyStats[9] = (byte)((res2[r1.Next() % 16] * 8) + (res2[r1.Next() % 16]));
+                }
+                else if (lnI < 36)
+                {
+                    enemyStats[7] = (byte)(((r1.Next() % 7) * 64) + (res3[r1.Next() % 16] * 8) + (res3[r1.Next() % 16]));
+                    enemyStats[8] = (byte)((res3[r1.Next() % 16] * 8) + (res3[r1.Next() % 16]));
+                    enemyStats[9] = (byte)((res3[r1.Next() % 16] * 8) + (res3[r1.Next() % 16]));
+                }
+                else if (lnI < 47)
+                {
+                    enemyStats[7] = (byte)(((r1.Next() % 7) * 64) + (res4[r1.Next() % 16] * 8) + (res4[r1.Next() % 16]));
+                    enemyStats[8] = (byte)((res4[r1.Next() % 16] * 8) + (res4[r1.Next() % 16]));
+                    enemyStats[9] = (byte)((res4[r1.Next() % 16] * 8) + (res4[r1.Next() % 16]));
+                }
+                else if (lnI < 58)
+                {
+                    enemyStats[7] = (byte)(((r1.Next() % 7) * 64) + (res5[r1.Next() % 16] * 8) + (res5[r1.Next() % 16]));
+                    enemyStats[8] = (byte)((res5[r1.Next() % 16] * 8) + (res5[r1.Next() % 16]));
+                    enemyStats[9] = (byte)((res5[r1.Next() % 16] * 8) + (res5[r1.Next() % 16]));
+                }
+                else if (lnI < 69)
+                {
+                    enemyStats[7] = (byte)(((r1.Next() % 7) * 64) + (res6[r1.Next() % 16] * 8) + (res6[r1.Next() % 16]));
+                    enemyStats[8] = (byte)((res6[r1.Next() % 16] * 8) + (res6[r1.Next() % 16]));
+                    enemyStats[9] = (byte)((res6[r1.Next() % 16] * 8) + (res6[r1.Next() % 16]));
+                }
+                else
+                {
+                    enemyStats[7] = (byte)(((r1.Next() % 7) * 64) + (res7[r1.Next() % 16] * 8) + (res7[r1.Next() % 16]));
+                    enemyStats[8] = (byte)((res7[r1.Next() % 16] * 8) + (res7[r1.Next() % 16]));
+                    enemyStats[9] = (byte)((res7[r1.Next() % 16] * 8) + (res7[r1.Next() % 16]));
+                }
 
                 byte[] enemyPatterns = { 0, 0, 0, 0, 0, 0, 0, 0 };
                 bool[] enemyPage2 = { false, false, false, false, false, false, false, false };
                 bool concentration = false;
 
-                if (r1.Next() % 100 < 40) // 40% chance of being a basic attack monster
+                // 40% chance of being a basic attack monster... and not a Magician, Enchanter, Sorcerer, Magic Baboon, Magidrakee
+                if (r1.Next() % 100 < 40 && lnI != 0x14 && lnI != 0x10 && lnI != 0x19 && lnI != 0x1c && lnI != 0x2e)
                 {
                     // ... but do place a 50% chance for "funny" attacks...
                     if (r1.Next() % 2 == 1)
@@ -533,6 +605,8 @@ namespace DW2Randomizer
                 }
                 if (lnI == 0x2f || lnI == 0x41) // Metal slime, Metal Babble
                     enemyPatterns[0] = 5; // run away
+                if (lnI == 0x05) // Healer
+                    enemyPatterns[0] = (byte)((r1.Next() % 3) + 12); // heal, healmore, healall
 
                 enemyStats[10] = (byte)(enemyPatterns[0] + (enemyPatterns[1] * 16));
                 enemyStats[11] = (byte)(enemyPatterns[2] + (enemyPatterns[3] * 16));
@@ -548,150 +622,150 @@ namespace DW2Randomizer
                 //#$6 Firebal, #$7 Firebane, #$8 Explodet, #$9 Heal*, #$A Healmore*, #$B Heal All*, #$C Heal**,
                 //#$D Healmore**, #$E Heal All**, #$F Revive
 
-                float atkMult = 1;
-                float atkBonus = 0;
-                for (int lnJ = 0; lnJ < 8; lnJ++)
-                {
-                    if (!enemyPage2[lnJ])
-                    {
-                        switch (enemyPatterns[lnJ])
-                        {
-                            case 1:
-                                atkMult *= (float)1.05;
-                                atkBonus += (float)0.25;
-                                break;
-                            case 2:
-                                atkMult *= (float)1.02;
-                                atkBonus += (float)0.1;
-                                break;
-                            case 3:
-                                atkMult *= (float)1.02;
-                                atkBonus += (float)0.1;
-                                break;
-                            case 6: // Really depends on an all vs. none attack, as well as strength, but for now...
-                                atkMult *= (float)1.01;
-                                atkBonus += (float)0.05;
-                                break;
-                            case 7: // Really depends on an all vs. none attack, as well as strength, but for now...
-                                atkMult *= (float)1.03;
-                                atkBonus += (float)0.5;
-                                break;
-                            case 8: // Really depends on an all vs. none attack, as well as strength, but for now...
-                                atkMult *= (float)1.05;
-                                atkBonus += (float)1.0;
-                                break;
-                            case 9: // Really depends on an all vs. none attack, as well as strength, but for now...
-                            case 12:
-                                atkMult *= (float)1.01;
-                                atkBonus += (float)0.05;
-                                break;
-                            case 10: // Really depends on an all vs. none attack, as well as strength, but for now...
-                            case 13:
-                                atkMult *= (float)1.02;
-                                atkBonus += (float)0.25;
-                                break;
-                            case 11: // Really depends on an all vs. none attack, as well as strength, but for now...
-                            case 14:
-                                atkMult *= (float)1.04;
-                                atkBonus += (float)0.5;
-                                break;
-                            case 15:
-                                atkMult *= (float)1.04;
-                                atkBonus += (float)0.5;
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        //Second page
-                        //#$0 Defence, #$1 Increase, #$2 Sleep, #$3 Stopspell, #$4 Surround, #$5 Defeat, $6 Sacrifice***,
-                        //#$7 Weak Flames, #$8 Strong Flames, #$9 Deadly Flames, #$A Poison Breath, #$B Sweet Breath,
-                        //#$C Call For Help, #$D Two Attacks, #$E concentration byte, #$F Dance Strange Jig
+                //float atkMult = 1;
+                //float atkBonus = 0;
+                //for (int lnJ = 0; lnJ < 8; lnJ++)
+                //{
+                //    if (!enemyPage2[lnJ])
+                //    {
+                //        switch (enemyPatterns[lnJ])
+                //        {
+                //            case 1:
+                //                atkMult *= (float)1.05;
+                //                atkBonus += (float)0.25;
+                //                break;
+                //            case 2:
+                //                atkMult *= (float)1.02;
+                //                atkBonus += (float)0.1;
+                //                break;
+                //            case 3:
+                //                atkMult *= (float)1.02;
+                //                atkBonus += (float)0.1;
+                //                break;
+                //            case 6: // Really depends on an all vs. none attack, as well as strength, but for now...
+                //                atkMult *= (float)1.01;
+                //                atkBonus += (float)0.05;
+                //                break;
+                //            case 7: // Really depends on an all vs. none attack, as well as strength, but for now...
+                //                atkMult *= (float)1.03;
+                //                atkBonus += (float)0.5;
+                //                break;
+                //            case 8: // Really depends on an all vs. none attack, as well as strength, but for now...
+                //                atkMult *= (float)1.05;
+                //                atkBonus += (float)1.0;
+                //                break;
+                //            case 9: // Really depends on an all vs. none attack, as well as strength, but for now...
+                //            case 12:
+                //                atkMult *= (float)1.01;
+                //                atkBonus += (float)0.05;
+                //                break;
+                //            case 10: // Really depends on an all vs. none attack, as well as strength, but for now...
+                //            case 13:
+                //                atkMult *= (float)1.02;
+                //                atkBonus += (float)0.25;
+                //                break;
+                //            case 11: // Really depends on an all vs. none attack, as well as strength, but for now...
+                //            case 14:
+                //                atkMult *= (float)1.04;
+                //                atkBonus += (float)0.5;
+                //                break;
+                //            case 15:
+                //                atkMult *= (float)1.04;
+                //                atkBonus += (float)0.5;
+                //                break;
+                //        }
+                //    }
+                //    else
+                //    {
+                //        //Second page
+                //        //#$0 Defence, #$1 Increase, #$2 Sleep, #$3 Stopspell, #$4 Surround, #$5 Defeat, $6 Sacrifice***,
+                //        //#$7 Weak Flames, #$8 Strong Flames, #$9 Deadly Flames, #$A Poison Breath, #$B Sweet Breath,
+                //        //#$C Call For Help, #$D Two Attacks, #$E concentration byte, #$F Dance Strange Jig
 
-                        switch (enemyPatterns[lnJ])
-                        {
-                            case 0:
-                                atkMult *= (float)1.005;
-                                atkBonus += (float)0.05;
-                                break;
-                            case 1:
-                                atkMult *= (float)1.005;
-                                atkBonus += (float)0.05;
-                                break;
-                            case 2:
-                                atkMult *= (float)1.02;
-                                atkBonus += (float)0.2;
-                                break;
-                            case 3:
-                                atkMult *= (float)1.01;
-                                atkBonus += (float)0.05;
-                                break;
-                            case 4:
-                                atkMult *= (float)1.01;
-                                atkBonus += (float)0.05;
-                                break;
-                            case 5:
-                                atkMult *= (float)1.06;
-                                atkBonus += (float)1.0;
-                                break;
-                            case 6:
-                                atkMult *= (float)1.06;
-                                atkBonus += (float)1.0;
-                                break;
-                            case 7:
-                                atkMult *= (float)1.01;
-                                atkBonus += (float)0.1;
-                                break;
-                            case 8:
-                                atkMult *= (float)1.03;
-                                atkBonus += (float)0.5;
-                                break;
-                            case 9:
-                                atkMult *= (float)1.06;
-                                atkBonus += (float)1.0;
-                                break;
-                            case 10:
-                                atkMult *= (float)1.01;
-                                atkBonus += (float)0.1;
-                                break;
-                            case 11:
-                                atkMult *= (float)1.02;
-                                atkBonus += (float)0.2;
-                                break;
-                            case 12:
-                                //atkMult *= (float)1.005;
-                                break;
-                            case 13:
-                                atkMult *= (float)1.03;
-                                atkBonus += (float)0.25;
-                                break;
-                            case 14:
-                                //atkMult *= (float)1.01;
-                                break;
-                            case 15:
-                                atkMult *= (float)1.02;
-                                atkBonus += (float)0.1;
-                                break;
-                        }
-                    }
-                }
-                xp += atkBonus;
-                xp *= atkMult;
+                //        switch (enemyPatterns[lnJ])
+                //        {
+                //            case 0:
+                //                atkMult *= (float)1.005;
+                //                atkBonus += (float)0.05;
+                //                break;
+                //            case 1:
+                //                atkMult *= (float)1.005;
+                //                atkBonus += (float)0.05;
+                //                break;
+                //            case 2:
+                //                atkMult *= (float)1.02;
+                //                atkBonus += (float)0.2;
+                //                break;
+                //            case 3:
+                //                atkMult *= (float)1.01;
+                //                atkBonus += (float)0.05;
+                //                break;
+                //            case 4:
+                //                atkMult *= (float)1.01;
+                //                atkBonus += (float)0.05;
+                //                break;
+                //            case 5:
+                //                atkMult *= (float)1.06;
+                //                atkBonus += (float)1.0;
+                //                break;
+                //            case 6:
+                //                atkMult *= (float)1.06;
+                //                atkBonus += (float)1.0;
+                //                break;
+                //            case 7:
+                //                atkMult *= (float)1.01;
+                //                atkBonus += (float)0.1;
+                //                break;
+                //            case 8:
+                //                atkMult *= (float)1.03;
+                //                atkBonus += (float)0.5;
+                //                break;
+                //            case 9:
+                //                atkMult *= (float)1.06;
+                //                atkBonus += (float)1.0;
+                //                break;
+                //            case 10:
+                //                atkMult *= (float)1.01;
+                //                atkBonus += (float)0.1;
+                //                break;
+                //            case 11:
+                //                atkMult *= (float)1.02;
+                //                atkBonus += (float)0.2;
+                //                break;
+                //            case 12:
+                //                //atkMult *= (float)1.005;
+                //                break;
+                //            case 13:
+                //                atkMult *= (float)1.03;
+                //                atkBonus += (float)0.25;
+                //                break;
+                //            case 14:
+                //                //atkMult *= (float)1.01;
+                //                break;
+                //            case 15:
+                //                atkMult *= (float)1.02;
+                //                atkBonus += (float)0.1;
+                //                break;
+                //        }
+                //    }
+                //}
+                //xp += atkBonus;
+                //xp *= atkMult;
 
-                float resMult = 1;
-                for (int lnJ = 7; lnJ <= 9; lnJ++)
-                {
-                    int p1 = enemyStats[lnJ] % 8;
-                    int p2 = (enemyStats[lnJ] % 64) / 8;
-                    float resSingle = 1;
-                    resSingle = (float)(p1 == 0 ? 0 : p1 == 1 ? 1 : p1 == 2 ? 2 : p1 == 3 ? 3 : p1 == 4 ? 4 : p1 == 5 ? 6 : p1 == 6 ? 8 : 10);
-                    resSingle *= (float)(lnJ == 7 ? 1 : lnJ == 8 ? .9 : .9);
-                    resMult *= (1 + (resSingle / 100));
-                    resSingle = (float)(p2 == 0 ? 0 : p2 == 1 ? 1 : p2 == 2 ? 2 : p2 == 3 ? 3 : p2 == 4 ? 4 : p2 == 5 ? 6 : p2 == 6 ? 8 : 10);
-                    resSingle *= (float)(lnJ == 7 ? 1 : lnJ == 8 ? .6 : .5);
-                    resMult *= (1 + (resSingle / 100));
-                }
-                xp *= resMult;
+                //float resMult = 1;
+                //for (int lnJ = 7; lnJ <= 9; lnJ++)
+                //{
+                //    int p1 = enemyStats[lnJ] % 8;
+                //    int p2 = (enemyStats[lnJ] % 64) / 8;
+                //    float resSingle = 1;
+                //    resSingle = (float)(p1 == 0 ? 0 : p1 == 1 ? 1 : p1 == 2 ? 2 : p1 == 3 ? 3 : p1 == 4 ? 4 : p1 == 5 ? 6 : p1 == 6 ? 8 : 10);
+                //    resSingle *= (float)(lnJ == 7 ? 1 : lnJ == 8 ? .9 : .9);
+                //    resMult *= (1 + (resSingle / 100));
+                //    resSingle = (float)(p2 == 0 ? 0 : p2 == 1 ? 1 : p2 == 2 ? 2 : p2 == 3 ? 3 : p2 == 4 ? 4 : p2 == 5 ? 6 : p2 == 6 ? 8 : 10);
+                //    resSingle *= (float)(lnJ == 7 ? 1 : lnJ == 8 ? .6 : .5);
+                //    resMult *= (1 + (resSingle / 100));
+                //}
+                //xp *= resMult;
 
                 xp = (float)Math.Round(xp, 0);
                 byte xp1 = (byte)(xp > 4095 ? 255 : (xp % 256));
@@ -704,29 +778,6 @@ namespace DW2Randomizer
 
                 for (int lnJ = 0; lnJ < 15; lnJ++)
                     romData[byteValStart + lnJ] = enemyStats[lnJ];
-            }
-
-            byte[] monsterRank = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-                21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-                41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60,
-                61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80 };
-            // Rank each monster by experience value
-            for (int lnI = 0; lnI < 80; lnI++) {
-                if (lnI == 0x30 || lnI == 0x42) continue; // do not rearrange the metal slime or the metal babble.
-                int byteValStart = 0x13805 + (15 * lnI);
-                int xp1 = romData[byteValStart + 3] + ((romData[byteValStart + 8] / 64) * 256) + ((romData[byteValStart + 8] / 64) * 1024);
-                for (int lnJ = lnI; lnJ < 80; lnJ++)
-                {
-                    if (lnJ == 0x30 || lnJ == 0x42) continue; // do not rearrange the metal slime or the metal babble.
-                    int byteValStart2 = 0x13805 + (15 * lnI);
-                    int xp2 = romData[byteValStart2 + 3] + ((romData[byteValStart2 + 8] / 64) * 256) + ((romData[byteValStart2 + 8] / 64) * 1024);
-                    if (xp2 > xp1)
-                    {
-                        int bubble = lnI;
-                        monsterRank[lnI] = monsterRank[lnJ];
-                        monsterRank[lnJ] = (byte)lnI;
-                    }
-                }
             }
 
             // Totally randomize monster zones (but make sure the first 20 zones have easier monsters) (10356-10389, 10519-10680, )
@@ -742,7 +793,7 @@ namespace DW2Randomizer
                         if (r1.Next() % 2 == 0)
                         {
                             zone = true;
-                            romData[byteToUse + lnJ] = (monsterRank[r1.Next() % (lnI + 6)]);
+                            romData[byteToUse + lnJ] = (byte)((r1.Next() % (lnI + 6)) + 1);
                         }
                         else
                             romData[byteToUse + lnJ] = 127;
@@ -752,7 +803,7 @@ namespace DW2Randomizer
                         if (r1.Next() % 3 < 2)
                         {
                             zone = true;
-                            romData[byteToUse + lnJ] = (monsterRank[r1.Next() % (lnI + 10)]);
+                            romData[byteToUse + lnJ] = (byte)((r1.Next() % (lnI + 10)) + 1);
                         }
                         else
                             romData[byteToUse + lnJ] = 127;
@@ -762,15 +813,14 @@ namespace DW2Randomizer
                         if (r1.Next() % 5 < 4)
                         {
                             zone = true;
-                            romData[byteToUse + lnJ] = (monsterRank[r1.Next() % 78]);
+                            romData[byteToUse + lnJ] = (byte)((r1.Next() % 78) + 1);
                         } else
                             romData[byteToUse + lnJ] = 127;
                     }
                 }
                 if (!zone)
-                {
-                    romData[byteToUse + 5] = (monsterRank[r1.Next() % (lnI < 11 ? lnI + 6 : lnI < 20 ? lnI + 10 : 78)]);
-                }
+                    romData[byteToUse + 5] = (byte)((r1.Next() % (lnI < 11 ? lnI + 6 : lnI < 20 ? lnI + 10 : 78)) + 1);
+
                 byte specialBout = (byte)(r1.Next() % 38);
                 if (lnI >= 20 && specialBout < 19)
                 {
@@ -796,7 +846,7 @@ namespace DW2Randomizer
                 for (int lnJ = 0; lnJ < 4; lnJ++)
                 {
                     if (r1.Next() % 2 == 1 || lnJ == 3)
-                        romData[byteToUse + lnJ] = monsterRank[r1.Next() % 78];
+                        romData[byteToUse + lnJ] = (byte)((r1.Next() % 78) + 1);
                 }
             }
 
@@ -804,12 +854,10 @@ namespace DW2Randomizer
             for (int lnI = 0; lnI < 13; lnI++)
             {
                 int byteToUse = 0x10356 + (lnI * 4);
-                int boss1 = (lnI >= 9 ? 78 + (lnI - 9) : (r1.Next() % 78));
-                boss1 = (lnI == 0 ? r1.Next() % 32 : boss1);
-                boss1 = (boss1 >= 80 ? boss1 + 1 : monsterRank[boss1]);
+                int boss1 = (lnI >= 9 ? 78 + (lnI - 9) : ((r1.Next() % 78) + 1));
+                boss1 = (lnI == 0 ? (r1.Next() % 32) + 1 : boss1);
                 int quantity1 = (boss1 >= 80 ? 1 : (r1.Next() % monsterSize[boss1]) + 1);
-                int boss2 = (lnI == 0 ? r1.Next() % 32 : r1.Next() % 78);
-                boss2 = monsterRank[boss2];
+                int boss2 = (lnI == 0 ? (r1.Next() % 32) + 1 : (r1.Next() % 78) + 1);
                 romData[byteToUse + 0] = (byte)boss1;
                 romData[byteToUse + 1] = (byte)quantity1;
                 romData[byteToUse + 2] = (byte)boss2;
@@ -916,7 +964,8 @@ namespace DW2Randomizer
                 {
                     byte treasure = (byte)((r1.Next() % legalTreasures.Length)); // the last two items we can't get...
                     treasure = legalTreasures[treasure];
-                    if (!(treasureList.Contains(treasure) && ((treasure >= 0x24 && treasure <= 0x2e) || treasure == 0x32 || treasure == 0x37 || treasure == 0x38 || treasure == 0x39)))
+                    if (!(treasureList.Contains(treasure) && ((treasure >= 0x24 && treasure <= 0x2e) || treasure == 0x32 || treasure == 0x37 || treasure == 0x38 || treasure == 0x39 
+                        || treasure == 0x40 || treasure == 0x43 || treasure == 0x44)))
                     {
                         legal = true;
                         treasureList.Add(treasure);

@@ -47,6 +47,7 @@
             this.btnCompare = new System.Windows.Forms.Button();
             this.txtSeed = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.chkDoubleXP = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // txtFileName
@@ -140,7 +141,7 @@
             // 
             this.radSlightIntensity.AutoSize = true;
             this.radSlightIntensity.Checked = true;
-            this.radSlightIntensity.Location = new System.Drawing.Point(12, 185);
+            this.radSlightIntensity.Location = new System.Drawing.Point(14, 220);
             this.radSlightIntensity.Name = "radSlightIntensity";
             this.radSlightIntensity.Size = new System.Drawing.Size(51, 17);
             this.radSlightIntensity.TabIndex = 9;
@@ -152,7 +153,7 @@
             // radModerateIntensity
             // 
             this.radModerateIntensity.AutoSize = true;
-            this.radModerateIntensity.Location = new System.Drawing.Point(69, 185);
+            this.radModerateIntensity.Location = new System.Drawing.Point(71, 220);
             this.radModerateIntensity.Name = "radModerateIntensity";
             this.radModerateIntensity.Size = new System.Drawing.Size(70, 17);
             this.radModerateIntensity.TabIndex = 11;
@@ -163,7 +164,7 @@
             // radHeavyIntensity
             // 
             this.radHeavyIntensity.AutoSize = true;
-            this.radHeavyIntensity.Location = new System.Drawing.Point(145, 185);
+            this.radHeavyIntensity.Location = new System.Drawing.Point(147, 220);
             this.radHeavyIntensity.Name = "radHeavyIntensity";
             this.radHeavyIntensity.Size = new System.Drawing.Size(56, 17);
             this.radHeavyIntensity.TabIndex = 12;
@@ -174,7 +175,7 @@
             // radInsaneIntensity
             // 
             this.radInsaneIntensity.AutoSize = true;
-            this.radInsaneIntensity.Location = new System.Drawing.Point(207, 185);
+            this.radInsaneIntensity.Location = new System.Drawing.Point(209, 220);
             this.radInsaneIntensity.Name = "radInsaneIntensity";
             this.radInsaneIntensity.Size = new System.Drawing.Size(68, 17);
             this.radInsaneIntensity.TabIndex = 13;
@@ -184,7 +185,7 @@
             // 
             // btnRandomize
             // 
-            this.btnRandomize.Location = new System.Drawing.Point(446, 185);
+            this.btnRandomize.Location = new System.Drawing.Point(448, 220);
             this.btnRandomize.Name = "btnRandomize";
             this.btnRandomize.Size = new System.Drawing.Size(75, 23);
             this.btnRandomize.TabIndex = 14;
@@ -195,7 +196,7 @@
             // lblIntensityDesc
             // 
             this.lblIntensityDesc.AutoSize = true;
-            this.lblIntensityDesc.Location = new System.Drawing.Point(9, 216);
+            this.lblIntensityDesc.Location = new System.Drawing.Point(11, 251);
             this.lblIntensityDesc.MaximumSize = new System.Drawing.Size(500, 0);
             this.lblIntensityDesc.Name = "lblIntensityDesc";
             this.lblIntensityDesc.Size = new System.Drawing.Size(0, 13);
@@ -203,7 +204,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(321, 156);
+            this.button1.Location = new System.Drawing.Point(323, 191);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(200, 23);
             this.button1.TabIndex = 16;
@@ -214,7 +215,7 @@
             // 
             // btnCompare
             // 
-            this.btnCompare.Location = new System.Drawing.Point(446, 126);
+            this.btnCompare.Location = new System.Drawing.Point(448, 161);
             this.btnCompare.Name = "btnCompare";
             this.btnCompare.Size = new System.Drawing.Size(75, 23);
             this.btnCompare.TabIndex = 17;
@@ -224,7 +225,7 @@
             // 
             // txtSeed
             // 
-            this.txtSeed.Location = new System.Drawing.Point(69, 159);
+            this.txtSeed.Location = new System.Drawing.Point(71, 194);
             this.txtSeed.Name = "txtSeed";
             this.txtSeed.Size = new System.Drawing.Size(100, 20);
             this.txtSeed.TabIndex = 19;
@@ -232,17 +233,30 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 161);
+            this.label3.Location = new System.Drawing.Point(14, 196);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(32, 13);
             this.label3.TabIndex = 20;
             this.label3.Text = "Seed";
             // 
+            // chkDoubleXP
+            // 
+            this.chkDoubleXP.AutoSize = true;
+            this.chkDoubleXP.Checked = true;
+            this.chkDoubleXP.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkDoubleXP.Location = new System.Drawing.Point(12, 153);
+            this.chkDoubleXP.Name = "chkDoubleXP";
+            this.chkDoubleXP.Size = new System.Drawing.Size(286, 17);
+            this.chkDoubleXP.TabIndex = 21;
+            this.chkDoubleXP.Text = "Double XP for all monsters EXCEPT metal slime/babble";
+            this.chkDoubleXP.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(533, 313);
+            this.ClientSize = new System.Drawing.Size(533, 349);
+            this.Controls.Add(this.chkDoubleXP);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.txtSeed);
             this.Controls.Add(this.btnCompare);
@@ -292,6 +306,7 @@
         private System.Windows.Forms.Button btnCompare;
         private System.Windows.Forms.TextBox txtSeed;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.CheckBox chkDoubleXP;
     }
 }
 
