@@ -233,7 +233,7 @@ namespace DW2Randomizer
                     { 90, 51, 2, 20, 61, 51 }, // Hork
                     { 60, 75, 27, 41, 64, 45 }, // Hawk Man
                     { 55, 61, 28, 43, 72, 110 }, // Sorcerer
-                    { 10, 37, 255, 100, 1015, 90 }, // Metal Slime <- Typically 5 HP, but due to the high EXP output and the ease of taking HP off, I made it 10.
+                    { 5, 37, 255, 100, 1015, 90 }, // Metal Slime
                     { 65, 82, 25, 57, 77, 97 }, // Hunter
                     { 50, 67, 30, 45, 92, 88 }, // Evil Eye
                     { 60, 74, 29, 52, 81, 83 }, // Hibabango
@@ -251,7 +251,7 @@ namespace DW2Randomizer
                     { 110, 99, 80, 60, 204, 181 }, // Orc King
                     { 82, 77, 47, 79, 182, 103 }, // Magic Vampirus
                     { 78, 109, 63, 55, 147, 123 }, // Berzerker
-                    { 50, 75, 255, 200, 10150, 255 }, // Metal Babble <- Typically 35 HP, but due to the high EXP output and the ease of taking HP off, I made it 50.
+                    { 5, 75, 255, 200, 10150, 255 }, // Metal Babble
                     { 77, 115, 72, 65, 201, 135 }, // Hargon's Knight
                     { 115, 121, 42, 43, 257, 99 }, // Cyclops
                     { 90 , 115, 150, 80, 554, 120 }, // Attackbot
@@ -294,6 +294,14 @@ namespace DW2Randomizer
                 romData[byteValStart + 8] = (byte)((romData[byteValStart + 8] % 64) + xp2);
                 romData[byteValStart + 9] = (byte)((romData[byteValStart + 9] % 64) + xp3);
                 romData[byteValStart + 2] = gp;
+                if (lnI == 0x2f || lnI == 0x41) // Metal Slime/Metal Babble
+                {
+                    romData[byteValStart + 10] = 0x55;
+                    romData[byteValStart + 11] = 0x55;
+                    if (lnI == 0x2f) romData[byteValStart + 12] = 0x66; else romData[byteValStart + 12] = 0x55;
+                    if (lnI == 0x2f) romData[byteValStart + 13] = 0x66; else romData[byteValStart + 13] = 0x77;
+                    romData[byteValStart + 14] = 0x00;
+                }
             }
 
             // Replace weapon data
@@ -325,15 +333,17 @@ namespace DW2Randomizer
             // Replace monster data
             for (int lnI = 0; lnI < 82; lnI++)
             {
+                if (lnI == 0x4c)
+                    lnI = 0x4c;
                 int byteValStart = 0x13805 + (15 * lnI);
 
-                int xp = romData[byteValStart + 3] + ((romData[byteValStart + 8] / 64) * 256) + ((romData[byteValStart + 8] / 64) * 1024);
+                int xp = romData[byteValStart + 3] + ((romData[byteValStart + 8] / 64) * 256) + ((romData[byteValStart + 9] / 64) * 1024);
                 if (lnI != 0x2f && lnI != 0x41)
                     xp *= 2;
 
                 byte xp1 = (byte)(xp > 4095 ? 255 : (xp % 256));
-                byte xp2 = (byte)((xp > 4095 ? 192 : (xp / 256) % 4) * 64);
-                byte xp3 = (byte)((xp > 4095 ? 192 : (xp / 1024)) * 64);
+                byte xp2 = (byte)(xp > 4095 ? 192 : ((xp / 256) % 4) * 64);
+                byte xp3 = (byte)(xp > 4095 ? 192 : (xp / 1024) * 64);
 
                 romData[byteValStart + 3] = xp1;
                 romData[byteValStart + 8] = (byte)((romData[byteValStart + 8] % 64) + xp2);
@@ -417,6 +427,14 @@ namespace DW2Randomizer
                 romData[0x1a054 + (lnI * 2)] = (byte)(special ? 1 : (itemcost[lnI] / 2) % 256);
                 romData[0x1a055 + (lnI * 2)] = (byte)(special ? 0 : (itemcost[lnI] / 2) / 256);
             }
+
+            // House of healing cost halved
+            romData[0x18659] = (20 / 2);
+
+            // Inn prices halved
+            byte[] inns = { 4, 6, 8, 12, 20, 2, 25, 30, 40, 30 };
+            for (int lnI = 0; lnI < inns.Length; lnI++)
+                romData[0x19f90 + lnI] = (byte)(inns[lnI] / 2);
         }
 
         private void superRandomize()
@@ -489,7 +507,7 @@ namespace DW2Randomizer
                 enemyStats[1] = (byte)((r1.Next() % 16) * 16);
                 int gp = enemyStats[2] + (r1.Next() % (2 * (lnI + 1)));
                 enemyStats[2] = (byte)(lnI == 0x33 || gp > 255 ? 255 : gp); // Gold Orc gold = 255
-                float xp = romData[byteValStart + 3] + ((romData[byteValStart + 8] / 64) * 256) + ((romData[byteValStart + 8] / 64) * 1024);
+                float xp = romData[byteValStart + 3] + ((romData[byteValStart + 8] / 64) * 256) + ((romData[byteValStart + 9] / 64) * 1024);
 
                 enemyStats[4] = (byte)(r1.Next() % 256);
                 enemyStats[5] += (byte)(r1.Next() % (enemyStats[5] * 3 / 2) - (enemyStats[5] / 2));
@@ -604,7 +622,23 @@ namespace DW2Randomizer
                     }
                 }
                 if (lnI == 0x2f || lnI == 0x41) // Metal slime, Metal Babble
+                {
                     enemyPatterns[0] = 5; // run away
+                    enemyPage2[0] = false;
+                    enemyPatterns[1] = 5; // run away
+                    enemyPage2[1] = false;
+                    enemyPatterns[2] = 5; // run away
+                    enemyPage2[2] = false;
+                    enemyPatterns[3] = 5; // run away
+                    enemyPage2[3] = false;
+                    if (lnI == 0x41)
+                    {
+                        enemyPatterns[4] = 5; // run away
+                        enemyPage2[4] = false;
+                        enemyPatterns[5] = 5; // run away
+                        enemyPage2[5] = false;
+                    }
+                }
                 if (lnI == 0x05) // Healer
                     enemyPatterns[0] = (byte)((r1.Next() % 3) + 12); // heal, healmore, healall
 
@@ -767,6 +801,9 @@ namespace DW2Randomizer
                 //}
                 //xp *= resMult;
 
+                if (lnI == 0x49)
+                    lnI = 0x49;
+
                 xp = (float)Math.Round(xp, 0);
                 byte xp1 = (byte)(xp > 4095 ? 255 : (xp % 256));
                 byte xp2 = (byte)(xp > 4095 ? 192 : (Math.Floor(xp / 256) % 4) * 64);
@@ -798,7 +835,7 @@ namespace DW2Randomizer
                         else
                             romData[byteToUse + lnJ] = 127;
                     }
-                    else if (lnI < 20) // For the next 9 zones, it's a 33% chance.  Still no special fights.
+                    else if (lnI < 21) // For the next 10 zones, it's a 33% chance.  Still no special fights.
                     {
                         if (r1.Next() % 3 < 2)
                         {
@@ -813,16 +850,16 @@ namespace DW2Randomizer
                         if (r1.Next() % 5 < 4)
                         {
                             zone = true;
-                            romData[byteToUse + lnJ] = (byte)((r1.Next() % 78) + 1);
+                            romData[byteToUse + lnJ] = (byte)((r1.Next() % 77) + 1);
                         } else
                             romData[byteToUse + lnJ] = 127;
                     }
                 }
                 if (!zone)
-                    romData[byteToUse + 5] = (byte)((r1.Next() % (lnI < 11 ? lnI + 6 : lnI < 20 ? lnI + 10 : 78)) + 1);
+                    romData[byteToUse + 5] = (byte)((r1.Next() % (lnI < 11 ? lnI + 6 : lnI < 21 ? lnI + 10 : 78)) + 1);
 
                 byte specialBout = (byte)(r1.Next() % 38);
-                if (lnI >= 20 && specialBout < 19)
+                if (lnI >= 21 && specialBout < 19)
                 {
                     romData[byteToUse + 0] += 128;
                     romData[byteToUse + 1] += (byte)(specialBout >= 16 ? 0 : 128);
@@ -846,18 +883,18 @@ namespace DW2Randomizer
                 for (int lnJ = 0; lnJ < 4; lnJ++)
                 {
                     if (r1.Next() % 2 == 1 || lnJ == 3)
-                        romData[byteToUse + lnJ] = (byte)((r1.Next() % 78) + 1);
+                        romData[byteToUse + lnJ] = (byte)((r1.Next() % 77) + 1);
                 }
             }
 
-            // Randomize 13 boss fights, but make sure the last four fights involve the highest exp monsters.
+            // Randomize 13 boss fights, but make sure the last four fights involve Atlas, Bazuzu, and Zarlox.
             for (int lnI = 0; lnI < 13; lnI++)
             {
                 int byteToUse = 0x10356 + (lnI * 4);
-                int boss1 = (lnI >= 9 ? 78 + (lnI - 9) : ((r1.Next() % 78) + 1));
-                boss1 = (lnI == 0 ? (r1.Next() % 32) + 1 : boss1);
+                int boss1 = (lnI >= 8 ? 78 + (lnI - 8) : ((r1.Next() % 77) + 1));
+                boss1 = (lnI == 0 ? (r1.Next() % 40) + 1 : boss1);
                 int quantity1 = (boss1 >= 80 ? 1 : (r1.Next() % monsterSize[boss1]) + 1);
-                int boss2 = (lnI == 0 ? (r1.Next() % 32) + 1 : (r1.Next() % 78) + 1);
+                int boss2 = (lnI == 0 ? (r1.Next() % 40) + 1 : (r1.Next() % 78) + 1);
                 romData[byteToUse + 0] = (byte)boss1;
                 romData[byteToUse + 1] = (byte)quantity1;
                 romData[byteToUse + 2] = (byte)boss2;
@@ -875,7 +912,18 @@ namespace DW2Randomizer
             byte[] maxPower = { 0, 0, 0, 0 };
             for (int lnI = 0; lnI < 35; lnI++)
             {
-                byte power = (byte)(r1.Next() % (lnI < 16 ? (7 * (lnI + 1)) : lnI < 27 ? (7 * (lnI - 15)) : lnI < 31 ? (7 * (lnI - 26)) : (7 * (lnI - 30))));
+                byte power = 0;
+                if (lnI == 0 || lnI == 16)
+                    power = (byte)(r1.Next() % 10);
+                else if (lnI < 16)
+                    power = (byte)(r1.Next() % 100);
+                else if (lnI < 27)
+                    power = (byte)(r1.Next() % 70);
+                else if (lnI < 31)
+                    power = (byte)(r1.Next() % 40);
+                else
+                    power = (byte)(r1.Next() % 30);
+                power = (byte)(r1.Next() % (lnI < 16 ? (7 * (lnI + 1)) : lnI < 27 ? (7 * (lnI - 15)) : lnI < 31 ? (7 * (lnI - 26)) : (7 * (lnI - 30))));
                 power += 1; // To avoid 0 power... and a non-selling item...
                 maxPower[(lnI < 16 ? 0 : lnI < 27 ? 1 : lnI < 31 ? 2 : 3)] = (power > maxPower[(lnI < 16 ? 0 : lnI < 27 ? 1 : lnI < 31 ? 2 : 3)] ? power : 
                     maxPower[(lnI < 16 ? 0 : lnI < 27 ? 1 : lnI < 31 ? 2 : 3)]);
@@ -965,7 +1013,7 @@ namespace DW2Randomizer
                     byte treasure = (byte)((r1.Next() % legalTreasures.Length)); // the last two items we can't get...
                     treasure = legalTreasures[treasure];
                     if (!(treasureList.Contains(treasure) && ((treasure >= 0x24 && treasure <= 0x2e) || treasure == 0x32 || treasure == 0x37 || treasure == 0x38 || treasure == 0x39 
-                        || treasure == 0x40 || treasure == 0x43 || treasure == 0x44)))
+                        || treasure == 0x40 || treasure == 0x42 || treasure == 0x44)))
                     {
                         legal = true;
                         treasureList.Add(treasure);
@@ -985,7 +1033,7 @@ namespace DW2Randomizer
                     if (!fail && r1.Next() % 12 <= chance - lnJ)
                     {
                         // Add item
-                        byte treasure = (byte)((r1.Next() % 62) + 1); // the last two items we can't get...
+                        byte treasure = (byte)((r1.Next() % 61) + 1); // 0x00, 0x3E, and 0x3F we can't get...
                         if (!(treasure == 0x3A || treasure == 0x27 || treasure == 0x36 || treasure == 0x28 || treasure == 0x2B) && !(lnI < 8 && treasure == 0x39))
                         {
                             romData[byteToUse + lnJ] = treasure;
@@ -999,12 +1047,20 @@ namespace DW2Randomizer
                 }
             }
 
+            // House of healing cost randomized
+            romData[0x18659] = (byte)(r1.Next() % 20);
+
+            // Inn prices randomized
+            // byte[] inns = { 4, 6, 8, 12, 20, 2, 25, 30, 40, 30 };
+            for (int lnI = 0; lnI < 9; lnI++)
+                romData[0x19f90 + lnI] = (byte)((r1.Next() % 20) + 1);
+
             // Verify that key items are available in either a store or a treasure chest in the right zone.
-            byte[] keyItems = { 0x2b, 0x2e, 0x37, 0x39, 0x26, 0x28 };
-            byte[] keyTreasure = { 16, 16, 26, 43, 48, 56 };
-            byte[] keyWStore = { 12, 12, 36, 48, 48, 48 };
-            byte[] keyIStore = { 24, 24, 54, 66, 66, 66 };
-            for (int lnI = 0; lnI < 6; lnI++)
+            byte[] keyItems = { 0x2b, 0x2e, 0x37, 0x39, 0x26, 0x28, 0x40, 0x43, 0x44 };
+            byte[] keyTreasure = { 16, 16, 26, 43, 48, 56, 64, 64, 64 };
+            byte[] keyWStore = { 12, 12, 36, 48, 48, 48, 48, 48, 48 };
+            byte[] keyIStore = { 24, 24, 54, 66, 66, 66, 66, 66, 66 };
+            for (int lnI = 0; lnI < keyItems.Length; lnI++)
             {
                 bool legal = false;
                 for (int lnJ = 0; lnJ < keyTreasure[lnI]; lnJ++)
@@ -1028,7 +1084,8 @@ namespace DW2Randomizer
                 {
                     byte tRand = (byte)(r1.Next() % keyTreasure[lnI]);
                     if (romData[allTreasure[tRand]] != keyTreasure[0] && romData[allTreasure[tRand]] != keyTreasure[1] && romData[allTreasure[tRand]] != keyTreasure[2] &&
-                        romData[allTreasure[tRand]] != keyTreasure[3] && romData[allTreasure[tRand]] != keyTreasure[4] && romData[allTreasure[tRand]] != keyTreasure[5])
+                        romData[allTreasure[tRand]] != keyTreasure[3] && romData[allTreasure[tRand]] != keyTreasure[4] && romData[allTreasure[tRand]] != keyTreasure[5] &&
+                        romData[allTreasure[tRand]] != keyTreasure[6] && romData[allTreasure[tRand]] != keyTreasure[7] && romData[allTreasure[tRand]] != keyTreasure[8])
                     {
                         romData[allTreasure[tRand]] = keyItems[lnI];
                         legal = true;
