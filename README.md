@@ -26,7 +26,8 @@
 - Weapon and item stores are completely randomized.  You theoretically could buy items such as Water Flying Clothes, Thunder Swords, Leaves of The World Tree, Golden Keys, Cloaks Of Wind, and so forth.  Crests and the Mirror Of Ra, as examples, still have to be found.
 - Weapon and armor power are completely randomized from 1 to 100 for weapons, 70 for armor, 40 for shields, and 30 for helmets.
 - Weapon and armor prices are adjusted according to the power randomized.  (power ^ 2.3, 2.4, 2.8, 3.0 for weapons, armor, shields, and helmets respectively)
-- The only exceptions are the bamboo stick and clothes (maximum power 10 for each), because all members will start with those items.
+- Who equips each weapon, armor, shield, and helmet is also randomized.
+- The only exceptions are the bamboo stick and clothes (maximum power 10 for each), because all members will start with those items, and they all can equip those items.
 - Spells are learned randomly, but progressively.  (see above for explanation)
 - Treasures are completely randomized, but you will find all key items before they are required either in the treasures to be found, or possibly weapon and item stores.
 - Starting gold is randomized from 0-255.  It is possible to start with 0 gold, especially if you start the game with a crest.
