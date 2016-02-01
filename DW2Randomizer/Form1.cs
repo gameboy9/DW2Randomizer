@@ -114,6 +114,10 @@ namespace DW2Randomizer
                     superRandomize();
             }
 
+            // ALL ROM Hacks will have greatly increased battle speeds.
+            romData[0x1adcf] = 0x01;
+            romData[0x1add0] = 0x28;
+            romData[0x1add1] = 0x40;
             saveRom();
         }
 
