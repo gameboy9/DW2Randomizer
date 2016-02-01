@@ -359,7 +359,6 @@ namespace DW2Randomizer
 
         private void halfExpAndGoldReq(bool special = false)
         {
-            special = true;
             // We'll divide all of these by two later...
             int[] weaponcost = new int[] { 20, 200, 2500, 26000, 60, 100, 330, 770, 25000, 1500, 4000, 15000, 8000, 16000, 4000, 500 };
             int[] armorcost = new int[] { 30, 1250, 70, 32767, 150, 390, 6400, 1250, 1000, 32000, 48000 };
