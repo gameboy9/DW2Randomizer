@@ -4,6 +4,7 @@
 - An opportunity to half the gold and experience requirements to reduce grinding.
 - An opportunity to adjust the seed from 1 to 2^32 (2 billion plus) for racing possibilities.
 - An opportunity to increase XP by 50% for all monsters EXCEPT metal slimes and metal babbles.  (due to the ease of killing them)
+- Super speedy battles!  (instead of waiting 2/3 of a second between battle statements, it is almost instantaneous)
 - Four Levels Of Randomization
 
 ** If this is done, Army Ant's XP/GP will increase to 6XP/7GP so they are more in line with other enemies in its' class.  Also, Metal Babbles and Metal Slime's attributes will change so they have a very high chance of running, in line with other Dragon Warrior games.
@@ -37,7 +38,6 @@
 - Randomize spell learning better in insane randomness.
 - Figure out a way to revive all party members with full HP and MP on a party wipe(AKA ColdAsACod), regardless of save location. (this only takes effect at the Rhone Shrine)
 - Figure out a way to adjust the interface so magic can be randomized effectively without UI confusion.
-- Figure out how to reduce the wait time(currently about 2/3 of a second on fast speed) between battle statements.
 - Skip the prologue at the beginning and go straight to the soldier limping into Midenhall's Throne Room.
 
 ## Special Thanks
