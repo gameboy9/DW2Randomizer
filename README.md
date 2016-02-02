@@ -20,7 +20,7 @@
 - Spells are adjusted by 1/3/6 levels, but are then rearranged so they are learned in order. (I currently don't know how to scramble the spells around without introducing UI confusion)
 
 ### Insane difficulty
-- All monsters are completely randomized, except for their HP, Strength, XP, and their gold.
+- All monsters are completely randomized, except for their HP, Defense, Attack Power, XP, and their gold. (in attack power's case, it is randomized from half to twice their original attack power)
 - Monsters resistances are randomized as well, but higher level monsters have a higher chance of higher resistances.
 - Monster zones are completely random, but they will be easier until the Moonbrooke shrine, and will get progressively harder starting at the Sea Cave.
 - Boss fights are completely randomized as well, but the ship fight is easier.
