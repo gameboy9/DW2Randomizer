@@ -2,10 +2,11 @@
 ## Features
 - An opportunity to adjust some enemy attributes to DW2 Remix values. **
 - An opportunity to half the gold and experience requirements to reduce grinding.
-- An opportunity to adjust the seed from 1 to 2^32 (2 billion plus) for racing possibilities.
 - An opportunity to increase XP by 50% for all monsters EXCEPT metal slimes and metal babbles.  (due to the ease of killing them)
+- Four Levels Of Randomization (with an option to not randomize at all)
+- An opportunity to adjust the seed from 1 to 2^32 (2 billion plus) for racing possibilities.
 - Super speedy battles!  (instead of waiting 2/3 of a second between battle statements, it is almost instantaneous)
-- Four Levels Of Randomization
+- Prologue automatically skipped.  The game now starts, albeit a bit awkwardly, with the soldier limping into Midenhall's Throne Room.
 
 ** If this is done, Army Ant's XP/GP will increase to 6XP/7GP so they are more in line with other enemies in its' class.  Also, Metal Babbles and Metal Slime's attributes will change so they have a very high chance of running, in line with other Dragon Warrior games.
 
@@ -39,9 +40,9 @@
 - Randomize spell learning better in insane randomness.
 - Figure out a way to revive all party members with full HP and MP on a party wipe(AKA ColdAsACod), regardless of save location. (this only takes effect at the Rhone Shrine)
 - Figure out a way to adjust the interface so magic can be randomized effectively without UI confusion.
-- Skip the prologue at the beginning and go straight to the soldier limping into Midenhall's Throne Room.
 
 ## Special Thanks
 - Mcgrew, for his Dragon Warrior 1 Randomizer(https://github.com/mcgrew/dwrandomizer), giving me the inspiration to create this randomizer.  Twitch:  http://www.twitch.tv/mcgrew
 - joe73ffdq, for his help in finding ROM addresses to make this possible.
 - Highspirits, for being the first to give this a try... and the free advertising.  :)  Twitch:  http://www.twitch.tv/highspirits
+- Evilash25, for also testing out the randomizer and finding some bugs that I needed to squash.  Twitch:  http://www.twitch.tv/evilash25
