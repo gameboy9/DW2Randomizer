@@ -524,7 +524,17 @@ namespace DW2Randomizer
                 float xp = romData[byteValStart + 3] + ((romData[byteValStart + 8] / 64) * 256) + ((romData[byteValStart + 9] / 64) * 1024);
 
                 enemyStats[4] = (byte)(r1.Next() % 256);
-                enemyStats[5] += (byte)(r1.Next() % (enemyStats[5] * 3 / 2) - (enemyStats[5] / 2));
+                int totalAtk = enemyStats[5];
+                int atkRandom = (r1.Next() % 3);
+                int atkDiv2 = (enemyStats[5] / 2) + 1;
+                if (atkRandom == 1) {
+                    totalAtk += (r1.Next() % atkDiv2);
+                } else if (atkRandom == 2)
+                {
+                    totalAtk -= (r1.Next() % atkDiv2);
+                }
+                totalAtk = (totalAtk > 254 ? 254 : totalAtk);
+                enemyStats[5] = (byte)totalAtk;
 
                 byte[] res1 = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7 };
                 byte[] res2 = { 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 4, 5, 6, 7 };
