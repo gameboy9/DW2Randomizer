@@ -110,7 +110,7 @@ namespace DW2Randomizer
                 if (chkDoubleXP.Checked) doubleExp();
                 if (radSlightIntensity.Checked || radModerateIntensity.Checked || radHeavyIntensity.Checked)
                     randomize();
-                else
+                else if (radInsaneIntensity.Checked)
                     superRandomize();
             }
 
@@ -118,6 +118,11 @@ namespace DW2Randomizer
             romData[0x1adcf] = 0x01;
             romData[0x1add0] = 0x28;
             romData[0x1add1] = 0x40;
+            // ALL ROM hacks will skip the prologue.
+            for (int lnI = 0; lnI < 12; lnI++)
+            {
+                romData[0x1c1a5 + lnI] = 0xea;
+            }
             saveRom();
         }
 
@@ -1498,8 +1503,9 @@ namespace DW2Randomizer
                 }
             }
 
-            // rearrange "boss fights".  There are 13 "boss fights".  Boss fights 9-13 will stay the same, except it might have more monsters showing up to make things even more fun!
-            for (int lnI = 0; lnI < 13; lnI++)
+            // rearrange "boss fights".  There are 13 "boss fights".  Boss fights 9-12 will stay the same, except it might have more monsters showing up to make things even more fun!
+            // Boss fight 13 will remain totally the same; nobody can join him.
+            for (int lnI = 0; lnI < 12; lnI++)
             {
                 int byteToUse = 0x10356 + (lnI * 4);
                 // "Zone" order:  monster, quantity, monster, quantity.  The first pairing has priority...
@@ -1550,12 +1556,14 @@ namespace DW2Randomizer
                                 romData[byteToUse + 2] = (byte)(test);
                             else
                                 romData[byteToUse + 2] = (byte)(average - randomModifier); // Reverse direction of the modifier to guarantee a second group.
-                        } else if (lnJ == 0 && romData[byteToUse + 2] == 255) // reswap to avoid three Bazuzus
-                        {
-                            swap(byteToUse + 2, byteToUse + 0);
-                            swap(byteToUse + 3, byteToUse + 1);
                         }
                     }
+                }
+
+                if (romData[byteToUse + 2] == 255) // reswap to DW2 normal
+                {
+                    swap(byteToUse + 2, byteToUse + 0);
+                    swap(byteToUse + 3, byteToUse + 1);
                 }
             }
 
@@ -1637,7 +1645,7 @@ namespace DW2Randomizer
             }
 
             for (int lnI = 0; lnI < 4; lnI++)
-                for (int lnJ = lnI + 1; lnJ < 31; lnJ++)
+                for (int lnJ = lnI + 1; lnJ < 4; lnJ++)
                 {
                     if (romData[0x13edb + lnJ] <= romData[0x13edb + lnI])
                     {
@@ -1647,7 +1655,7 @@ namespace DW2Randomizer
                 }
 
             for (int lnI = 4; lnI < 8; lnI++)
-                for (int lnJ = lnI + 1; lnJ < 15; lnJ++)
+                for (int lnJ = lnI + 1; lnJ < 8; lnJ++)
                 {
                     if (romData[0x13edb + lnJ] <= romData[0x13edb + lnI])
                     {
@@ -1667,7 +1675,7 @@ namespace DW2Randomizer
                 }
 
             for (int lnI = 16; lnI < 20; lnI++)
-                for (int lnJ = lnI + 1; lnJ < 31; lnJ++)
+                for (int lnJ = lnI + 1; lnJ < 20; lnJ++)
                 {
                     if (romData[0x13edb + lnJ] <= romData[0x13edb + lnI])
                     {
@@ -1677,7 +1685,7 @@ namespace DW2Randomizer
                 }
 
             for (int lnI = 20; lnI < 24; lnI++)
-                for (int lnJ = lnI + 1; lnJ < 31; lnJ++)
+                for (int lnJ = lnI + 1; lnJ < 24; lnJ++)
                 {
                     if (romData[0x13edb + lnJ] <= romData[0x13edb + lnI])
                     {

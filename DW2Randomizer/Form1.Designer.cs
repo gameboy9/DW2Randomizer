@@ -48,6 +48,7 @@
             this.txtSeed = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.chkDoubleXP = new System.Windows.Forms.CheckBox();
+            this.optNoIntensity = new System.Windows.Forms.RadioButton();
             this.SuspendLayout();
             // 
             // txtFileName
@@ -140,12 +141,10 @@
             // radSlightIntensity
             // 
             this.radSlightIntensity.AutoSize = true;
-            this.radSlightIntensity.Checked = true;
-            this.radSlightIntensity.Location = new System.Drawing.Point(14, 220);
+            this.radSlightIntensity.Location = new System.Drawing.Point(70, 220);
             this.radSlightIntensity.Name = "radSlightIntensity";
             this.radSlightIntensity.Size = new System.Drawing.Size(51, 17);
             this.radSlightIntensity.TabIndex = 9;
-            this.radSlightIntensity.TabStop = true;
             this.radSlightIntensity.Text = "Slight";
             this.radSlightIntensity.UseVisualStyleBackColor = true;
             this.radSlightIntensity.CheckedChanged += new System.EventHandler(this.radSlightIntensity_CheckedChanged);
@@ -153,7 +152,7 @@
             // radModerateIntensity
             // 
             this.radModerateIntensity.AutoSize = true;
-            this.radModerateIntensity.Location = new System.Drawing.Point(71, 220);
+            this.radModerateIntensity.Location = new System.Drawing.Point(128, 220);
             this.radModerateIntensity.Name = "radModerateIntensity";
             this.radModerateIntensity.Size = new System.Drawing.Size(70, 17);
             this.radModerateIntensity.TabIndex = 11;
@@ -164,10 +163,12 @@
             // radHeavyIntensity
             // 
             this.radHeavyIntensity.AutoSize = true;
-            this.radHeavyIntensity.Location = new System.Drawing.Point(147, 220);
+            this.radHeavyIntensity.Checked = true;
+            this.radHeavyIntensity.Location = new System.Drawing.Point(205, 220);
             this.radHeavyIntensity.Name = "radHeavyIntensity";
             this.radHeavyIntensity.Size = new System.Drawing.Size(56, 17);
             this.radHeavyIntensity.TabIndex = 12;
+            this.radHeavyIntensity.TabStop = true;
             this.radHeavyIntensity.Text = "Heavy";
             this.radHeavyIntensity.UseVisualStyleBackColor = true;
             this.radHeavyIntensity.CheckedChanged += new System.EventHandler(this.radHeavyIntensity_CheckedChanged);
@@ -175,7 +176,7 @@
             // radInsaneIntensity
             // 
             this.radInsaneIntensity.AutoSize = true;
-            this.radInsaneIntensity.Location = new System.Drawing.Point(209, 220);
+            this.radInsaneIntensity.Location = new System.Drawing.Point(268, 220);
             this.radInsaneIntensity.Name = "radInsaneIntensity";
             this.radInsaneIntensity.Size = new System.Drawing.Size(68, 17);
             this.radInsaneIntensity.TabIndex = 13;
@@ -251,11 +252,22 @@
             this.chkDoubleXP.Text = "XP +50% for all monsters EXCEPT metal slime/babble";
             this.chkDoubleXP.UseVisualStyleBackColor = true;
             // 
+            // optNoIntensity
+            // 
+            this.optNoIntensity.AutoSize = true;
+            this.optNoIntensity.Location = new System.Drawing.Point(12, 220);
+            this.optNoIntensity.Name = "optNoIntensity";
+            this.optNoIntensity.Size = new System.Drawing.Size(51, 17);
+            this.optNoIntensity.TabIndex = 22;
+            this.optNoIntensity.Text = "None";
+            this.optNoIntensity.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(533, 349);
+            this.Controls.Add(this.optNoIntensity);
             this.Controls.Add(this.chkDoubleXP);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.txtSeed);
@@ -307,6 +319,7 @@
         private System.Windows.Forms.TextBox txtSeed;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.CheckBox chkDoubleXP;
+        private System.Windows.Forms.RadioButton optNoIntensity;
     }
 }
 
