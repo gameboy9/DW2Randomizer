@@ -370,6 +370,17 @@ namespace DW2Randomizer
 
         private void halfExpAndGoldReq(bool special = false)
         {
+            // Divide encounter rates by half.
+            romData[0x1033c] = 5; // was 10
+            romData[0x1033d] = 42; // was 84
+            romData[0x1033e] = 4; // was 8
+            romData[0x1033f] = 2; // was 4
+            romData[0x10340] = 8; // was 16
+            romData[0x10341] = 12; // was 25
+            romData[0x10342] = 8; // was 16
+            //romData[0x10343] = 8; // was 16
+            //romData[0x10344] = 4; // was 9
+
             // We'll divide all of these by two later...
             int[] weaponcost = new int[] { 20, 200, 2500, 26000, 60, 100, 330, 770, 25000, 1500, 4000, 15000, 8000, 16000, 4000, 500 };
             int[] armorcost = new int[] { 30, 1250, 70, 32767, 150, 390, 6400, 1250, 1000, 32000, 48000 };
