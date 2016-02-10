@@ -338,7 +338,7 @@ namespace DW2Randomizer
                 romData[0x1a3ce + lnI] = equipwho[lnI];
 
             // Change the Staff Of Thunder boss fight to the Mace Master
-            romData[0x10356 + (4 * 4) + 2] = 0x47;
+            romData[0x10356 + (1 * 4) + 2] = 0x47;
         }
 
         private void doubleExp()
