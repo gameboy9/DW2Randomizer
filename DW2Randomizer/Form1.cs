@@ -944,13 +944,15 @@ namespace DW2Randomizer
             byte level = 1;
             for (int lnI = 0; lnI < 32; lnI++)
             {
-                if (lnI == 15) { level = 1; continue; }
-                if (lnI == 31) continue; // We can't figure out how to get an eighth command spell in there yet.
+                if (lnI == 15 || lnI == 31) continue; // We can't figure out how to get an eighth command spell in there yet.
                 if (lnI == 4 || lnI == 8 || lnI == 20 || lnI == 24) continue; // Heal/Healmore MUST be learned at level 1, so leave that byte alone.
 
-                level = (byte)((r1.Next() % 31) + 2);
+                if (lnI < 16)
+                    level = (byte)((r1.Next() % 26) + 2);
+                else
+                    level = (byte)((r1.Next() % 23) + 2);
+
                 romData[0x13edb + lnI] = level;
-                if (lnI == 3 || lnI == 7 || lnI == 15 || lnI == 19 || lnI == 23) level = 1; // Reset with each fight page (4x2 spells each) and command page (8 spells each)
             }
 
             for (int lnI = 0; lnI < 4; lnI++)
@@ -1049,7 +1051,8 @@ namespace DW2Randomizer
             byte[] legalTreasures = { 0x01, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
                                       0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
                                       0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2d, 0x2e, 0x2f,
-                                      0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x37, 0x38, 0x39, 0x3b, 0x3c, 0x3d, 0x40, 0x43, 0x44 };
+                                      0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x37, 0x38, 0x39, 0x3b, 0x3c, 0x3d, 0x40, 0x43, 0x44,
+                                      0x45, 0x46, 0x47, 0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f };
             for (int lnI = 0; lnI < 64; lnI++)
             {
                 if (lnI == 1)
@@ -1150,7 +1153,7 @@ namespace DW2Randomizer
                 while (!legal)
                 {
                     byte tRand = (byte)(r1.Next() % keyTreasure[lnI]);
-                    if (tRand != 1 && romData[allTreasure[tRand]] != keyTreasure[0] && romData[allTreasure[tRand]] != keyTreasure[1] && romData[allTreasure[tRand]] != keyTreasure[2] &&
+                    if (tRand != 0 && tRand != 1 && romData[allTreasure[tRand]] != keyTreasure[0] && romData[allTreasure[tRand]] != keyTreasure[1] && romData[allTreasure[tRand]] != keyTreasure[2] &&
                         romData[allTreasure[tRand]] != keyTreasure[3] && romData[allTreasure[tRand]] != keyTreasure[4] && romData[allTreasure[tRand]] != keyTreasure[5] &&
                         romData[allTreasure[tRand]] != keyTreasure[6] && romData[allTreasure[tRand]] != keyTreasure[7] && romData[allTreasure[tRand]] != keyTreasure[8])
                     {
