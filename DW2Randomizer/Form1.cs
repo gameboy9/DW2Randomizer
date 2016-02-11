@@ -1150,7 +1150,7 @@ namespace DW2Randomizer
                 while (!legal)
                 {
                     byte tRand = (byte)(r1.Next() % keyTreasure[lnI]);
-                    if (romData[allTreasure[tRand]] != keyTreasure[0] && romData[allTreasure[tRand]] != keyTreasure[1] && romData[allTreasure[tRand]] != keyTreasure[2] &&
+                    if (tRand != 1 && romData[allTreasure[tRand]] != keyTreasure[0] && romData[allTreasure[tRand]] != keyTreasure[1] && romData[allTreasure[tRand]] != keyTreasure[2] &&
                         romData[allTreasure[tRand]] != keyTreasure[3] && romData[allTreasure[tRand]] != keyTreasure[4] && romData[allTreasure[tRand]] != keyTreasure[5] &&
                         romData[allTreasure[tRand]] != keyTreasure[6] && romData[allTreasure[tRand]] != keyTreasure[7] && romData[allTreasure[tRand]] != keyTreasure[8])
                     {
