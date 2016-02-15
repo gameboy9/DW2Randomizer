@@ -869,13 +869,13 @@ namespace DW2Randomizer
                 if (lnI == 0 || lnI == 16)
                     power = (byte)(r1.Next() % 10);
                 else if (lnI < 16)
-                    power = (byte)(Math.Pow(r1.Next() % 500, .742)); // max 100
+                    power = (byte)(Math.Pow(r1.Next() % 500, 2) / 2500); // max 100
                 else if (lnI < 27)
-                    power = (byte)(Math.Pow(r1.Next() % 500, .685)); // max 70
+                    power = (byte)(Math.Pow(r1.Next() % 500, 2) / 3570); // max 70
                 else if (lnI < 31)
-                    power = (byte)(Math.Pow(r1.Next() % 500, .595)); // max 40
+                    power = (byte)(Math.Pow(r1.Next() % 500, 2) / 6250); // max 40
                 else
-                    power = (byte)(Math.Pow(r1.Next() % 500, .55)); // max 30
+                    power = (byte)(Math.Pow(r1.Next() % 500, 2) / 8333); // max 30
                 //power = (byte)(r1.Next() % (lnI < 16 ? (7 * (lnI + 1)) : lnI < 27 ? (7 * (lnI - 15)) : lnI < 31 ? (7 * (lnI - 26)) : (7 * (lnI - 30))));
                 power += (byte)((lnI < 16 ? lnI : lnI < 27 ? lnI - 16 : lnI < 31 ? lnI - 27 : lnI - 31) + 1); // To avoid 0 power... and a non-selling item...
                 maxPower[(lnI < 16 ? 0 : lnI < 27 ? 1 : lnI < 31 ? 2 : 3)] = (power > maxPower[(lnI < 16 ? 0 : lnI < 27 ? 1 : lnI < 31 ? 2 : 3)] ? power : 
