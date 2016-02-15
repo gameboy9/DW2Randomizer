@@ -125,6 +125,26 @@ namespace DW2Randomizer
             romData[0x11038] = 2; // instead of 11
             romData[0x10ae9] = 1; // instead of 4, greatly reducing enemy flashing on them taking damage, reducing about 12 frames each time.
             romData[0x3c526] = 1; // instead of 10, greatly reducing flashes done for spell casting, removing 20 frames every time a spell is cast.
+            // All ROM hacks will revive ALL characters on a ColdAsACod.
+            byte[] codData1 = { 0x20, 0x97, 0xff }; // replace with a jsr to a bunch of unused code at 0x3ffa7 (near the end of the ROM)
+            byte[] codData2 = { 0x8d, 0x3b, 0x06, // save to the hero's address (this is the code we're replacing in codData1)
+                                0xad, 0x51, 0x06, // load moonbrooke's status
+                                0xc9, 0x04, // Check for moonbrooke existance
+                                0xd0, 0x03, // If not, skip three bytes
+                                0x4c, 0xca, 0xd2, // Else, change to the Rhone routine, reviving all characters with full health... although a bit awkwardly.
+                                0xad, 0x3f, 0x06, // Load cannock's status
+                                0xc9, 0x04, // Make sure he exists
+                                0xd0, 0x0a, // If not, skip ten bytes.
+                                0xa9, 0x84, // Revive the prince...
+                                0x8d, 0x3f, 0x06, // Here, officially
+                                0xa9, 0x01, // then give the prince 1 HP (which will later, by ENIX, change to MAX HP)
+                                0x8d, 0x4d, 0x06, // and then make it official.
+                                0x60 }; // jsr, i.e. end sub
+
+            for (int lnI = 0; lnI < codData1.Length; lnI++)
+                romData[0x3d293 + lnI] = codData1[lnI];
+            for (int lnI = 0; lnI < codData2.Length; lnI++)
+                romData[0x3ffa7 + lnI] = codData2[lnI];
             saveRom();
         }
 
@@ -849,13 +869,13 @@ namespace DW2Randomizer
                 if (lnI == 0 || lnI == 16)
                     power = (byte)(r1.Next() % 10);
                 else if (lnI < 16)
-                    power = (byte)(r1.Next() % 100);
+                    power = (byte)(Math.Pow(r1.Next() % 500, .742)); // max 100
                 else if (lnI < 27)
-                    power = (byte)(r1.Next() % 70);
+                    power = (byte)(Math.Pow(r1.Next() % 500, .685)); // max 70
                 else if (lnI < 31)
-                    power = (byte)(r1.Next() % 40);
+                    power = (byte)(Math.Pow(r1.Next() % 500, .595)); // max 40
                 else
-                    power = (byte)(r1.Next() % 30);
+                    power = (byte)(Math.Pow(r1.Next() % 500, .55)); // max 30
                 //power = (byte)(r1.Next() % (lnI < 16 ? (7 * (lnI + 1)) : lnI < 27 ? (7 * (lnI - 15)) : lnI < 31 ? (7 * (lnI - 26)) : (7 * (lnI - 30))));
                 power += (byte)((lnI < 16 ? lnI : lnI < 27 ? lnI - 16 : lnI < 31 ? lnI - 27 : lnI - 31) + 1); // To avoid 0 power... and a non-selling item...
                 maxPower[(lnI < 16 ? 0 : lnI < 27 ? 1 : lnI < 31 ? 2 : 3)] = (power > maxPower[(lnI < 16 ? 0 : lnI < 27 ? 1 : lnI < 31 ? 2 : 3)] ? power : 
@@ -1050,7 +1070,7 @@ namespace DW2Randomizer
             List<byte> treasureList = new List<byte>();
             byte[] legalTreasures = { 0x01, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
                                       0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
-                                      0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2d, 0x2e, 0x2f,
+                                      0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x28, 0x29, 0x2A, 0x2B, 0x2e, 0x2f,
                                       0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x37, 0x38, 0x39, 0x3b, 0x3c, 0x3d, 0x40, 0x43, 0x44,
                                       0x45, 0x46, 0x47, 0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f };
             for (int lnI = 0; lnI < 64; lnI++)
