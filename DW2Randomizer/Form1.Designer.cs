@@ -43,12 +43,15 @@
             this.radInsaneIntensity = new System.Windows.Forms.RadioButton();
             this.btnRandomize = new System.Windows.Forms.Button();
             this.lblIntensityDesc = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
             this.btnCompare = new System.Windows.Forms.Button();
             this.txtSeed = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.chkDoubleXP = new System.Windows.Forms.CheckBox();
             this.optNoIntensity = new System.Windows.Forms.RadioButton();
+            this.btnCompareBrowse = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
+            this.txtCompare = new System.Windows.Forms.TextBox();
+            this.btnNewSeed = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // txtFileName
@@ -73,7 +76,7 @@
             this.btnBrowse.Location = new System.Drawing.Point(448, 21);
             this.btnBrowse.Name = "btnBrowse";
             this.btnBrowse.Size = new System.Drawing.Size(75, 23);
-            this.btnBrowse.TabIndex = 2;
+            this.btnBrowse.TabIndex = 1;
             this.btnBrowse.Text = "Browse";
             this.btnBrowse.UseVisualStyleBackColor = true;
             this.btnBrowse.Click += new System.EventHandler(this.btnBrowse_Click);
@@ -81,7 +84,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 58);
+            this.label2.Location = new System.Drawing.Point(12, 78);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(88, 13);
             this.label2.TabIndex = 3;
@@ -90,16 +93,16 @@
             // lblSHAChecksum
             // 
             this.lblSHAChecksum.AutoSize = true;
-            this.lblSHAChecksum.Location = new System.Drawing.Point(119, 58);
+            this.lblSHAChecksum.Location = new System.Drawing.Point(119, 78);
             this.lblSHAChecksum.Name = "lblSHAChecksum";
-            this.lblSHAChecksum.Size = new System.Drawing.Size(139, 13);
+            this.lblSHAChecksum.Size = new System.Drawing.Size(247, 13);
             this.lblSHAChecksum.TabIndex = 4;
-            this.lblSHAChecksum.Text = "??????????????????????";
+            this.lblSHAChecksum.Text = "????????????????????????????????????????";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 82);
+            this.label4.Location = new System.Drawing.Point(12, 102);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(50, 13);
             this.label4.TabIndex = 5;
@@ -108,7 +111,7 @@
             // lblReqChecksum
             // 
             this.lblReqChecksum.AutoSize = true;
-            this.lblReqChecksum.Location = new System.Drawing.Point(119, 82);
+            this.lblReqChecksum.Location = new System.Drawing.Point(119, 102);
             this.lblReqChecksum.Name = "lblReqChecksum";
             this.lblReqChecksum.Size = new System.Drawing.Size(238, 13);
             this.lblReqChecksum.TabIndex = 6;
@@ -119,10 +122,10 @@
             this.chkChangeStatsToRemix.AutoSize = true;
             this.chkChangeStatsToRemix.Checked = true;
             this.chkChangeStatsToRemix.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkChangeStatsToRemix.Location = new System.Drawing.Point(12, 107);
+            this.chkChangeStatsToRemix.Location = new System.Drawing.Point(12, 127);
             this.chkChangeStatsToRemix.Name = "chkChangeStatsToRemix";
             this.chkChangeStatsToRemix.Size = new System.Drawing.Size(310, 17);
-            this.chkChangeStatsToRemix.TabIndex = 7;
+            this.chkChangeStatsToRemix.TabIndex = 5;
             this.chkChangeStatsToRemix.Text = "Change all monster stats and weapon values to remix values";
             this.chkChangeStatsToRemix.UseVisualStyleBackColor = true;
             // 
@@ -131,20 +134,20 @@
             this.chkHalfExpGoldReq.AutoSize = true;
             this.chkHalfExpGoldReq.Checked = true;
             this.chkHalfExpGoldReq.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkHalfExpGoldReq.Location = new System.Drawing.Point(12, 130);
+            this.chkHalfExpGoldReq.Location = new System.Drawing.Point(12, 150);
             this.chkHalfExpGoldReq.Name = "chkHalfExpGoldReq";
             this.chkHalfExpGoldReq.Size = new System.Drawing.Size(357, 17);
-            this.chkHalfExpGoldReq.TabIndex = 8;
+            this.chkHalfExpGoldReq.TabIndex = 6;
             this.chkHalfExpGoldReq.Text = "Half experience requirements for levels and gold requirements for items";
             this.chkHalfExpGoldReq.UseVisualStyleBackColor = true;
             // 
             // radSlightIntensity
             // 
             this.radSlightIntensity.AutoSize = true;
-            this.radSlightIntensity.Location = new System.Drawing.Point(70, 220);
+            this.radSlightIntensity.Location = new System.Drawing.Point(70, 240);
             this.radSlightIntensity.Name = "radSlightIntensity";
             this.radSlightIntensity.Size = new System.Drawing.Size(51, 17);
-            this.radSlightIntensity.TabIndex = 9;
+            this.radSlightIntensity.TabIndex = 11;
             this.radSlightIntensity.Text = "Slight";
             this.radSlightIntensity.UseVisualStyleBackColor = true;
             this.radSlightIntensity.CheckedChanged += new System.EventHandler(this.radSlightIntensity_CheckedChanged);
@@ -152,10 +155,10 @@
             // radModerateIntensity
             // 
             this.radModerateIntensity.AutoSize = true;
-            this.radModerateIntensity.Location = new System.Drawing.Point(128, 220);
+            this.radModerateIntensity.Location = new System.Drawing.Point(128, 240);
             this.radModerateIntensity.Name = "radModerateIntensity";
             this.radModerateIntensity.Size = new System.Drawing.Size(70, 17);
-            this.radModerateIntensity.TabIndex = 11;
+            this.radModerateIntensity.TabIndex = 12;
             this.radModerateIntensity.Text = "Moderate";
             this.radModerateIntensity.UseVisualStyleBackColor = true;
             this.radModerateIntensity.CheckedChanged += new System.EventHandler(this.radModerateIntensity_CheckedChanged);
@@ -164,10 +167,10 @@
             // 
             this.radHeavyIntensity.AutoSize = true;
             this.radHeavyIntensity.Checked = true;
-            this.radHeavyIntensity.Location = new System.Drawing.Point(205, 220);
+            this.radHeavyIntensity.Location = new System.Drawing.Point(205, 240);
             this.radHeavyIntensity.Name = "radHeavyIntensity";
             this.radHeavyIntensity.Size = new System.Drawing.Size(56, 17);
-            this.radHeavyIntensity.TabIndex = 12;
+            this.radHeavyIntensity.TabIndex = 13;
             this.radHeavyIntensity.TabStop = true;
             this.radHeavyIntensity.Text = "Heavy";
             this.radHeavyIntensity.UseVisualStyleBackColor = true;
@@ -176,20 +179,20 @@
             // radInsaneIntensity
             // 
             this.radInsaneIntensity.AutoSize = true;
-            this.radInsaneIntensity.Location = new System.Drawing.Point(268, 220);
+            this.radInsaneIntensity.Location = new System.Drawing.Point(268, 240);
             this.radInsaneIntensity.Name = "radInsaneIntensity";
             this.radInsaneIntensity.Size = new System.Drawing.Size(68, 17);
-            this.radInsaneIntensity.TabIndex = 13;
+            this.radInsaneIntensity.TabIndex = 14;
             this.radInsaneIntensity.Text = "INSANE!";
             this.radInsaneIntensity.UseVisualStyleBackColor = true;
             this.radInsaneIntensity.CheckedChanged += new System.EventHandler(this.radInsaneIntensity_CheckedChanged);
             // 
             // btnRandomize
             // 
-            this.btnRandomize.Location = new System.Drawing.Point(448, 220);
+            this.btnRandomize.Location = new System.Drawing.Point(448, 240);
             this.btnRandomize.Name = "btnRandomize";
             this.btnRandomize.Size = new System.Drawing.Size(75, 23);
-            this.btnRandomize.TabIndex = 14;
+            this.btnRandomize.TabIndex = 15;
             this.btnRandomize.Text = "Randomize!";
             this.btnRandomize.UseVisualStyleBackColor = true;
             this.btnRandomize.Click += new System.EventHandler(this.btnRandomize_Click);
@@ -197,44 +200,34 @@
             // lblIntensityDesc
             // 
             this.lblIntensityDesc.AutoSize = true;
-            this.lblIntensityDesc.Location = new System.Drawing.Point(11, 251);
+            this.lblIntensityDesc.Location = new System.Drawing.Point(11, 271);
             this.lblIntensityDesc.MaximumSize = new System.Drawing.Size(500, 0);
             this.lblIntensityDesc.Name = "lblIntensityDesc";
-            this.lblIntensityDesc.Size = new System.Drawing.Size(0, 13);
+            this.lblIntensityDesc.Size = new System.Drawing.Size(84, 13);
             this.lblIntensityDesc.TabIndex = 15;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(323, 191);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(200, 23);
-            this.button1.TabIndex = 16;
-            this.button1.Text = "Limited Monster Zones";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Visible = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.lblIntensityDesc.Text = "Description here";
             // 
             // btnCompare
             // 
-            this.btnCompare.Location = new System.Drawing.Point(448, 161);
+            this.btnCompare.Location = new System.Drawing.Point(448, 76);
             this.btnCompare.Name = "btnCompare";
             this.btnCompare.Size = new System.Drawing.Size(75, 23);
-            this.btnCompare.TabIndex = 17;
+            this.btnCompare.TabIndex = 4;
             this.btnCompare.Text = "Compare";
             this.btnCompare.UseVisualStyleBackColor = true;
             this.btnCompare.Click += new System.EventHandler(this.btnCompare_Click);
             // 
             // txtSeed
             // 
-            this.txtSeed.Location = new System.Drawing.Point(71, 194);
+            this.txtSeed.Location = new System.Drawing.Point(69, 207);
             this.txtSeed.Name = "txtSeed";
             this.txtSeed.Size = new System.Drawing.Size(100, 20);
-            this.txtSeed.TabIndex = 19;
+            this.txtSeed.TabIndex = 8;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(14, 196);
+            this.label3.Location = new System.Drawing.Point(12, 209);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(32, 13);
             this.label3.TabIndex = 20;
@@ -245,34 +238,73 @@
             this.chkDoubleXP.AutoSize = true;
             this.chkDoubleXP.Checked = true;
             this.chkDoubleXP.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkDoubleXP.Location = new System.Drawing.Point(12, 153);
+            this.chkDoubleXP.Location = new System.Drawing.Point(12, 173);
             this.chkDoubleXP.Name = "chkDoubleXP";
             this.chkDoubleXP.Size = new System.Drawing.Size(358, 17);
-            this.chkDoubleXP.TabIndex = 21;
+            this.chkDoubleXP.TabIndex = 7;
             this.chkDoubleXP.Text = "XP +50% for all monsters EXCEPT metal slime/babble, less encounters";
             this.chkDoubleXP.UseVisualStyleBackColor = true;
             // 
             // optNoIntensity
             // 
             this.optNoIntensity.AutoSize = true;
-            this.optNoIntensity.Location = new System.Drawing.Point(12, 220);
+            this.optNoIntensity.Location = new System.Drawing.Point(12, 240);
             this.optNoIntensity.Name = "optNoIntensity";
             this.optNoIntensity.Size = new System.Drawing.Size(51, 17);
-            this.optNoIntensity.TabIndex = 22;
+            this.optNoIntensity.TabIndex = 10;
             this.optNoIntensity.Text = "None";
             this.optNoIntensity.UseVisualStyleBackColor = true;
+            // 
+            // btnCompareBrowse
+            // 
+            this.btnCompareBrowse.Location = new System.Drawing.Point(448, 47);
+            this.btnCompareBrowse.Name = "btnCompareBrowse";
+            this.btnCompareBrowse.Size = new System.Drawing.Size(75, 23);
+            this.btnCompareBrowse.TabIndex = 3;
+            this.btnCompareBrowse.Text = "Browse";
+            this.btnCompareBrowse.UseVisualStyleBackColor = true;
+            this.btnCompareBrowse.Click += new System.EventHandler(this.btnCompareBrowse_Click);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(12, 49);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(94, 13);
+            this.label5.TabIndex = 24;
+            this.label5.Text = "Comparison Image";
+            // 
+            // txtCompare
+            // 
+            this.txtCompare.Location = new System.Drawing.Point(122, 49);
+            this.txtCompare.Name = "txtCompare";
+            this.txtCompare.Size = new System.Drawing.Size(320, 20);
+            this.txtCompare.TabIndex = 2;
+            // 
+            // btnNewSeed
+            // 
+            this.btnNewSeed.Location = new System.Drawing.Point(186, 205);
+            this.btnNewSeed.Name = "btnNewSeed";
+            this.btnNewSeed.Size = new System.Drawing.Size(75, 23);
+            this.btnNewSeed.TabIndex = 9;
+            this.btnNewSeed.Text = "New Seed";
+            this.btnNewSeed.UseVisualStyleBackColor = true;
+            this.btnNewSeed.Click += new System.EventHandler(this.btnNewSeed_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(533, 349);
+            this.ClientSize = new System.Drawing.Size(533, 397);
+            this.Controls.Add(this.btnNewSeed);
+            this.Controls.Add(this.btnCompareBrowse);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.txtCompare);
             this.Controls.Add(this.optNoIntensity);
             this.Controls.Add(this.chkDoubleXP);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.txtSeed);
             this.Controls.Add(this.btnCompare);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.lblIntensityDesc);
             this.Controls.Add(this.btnRandomize);
             this.Controls.Add(this.radInsaneIntensity);
@@ -314,12 +346,15 @@
         private System.Windows.Forms.RadioButton radInsaneIntensity;
         private System.Windows.Forms.Button btnRandomize;
         private System.Windows.Forms.Label lblIntensityDesc;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button btnCompare;
         private System.Windows.Forms.TextBox txtSeed;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.CheckBox chkDoubleXP;
         private System.Windows.Forms.RadioButton optNoIntensity;
+        private System.Windows.Forms.Button btnNewSeed;
+        private System.Windows.Forms.TextBox txtCompare;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button btnCompareBrowse;
     }
 }
 

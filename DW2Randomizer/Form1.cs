@@ -34,12 +34,18 @@ namespace DW2Randomizer
 
         private void runChecksum()
         {
-            using (var md5 = SHA1.Create())
+            try
             {
-                using (var stream = File.OpenRead(txtFileName.Text))
+                using (var md5 = SHA1.Create())
                 {
-                    lblSHAChecksum.Text = BitConverter.ToString(md5.ComputeHash(stream)).ToLower().Replace("-", "");
+                    using (var stream = File.OpenRead(txtFileName.Text))
+                    {
+                        lblSHAChecksum.Text = BitConverter.ToString(md5.ComputeHash(stream)).ToLower().Replace("-", "");
+                    }
                 }
+            } catch
+            {
+                lblSHAChecksum.Text = "????????????????????????????????????????";
             }
         }
 
@@ -83,6 +89,7 @@ namespace DW2Randomizer
                 {
                     txtFileName.Text = reader.ReadLine();
                     runChecksum();
+                    txtCompare.Text = reader.ReadLine();
                 }
             }
             catch
@@ -93,9 +100,21 @@ namespace DW2Randomizer
             radSlightIntensity_CheckedChanged(null, null);
         }
 
+        private void btnNewSeed_Click(object sender, EventArgs e)
+        {
+            txtSeed.Text = (DateTime.Now.Ticks % 2147483647).ToString();
+        }
+
         private void btnRandomize_Click(object sender, EventArgs e)
         {
-            loadRom();
+            if (lblSHAChecksum.Text != lblReqChecksum.Text)
+            {
+                if (MessageBox.Show("The checksum of the ROM does not match the required checksum.  Patch anyway?", "Checksum mismatch", MessageBoxButtons.YesNo) == DialogResult.No)
+                    return;
+            }
+
+            if (!loadRom())
+                return;
             if (txtSeed.Text == "test1")
                 halfExpAndGoldReq(true);
             else if (txtSeed.Text == "textGet")
@@ -184,18 +203,32 @@ namespace DW2Randomizer
             }
         }
 
-        private void loadRom(bool extra = false)
+        private bool loadRom(bool extra = false)
         {
-            romData = File.ReadAllBytes(txtFileName.Text);
-            if (extra)
-                romData2 = File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(txtFileName.Text), "DW2Rando_" + txtSeed.Text + ".nes"));
+            try
+            {
+                romData = File.ReadAllBytes(txtFileName.Text);
+                if (extra)
+                    romData2 = File.ReadAllBytes(txtCompare.Text);
+            }
+            catch
+            {
+                MessageBox.Show("Empty file name(s) or unable to open files.  Please verify the files exist.");
+                return false;
+            }
+            return true;
         }
 
         private void saveRom()
         {
-            string finalFile = Path.Combine(Path.GetDirectoryName(txtFileName.Text), "DW2Rando_" + txtSeed.Text + ".nes");
+            string options = (chkChangeStatsToRemix.Checked ? "_r" : "_");
+            options += (chkHalfExpGoldReq.Checked ? "h" : "");
+            options += (chkDoubleXP.Checked ? "d" : "");
+            options += (optNoIntensity.Checked ? "_none" : radSlightIntensity.Checked ? "_slight" : radModerateIntensity.Checked ? "_moderate" : radHeavyIntensity.Checked ? "_heavy" : "_insane");
+            string finalFile = Path.Combine(Path.GetDirectoryName(txtFileName.Text), "DW2Random_" + txtSeed.Text + options + ".nes");
             File.WriteAllBytes(finalFile, romData);
             lblIntensityDesc.Text = "ROM hacking complete!  (" + finalFile + ")";
+            txtCompare.Text = finalFile;
         }
 
         private void changeStatsToRemix()
@@ -625,16 +658,40 @@ namespace DW2Randomizer
                 bool[] enemyPage2 = { false, false, false, false, false, false, false, false };
                 bool concentration = false;
 
-                // 40% chance of being a basic attack monster... and not a Magician, Enchanter, Sorcerer, Magic Baboon, Magidrakee
-                if (r1.Next() % 100 < 40 && lnI != 0x14 && lnI != 0x10 && lnI != 0x19 && lnI != 0x1c && lnI != 0x2e)
+                byte[] pattern1 = { 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3 };
+                byte[] pattern2 = { 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3 };
+                byte[] pattern3 = { 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 4 };
+                byte[] pattern4 = { 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4, 4, 4 };
+                byte[] pattern5 = { 0, 0, 1, 1, 2, 2, 2, 2, 2, 3, 3, 4, 4, 4, 4, 4 };
+                byte[] pattern6 = { 1, 1, 2, 2, 2, 2, 2, 2, 3, 4, 4, 4, 4, 4, 4, 4 };
+                byte[] pattern7 = { 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 };
+
+                int enemyPattern = 0;
+
+                if (lnI < 12)
+                    enemyPattern = pattern1[r1.Next() % 16];
+                else if (lnI < 24)
+                    enemyPattern = pattern2[r1.Next() % 16];
+                else if (lnI < 36)
+                    enemyPattern = pattern3[r1.Next() % 16];
+                else if (lnI < 47)
+                    enemyPattern = pattern4[r1.Next() % 16];
+                else if (lnI < 58)
+                    enemyPattern = pattern5[r1.Next() % 16];
+                else if (lnI < 69)
+                    enemyPattern = pattern6[r1.Next() % 16];
+                else
+                    enemyPattern = pattern7[r1.Next() % 16];
+
+                switch (enemyPattern)
                 {
-                    // ... but do place a 50% chance for "funny" attacks...
-                    if (r1.Next() % 2 == 1)
-                    {
+                    case 0: // leave everything alone; it's a basic attack monster.
+                        break;
+                    case 1: // Give the monster a little goofyness to their attack...
                         for (int lnJ = 0; lnJ < 8; lnJ++)
                         {
-                            // 37.5% chance of setting a different attack.
-                            byte random = (byte)(r1.Next() % 12);
+                            // 50% chance of setting a different attack.
+                            byte random = (byte)(r1.Next() % 10);
                             switch (random)
                             {
                                 case 1:
@@ -663,23 +720,64 @@ namespace DW2Randomizer
                                     break;
                             }
                         }
-                    }
-                } else
-                {
-                    for (int lnJ = 0; lnJ < 8; lnJ++)
-                    {
-                        // 50% chance of setting a different attack.
-                        byte random = (byte)(r1.Next() % 64);
-                        if (random >= 1 && random <= 31) // 0 would be fine, but it's already set.
+                        break;
+                    case 2:
+                        for (int lnJ = 0; lnJ < 8; lnJ++)
                         {
-                            if (random == 30 && concentration)
-                                continue; // do NOT set the concentration bit again.  Maintain regular attack.
-                            if (random >= 16)
-                                enemyPage2[lnJ] = true;
-                            enemyPatterns[lnJ] = (byte)(random % 16);
+                            // 75% chance of setting a different attack.
+                            byte random = (byte)(r1.Next() % 48);
+                            if (random >= 1 && random <= 31) // 0 would be fine, but it's already set.
+                            {
+                                if (random == 30 && concentration)
+                                    continue; // do NOT set the concentration bit again.  Maintain regular attack.
+                                else if (random >= 16)
+                                    enemyPage2[lnJ] = true;
+                                else if (random == 30)
+                                    concentration = true;
+                                enemyPatterns[lnJ] = (byte)(random % 16);
+                            }
                         }
-                    }
+                        break;
+                    case 3:
+                        for (int lnJ = 0; lnJ < 8; lnJ++)
+                        {
+                            // Normal, heroic, poison, faint, heal, healmore (both self and others), sleep, stopspell, sacrifice, weak flames, 
+                            // poison and sweet breaths, call for help, double attacks, and strange jigs.
+                            byte[] attackPattern = { 0, 0, 0, 0, 0, 1, 2, 3, 9, 10, 12, 13, 18, 19, 22, 23, 26, 27, 28, 29, 31 };
+                            byte random = (attackPattern[r1.Next() % attackPattern.Length]);
+                            if (random >= 1 && random <= 31) // 0 would be fine, but it's already set.
+                            {
+                                if (random == 30 && concentration)
+                                    continue; // do NOT set the concentration bit again.  Maintain regular attack.
+                                else if (random >= 16)
+                                    enemyPage2[lnJ] = true;
+                                else if (random == 30)
+                                    concentration = true;
+                                enemyPatterns[lnJ] = (byte)(random % 16);
+                            }
+                        }
+                        break;
+                    case 4:
+                        for (int lnJ = 0; lnJ < 8; lnJ++)
+                        {
+                            // Double attacks, heroic attacks, firebane, explodet, heal all (both self and party), revive, defeat, 
+                            // sacrifice, strong and deadly flames, and sweet breath.
+                            byte[] attackPattern = { 29, 29, 29, 29, 1, 1, 7, 8, 11, 14, 15, 21, 22, 24, 25, 27 };
+                            byte random = (attackPattern[r1.Next() % attackPattern.Length]);
+                            if (random >= 1 && random <= 31) // 0 would be fine, but it's already set.
+                            {
+                                if (random == 30 && concentration)
+                                    continue; // do NOT set the concentration bit again.  Maintain regular attack.
+                                else if (random >= 16)
+                                    enemyPage2[lnJ] = true;
+                                else if (random == 30)
+                                    concentration = true;
+                                enemyPatterns[lnJ] = (byte)(random % 16);
+                            }
+                        }
+                        break;
                 }
+
                 if (lnI == 0x2f || lnI == 0x41) // Metal slime, Metal Babble
                 {
                     enemyPatterns[0] = 5; // run away
@@ -700,8 +798,30 @@ namespace DW2Randomizer
                     enemyStats[4] = 255;
                     enemyStats[5] = 1;
                 }
-                if (lnI == 0x05) // Healer
+                if (lnI == 0x05) { // Healer
                     enemyPatterns[0] = (byte)((r1.Next() % 3) + 12); // heal, healmore, healall
+                    enemyPatterns[1] = (byte)((r1.Next() % 3) + 12); // heal, healmore, healall
+                }
+                if (lnI == 0x1F) { // Poison Lily
+                    enemyPatterns[0] = 2;
+                    enemyPage2[0] = false;
+                    enemyPatterns[1] = 10;
+                    enemyPage2[1] = true;
+                }
+                if (lnI == 0x0a || lnI == 0x0e || lnI == 0x1a || lnI == 0x1c || lnI == 0x2f || lnI == 0x40) // Magician, Magidrakee, Magic Baboon, Sorcerer, Magic Vampirus
+                {
+                    enemyPatterns[0] = (byte)((r1.Next() % 15) + 6); // any magic spell
+                    enemyPage2[0] = (enemyPatterns[0] >= 16);
+                    enemyPatterns[1] = (byte)((r1.Next() % 15) + 6); // any magic spell
+                    enemyPage2[1] = (enemyPatterns[1] >= 16);
+                }
+                if (lnI == 0x23 || lnI == 0x46 || lnI == 0x48) // Dragon Fly, Green Dragon, Flame
+                {
+                    enemyPatterns[0] = (byte)((r1.Next() % 3) + 7); // breathe flames
+                    enemyPage2[0] = true;
+                    enemyPatterns[1] = (byte)((r1.Next() % 3) + 7); // breathe flames
+                    enemyPage2[1] = true;
+                }
 
                 enemyStats[10] = (byte)(enemyPatterns[0] + (enemyPatterns[1] * 16));
                 enemyStats[11] = (byte)(enemyPatterns[2] + (enemyPatterns[3] * 16));
@@ -1741,9 +1861,10 @@ namespace DW2Randomizer
             romData[firstAddress] = holdAddress;
         }
 
+        // Reserve for another time...
         private void button1_Click(object sender, EventArgs e)
         {
-            loadRom();
+            if (!loadRom()) return;
             halfExpAndGoldReq(true);
             for (int lnI = 0; lnI < 68; lnI++)
             {
@@ -1761,7 +1882,7 @@ namespace DW2Randomizer
 
         private void btnCompare_Click(object sender, EventArgs e)
         {
-            loadRom(true);
+            if (!loadRom(true)) return;
             using (StreamWriter writer = File.CreateText(Path.Combine(Path.GetDirectoryName(txtFileName.Text), "DW2Compare.txt")))
             {
                 for (int lnI = 0; lnI < 82; lnI++)
@@ -1849,12 +1970,30 @@ namespace DW2Randomizer
         {
             if (txtFileName.Text != "")
                 using (StreamWriter writer = File.CreateText("lastFile.txt"))
+                {
                     writer.WriteLine(txtFileName.Text);
+                    writer.WriteLine(txtCompare.Text);
+                }
         }
 
         private void txtFileName_Leave(object sender, EventArgs e)
         {
             runChecksum();
+        }
+
+        private void btnCompareBrowse_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+
+            openFileDialog1.InitialDirectory = "c:\\";
+            openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            openFileDialog1.FilterIndex = 2;
+            openFileDialog1.RestoreDirectory = true;
+
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                txtCompare.Text = openFileDialog1.FileName;
+            }
         }
     }
 }
