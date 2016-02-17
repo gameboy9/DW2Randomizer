@@ -7,6 +7,7 @@
 - An opportunity to adjust the seed from 1 to 2^32 (2 billion plus) for racing possibilities.
 - Super speedy battles!
 - Prologue automatically skipped.  The game now starts, albeit a bit awkwardly, with the soldier limping into Midenhall's Throne Room.
+- All party members are revived with full HP and, with all three characters, MP on a party wipe(AKA ColdAsACod), regardless of save location. (this normally takes effect at the Rhone Shrine)
 
 ** If this is done, Army Ant's XP/GP will increase to 6XP/7GP so they are more in line with other enemies in its' class.  Also, Metal Babbles and Metal Slime's attributes will change so they have a very high chance of running, in line with other Dragon Warrior games.
 
@@ -39,7 +40,6 @@
 - Magic strengths is randomized, but what the spells do has NOT been randomized.
 
 ## To Do/Wishlist
-- Figure out a way to revive all party members with full HP and MP on a party wipe(AKA ColdAsACod), regardless of save location. (this only takes effect at the Rhone Shrine)
 - Figure out a way to adjust the interface so magic can be randomized effectively without UI confusion. (this will be a 2.0 feature)
 
 ## Special Thanks
