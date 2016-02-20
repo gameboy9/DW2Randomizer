@@ -25,6 +25,8 @@
 - Monsters resistances are randomized as well, but higher level monsters have a higher chance of higher resistances.
 - Monster zones are completely random, but they will be easier until the Moonbrooke shrine, and will get progressively harder starting at the Sea Cave.
 - Boss fights are completely randomized as well, but the ship fight is easier.
+- The higher level monster, the higher chances of it doing really nasty stuff (explodet, defeat, etc.)
+- Some monsters have chances of doing what you would think it would do.  (e.g. Magidrakee, magicians, etc. casting a spell, flames, dragon flies, green dragons breathing flames, healers healing, and metal monsters running away)
 - Weapon and item stores are completely randomized.  You theoretically could buy items such as Water Flying Clothes, Thunder Swords, Leaves of The World Tree, Golden Keys, Cloaks Of Wind, and so forth.  Crests and the Mirror Of Ra, as examples, still have to be found.
 - Weapon and armor power are completely randomized from 1 to 100 for weapons, 70 for armor, 40 for shields, and 30 for helmets.
 - Weapon and armor prices are adjusted according to the power randomized.  (power ^ 2.3, 2.4, 2.8, 3.0 for weapons, armor, shields, and helmets respectively)
