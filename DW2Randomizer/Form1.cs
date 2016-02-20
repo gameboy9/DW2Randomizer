@@ -884,7 +884,7 @@ namespace DW2Randomizer
                         else
                             romData[byteToUse + lnJ] = 127;
                     }
-                    else if (lnI == 45 || lnI == 46 || lnI == 47 || lnI == 48 || lnI == 49) // Rhone cave.  Introduce Atlas chance.
+                    else if (lnI == 45 || lnI == 46 || lnI == 47 || lnI == 48 || lnI == 49 || lnI == 56) // Rhone cave.  Introduce Atlas chance.
                     {
                         if (r1.Next() % 5 < 4)
                         {
@@ -1215,7 +1215,7 @@ namespace DW2Randomizer
                 }
             }
             // Totally randomize stores (cannot have Jailor's Key in a weapons store) (19f9a-1a00b)
-            for (int lnI = 0; lnI < 18; lnI++)
+            for (int lnI = 0; lnI < 19; lnI++)
             {
                 int byteToUse = 0x19f9a + (lnI * 6);
                 // Always have one item in store.  Let chances of having another item = 91%/83%/75%/67%/58%
@@ -1227,7 +1227,8 @@ namespace DW2Randomizer
                     {
                         // Add item
                         byte treasure = (byte)((r1.Next() % 61) + 1); // 0x00, 0x3E, and 0x3F we can't get...
-                        if (!(treasure == 0x3A || treasure == 0x27 || treasure == 0x36 || treasure == 0x28 || treasure == 0x2B) && !(lnI < 8 && treasure == 0x39))
+                        if (!(treasure == 0x3A || treasure == 0x27 || treasure == 0x36 || treasure == 0x28 || treasure == 0x2B || 
+                            treasure == 0x2C || treasure == 0x2D || treasure == 0x24) && !(lnI < 8 && treasure == 0x39))
                         {
                             romData[byteToUse + lnJ] = treasure;
                         } else
@@ -1239,7 +1240,7 @@ namespace DW2Randomizer
                     }
                 }
 
-                // Go through to find duplicates.Any duplicates found-> 00.  108 items total.
+                // Go through to find duplicates.Any duplicates found-> 00.  114 items total.
                 List<int> items = new List<int>();
                 for (int lnJ = 0; lnJ < 6; lnJ++)
                 {
@@ -1911,7 +1912,7 @@ namespace DW2Randomizer
 
                 for (int lnI = 0; lnI < 8; lnI++)
                     compareComposeString("weaponContents" + lnI.ToString("X2"), writer, 0x19f9a + (6 * lnI), 6);
-                for (int lnI = 0; lnI < 10; lnI++)
+                for (int lnI = 0; lnI < 11; lnI++)
                     compareComposeString("itemContents" + lnI.ToString("X2"), writer, 0x19f9a + 48 + (6 * lnI), 6);
                 for (int lnI = 0; lnI < 68; lnI++)
                     compareComposeString("monsterZones" + lnI.ToString("X2"), writer, (0x10519 + (6 * lnI)), 6);
