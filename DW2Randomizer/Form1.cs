@@ -1069,8 +1069,8 @@ namespace DW2Randomizer
                 int target = (lnI == 0 ? ((r1.Next() % 3) + 2) : (r1.Next() % 2));
                 romData[byteToUse + 0] = (byte)(target);
 
-                int def = r1.Next() % 6;
-                romData[byteToUse + 1] = (byte)(def == 1 ? 0 : def == 2 ? 1 : def == 3 ? 2 : def == 4 ? 16 : def == 5 ? 32 : 64);
+                int def = r1.Next() % 65;
+                romData[byteToUse + 1] = (byte)(def); // (def == 1 ? 0 : def == 2 ? 1 : def == 3 ? 2 : def == 4 ? 16 : def == 5 ? 32 : 64);
 
                 int cmdTarget = (target == 1 || target == 4 ? 0 : target == 2 || target == 3 ? 1 : 2);
                 romData[defCmd[lnI]] = (byte)cmdTarget;
@@ -1214,25 +1214,27 @@ namespace DW2Randomizer
                     }
                 }
             }
+
             // Totally randomize stores (cannot have Jailor's Key in a weapons store) (19f9a-1a00b)
             for (int lnI = 0; lnI < 19; lnI++)
             {
+                byte[] legalWeapons = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35 };
+                byte[] legalItems = { 37, 38, 41, 42, 43, 46, 47, 48, 49, 50, 51, 52, 53, 55, 56, 57, 59, 60, 61 };
                 int byteToUse = 0x19f9a + (lnI * 6);
-                // Always have one item in store.  Let chances of having another item = 91%/83%/75%/67%/58%
-                byte chance = 11;
+                // Always have one item in store.  Let chances of having another item = 94%/88%/81%/75%/69%/63% for weapons and 90%/80%/70%/60%/50% for items
+                byte chance = (byte)(lnI < 8 ? 15 : 9); 
                 bool fail = false;
                 for (int lnJ = 0; lnJ < 6; lnJ++)
                 {
-                    if (!fail && r1.Next() % 12 <= chance - lnJ)
+                    if (!fail && r1.Next() % (chance + 1) <= chance - lnJ)
                     {
                         // Add item
-                        byte treasure = (byte)((r1.Next() % 61) + 1); // 0x00, 0x3E, and 0x3F we can't get...
-                        if (!(treasure == 0x3A || treasure == 0x27 || treasure == 0x36 || treasure == 0x28 || treasure == 0x2B || 
-                            treasure == 0x2C || treasure == 0x2D || treasure == 0x24) && !(lnI < 8 && treasure == 0x39))
-                        {
-                            romData[byteToUse + lnJ] = treasure;
-                        } else
-                            fail = true;
+                        byte treasure;
+                        if (lnI < 8)
+                            treasure = legalWeapons[r1.Next() % legalWeapons.Length];
+                        else
+                            treasure = legalItems[r1.Next() % legalItems.Length];
+                        romData[byteToUse + lnJ] = treasure;
                     } else
                     {
                         romData[byteToUse + lnJ] = 0;
@@ -1240,7 +1242,7 @@ namespace DW2Randomizer
                     }
                 }
 
-                // Go through to find duplicates.Any duplicates found-> 00.  114 items total.
+                // Go through to find duplicates.  Any duplicates found-> 00.  114 items total.
                 List<int> items = new List<int>();
                 for (int lnJ = 0; lnJ < 6; lnJ++)
                 {
