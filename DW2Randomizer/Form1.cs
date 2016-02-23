@@ -440,7 +440,7 @@ namespace DW2Randomizer
             int[] shieldcost = new int[] { 90, 21500, 2000, 8800, 15000 };
             int[] helmetcost = new int[] { 20000, 3150, 15000 };
             // Adjusting item costs for the super randomizer, where they could be made available for purchasing in a store!
-            int[] itemcost = new int[] { 10, 300, 300, 0, 0, 5000, 600, 0, 8000, 8000, 1000, 1500, 640, 10000, 50000, 70, 40, 80, 2, 3000, 1500, 2000, 0, 8, 15, 10000, 2, 2 };
+            int[] itemcost = new int[] { 10, 300, 300, 0, 0, 5000, 600, 0, 8000, 8000, 1000, 1500, 640, 10000, 20000, 70, 40, 80, 2, 3000, 1500, 2000, 0, 8, 15, 10000, 2, 2 };
 
             int[] midenhallExpReq = new int[] { 12, 20, 40, 68, 140, 280, 440, 800, 1000,
                   1100, 1400, 2300, 2400, 3000, 4000, 4000, 5000, 6000, 8000,
@@ -1296,13 +1296,27 @@ namespace DW2Randomizer
                 while (!legal)
                 {
                     byte tRand = (byte)(r1.Next() % keyTreasure[lnI]);
-                    if (tRand != 0 && tRand != 1 && romData[allTreasure[tRand]] != keyTreasure[0] && romData[allTreasure[tRand]] != keyTreasure[1] && romData[allTreasure[tRand]] != keyTreasure[2] &&
-                        romData[allTreasure[tRand]] != keyTreasure[3] && romData[allTreasure[tRand]] != keyTreasure[4] && romData[allTreasure[tRand]] != keyTreasure[5] &&
-                        romData[allTreasure[tRand]] != keyTreasure[6] && romData[allTreasure[tRand]] != keyTreasure[7] && romData[allTreasure[tRand]] != keyTreasure[8])
+                    if (tRand != 0 && tRand != 1)
                     {
-                        romData[allTreasure[tRand]] = keyItems[lnI];
-                        legal = true;
+                        bool dupCheck = false;
+                        for (int lnJ = 0; lnJ < keyItems.Length; lnJ++)
+                        {
+                            if (romData[allTreasure[tRand]] == keyItems[lnJ])
+                                dupCheck = true;
+                        }
+                        if (dupCheck == false)
+                        {
+                            romData[allTreasure[tRand]] = keyItems[lnI];
+                            legal = true;
+                        }
                     }
+                    //if (tRand != 0 && tRand != 1 && romData[allTreasure[tRand]] != keyItems[0] && romData[allTreasure[tRand]] != keyItems[1] && romData[allTreasure[tRand]] != keyItems[2] &&
+                    //    romData[allTreasure[tRand]] != keyItems[3] && romData[allTreasure[tRand]] != keyItems[4] && romData[allTreasure[tRand]] != keyItems[5] &&
+                    //    romData[allTreasure[tRand]] != keyItems[6] && romData[allTreasure[tRand]] != keyItems[7] && romData[allTreasure[tRand]] != keyItems[8])
+                    //{
+                    //    romData[allTreasure[tRand]] = keyItems[lnI];
+                    //    legal = true;
+                    //}
                 }
 
             }
