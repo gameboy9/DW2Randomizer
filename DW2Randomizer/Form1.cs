@@ -1162,12 +1162,12 @@ namespace DW2Randomizer
                                      0x19e81, 0x19e85, 0x19e89, 0x19e8d, 0x19e91,
                                      0x19f0d, 0x19f11, 0x19f15, 0x19f1a }; // Cloak of wind/Mirror Of Ra and previous; 14
             int[] treasureAddrZ2 = { 0x19f32, 0x19eb5, 0x19ef9, 0x19f01, 0x19f05,
-                                     0x19f09, 0x19f1e, 0x19f22, 0x19f2a, 0x19b5c }; // Pre-Golden key; 10
+                                     0x19f09, 0x19f1e, 0x19f22, 0x19f2a }; // Pre-Golden key; 9
             int[] treasureAddrZ3 = { 0x19e45, 0x19e49, 0x19e4d, 0x19e51, 0x19e55,
                                      0x19e59, 0x19e5d, 0x19e61, 0x19e65, 0x19e69,
                                      0x19e6d, 0x19e71, 0x19e75, 0x19ef9, 0x19f01,
                                      0x19f05, 0x19f09 }; // Golden key to moon tower; Jailor's required by here; 17
-            int[] treasureAddrZ4 = { 0x19ee5, 0x19ee9, 0x19eed, 0x19ef1, 0x19ef5 }; // Moon Tower; 5
+            int[] treasureAddrZ4 = { 0x19f26, 0x19ee5, 0x19ee9, 0x19eed, 0x19ef1, 0x19ef5 }; // Hamlin and Moon Tower; 6
             int[] treasureAddrZ5 = { 0x19e95, 0x19e99, 0x19e9d, 0x19ea1, 0x19ea5,
                                      0x19ea9, 0x19ead, 0x19eb1 }; // Sea Cave; 8
             int[] treasureAddrZ6 = { 0x19eb9, 0x19ebd, 0x19ec1, 0x19ec5, 0x19ec9,
@@ -1193,7 +1193,7 @@ namespace DW2Randomizer
                                       0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x28, 0x29, 0x2A, 0x2B, 0x2e, 0x2f,
                                       0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x37, 0x38, 0x39, 0x3b, 0x3c, 0x3d, 0x40, 0x43, 0x44,
                                       0x45, 0x46, 0x47, 0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f };
-            for (int lnI = 0; lnI < 64; lnI++)
+            for (int lnI = 0; lnI < allTreasure.Length; lnI++)
             {
                 if (lnI == 1)
                 {
@@ -1219,7 +1219,7 @@ namespace DW2Randomizer
             for (int lnI = 0; lnI < 19; lnI++)
             {
                 byte[] legalWeapons = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35 };
-                byte[] legalItems = { 37, 38, 41, 42, 43, 46, 47, 48, 49, 50, 51, 52, 53, 55, 56, 57, 59, 60, 61 };
+                byte[] legalItems = { 37, 38, 41, 42, 46, 47, 48, 49, 50, 51, 52, 53, 55, 56, 57, 59, 60, 61 };
                 int byteToUse = 0x19f9a + (lnI * 6);
                 // Always have one item in store.  Let chances of having another item = 94%/88%/81%/75%/69%/63% for weapons and 90%/80%/70%/60%/50% for items
                 byte chance = (byte)(lnI < 8 ? 15 : 9); 
@@ -1270,7 +1270,7 @@ namespace DW2Randomizer
 
             // Verify that key items are available in either a store or a treasure chest in the right zone.
             byte[] keyItems = { 0x2b, 0x2e, 0x37, 0x39, 0x26, 0x28, 0x40, 0x43, 0x44 };
-            byte[] keyTreasure = { 16, 16, 26, 43, 48, 56, 64, 64, 64 };
+            byte[] keyTreasure = { 16, 16, 25, 42, 48, 56, 64, 64, 64 };
             byte[] keyWStore = { 12, 12, 36, 48, 48, 48, 48, 48, 48 };
             byte[] keyIStore = { 24, 24, 54, 66, 66, 66, 66, 66, 66 };
             for (int lnI = 0; lnI < keyItems.Length; lnI++)
