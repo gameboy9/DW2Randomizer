@@ -1186,6 +1186,8 @@ namespace DW2Randomizer
 
             // randomize starting gold
             romData[0x19c84] = (byte)(r1.Next() % 256);
+            // Replace Dew's Yarn location with gold so people don't go there hoping they can also get the Magic Loom.
+            romData[0x19b5c] = 0x49;
 
             List<byte> treasureList = new List<byte>();
             byte[] legalTreasures = { 0x01, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
@@ -1310,15 +1312,7 @@ namespace DW2Randomizer
                             legal = true;
                         }
                     }
-                    //if (tRand != 0 && tRand != 1 && romData[allTreasure[tRand]] != keyItems[0] && romData[allTreasure[tRand]] != keyItems[1] && romData[allTreasure[tRand]] != keyItems[2] &&
-                    //    romData[allTreasure[tRand]] != keyItems[3] && romData[allTreasure[tRand]] != keyItems[4] && romData[allTreasure[tRand]] != keyItems[5] &&
-                    //    romData[allTreasure[tRand]] != keyItems[6] && romData[allTreasure[tRand]] != keyItems[7] && romData[allTreasure[tRand]] != keyItems[8])
-                    //{
-                    //    romData[allTreasure[tRand]] = keyItems[lnI];
-                    //    legal = true;
-                    //}
                 }
-
             }
 
             // Randomize starting stats.  Do not exceed 16 strength and agility, and 40 HP/MP. (13dd1-13ddc)
