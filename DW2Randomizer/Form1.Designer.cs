@@ -524,7 +524,7 @@
             // lblIntensityDesc
             // 
             this.lblIntensityDesc.AutoSize = true;
-            this.lblIntensityDesc.Location = new System.Drawing.Point(15, 354);
+            this.lblIntensityDesc.Location = new System.Drawing.Point(15, 404);
             this.lblIntensityDesc.Name = "lblIntensityDesc";
             this.lblIntensityDesc.Size = new System.Drawing.Size(0, 13);
             this.lblIntensityDesc.TabIndex = 28;
@@ -578,7 +578,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(546, 408);
+            this.ClientSize = new System.Drawing.Size(546, 435);
             this.Controls.Add(this.txtFlags);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.lblIntensityDesc);

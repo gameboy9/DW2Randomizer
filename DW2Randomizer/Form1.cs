@@ -704,6 +704,8 @@ namespace DW2Randomizer
         private byte adjustEnemyStat(Random r1, int origStat, int adjLevel)
         {
             int maxAdjustment = origStat / (randomLevel == 4 ? 1 : randomLevel == 3 ? 2 : randomLevel == 2 ? 4 : 8) / adjLevel;
+            if (maxAdjustment <= 1)
+                return (byte)origStat;
             int finalStat = origStat;
 
             int direction = r1.Next() % 3;
@@ -1539,11 +1541,11 @@ namespace DW2Randomizer
 
         private void saveRom()
         {
-            string options = (chkChangeStatsToRemix.Checked ? "_r" : "_");
+            //string options = (chkChangeStatsToRemix.Checked ? "_r" : "_");
             //options += (chkHalfExpGoldReq.Checked ? "h" : "");
             //options += (chkDoubleXP.Checked ? "d" : "");
-            options += (radSlightIntensity.Checked ? "_l1" : radModerateIntensity.Checked ? "_l2" : radHeavyIntensity.Checked ? "_l3" : "_l4");
-            string finalFile = Path.Combine(Path.GetDirectoryName(txtFileName.Text), "DW2Random_" + txtSeed.Text + options + ".nes");
+            //options += (radSlightIntensity.Checked ? "_l1" : radModerateIntensity.Checked ? "_l2" : radHeavyIntensity.Checked ? "_l3" : "_l4");
+            string finalFile = Path.Combine(Path.GetDirectoryName(txtFileName.Text), "DW2Random_" + txtSeed.Text + "_" + txtFlags.Text + ".nes");
             File.WriteAllBytes(finalFile, romData);
             lblIntensityDesc.Text = "ROM hacking complete!  (" + finalFile + ")";
             txtCompare.Text = finalFile;
@@ -2196,14 +2198,14 @@ namespace DW2Randomizer
             chkHeroStores.Checked = (txtFlags.Text.Contains("C"));
             chkTreasures.Checked = (txtFlags.Text.Contains("T"));
 
-            if (txtFlags.Text.Contains("1")) radSlightIntensity.Checked = true;
-            if (txtFlags.Text.Contains("2")) radModerateIntensity.Checked = true;
-            if (txtFlags.Text.Contains("3")) radHeavyIntensity.Checked = true;
-            if (txtFlags.Text.Contains("4")) radInsaneIntensity.Checked = true;
-            cboGPReq.SelectedItem = (txtFlags.Text.Contains("5") ? "75%" : txtFlags.Text.Contains("6") ? "50%" : txtFlags.Text.Contains("7") ? "33%" : "100%");
-            cboXPReq.SelectedItem = (txtFlags.Text.Contains("8") ? "75%" : txtFlags.Text.Contains("9") ? "50%" : txtFlags.Text.Contains("0") ? "33%" : "100%");
-            cboEncounterRate.SelectedItem = (txtFlags.Text.Contains("q") ? "300%" : txtFlags.Text.Contains("w") ? "200%" : txtFlags.Text.Contains("e") ? "150%" : 
-                txtFlags.Text.Contains("r") ? "75%" : txtFlags.Text.Contains("t") ? "50%" : txtFlags.Text.Contains("y") ? "33%" : txtFlags.Text.Contains("u") ? "25%" : "100%");
+            if (txtFlags.Text.Contains("_r1")) radSlightIntensity.Checked = true;
+            if (txtFlags.Text.Contains("_r2")) radModerateIntensity.Checked = true;
+            if (txtFlags.Text.Contains("_r3")) radHeavyIntensity.Checked = true;
+            if (txtFlags.Text.Contains("_r4")) radInsaneIntensity.Checked = true;
+            cboGPReq.SelectedItem = (txtFlags.Text.Contains("_g1") ? "75%" : txtFlags.Text.Contains("_g2") ? "50%" : txtFlags.Text.Contains("_g3") ? "33%" : "100%");
+            cboXPReq.SelectedItem = (txtFlags.Text.Contains("_x1") ? "75%" : txtFlags.Text.Contains("_x2") ? "50%" : txtFlags.Text.Contains("_x3") ? "33%" : "100%");
+            cboEncounterRate.SelectedItem = (txtFlags.Text.Contains("_e1") ? "300%" : txtFlags.Text.Contains("_e2") ? "200%" : txtFlags.Text.Contains("_e3") ? "150%" : 
+                txtFlags.Text.Contains("_e4") ? "75%" : txtFlags.Text.Contains("_e5") ? "50%" : txtFlags.Text.Contains("_e6") ? "33%" : txtFlags.Text.Contains("_e7") ? "25%" : "100%");
         }
 
         private void determineFlag()
@@ -2241,12 +2243,12 @@ namespace DW2Randomizer
             if (chkTreasures.Checked)
                 flags += "T";
 
-            flags += (radSlightIntensity.Checked ? "1" : radModerateIntensity.Checked ? "2" : radHeavyIntensity.Checked ? "3" : "4");
-            flags += ((string)cboGPReq.SelectedItem == "75%" ? "5" : (string)cboGPReq.SelectedItem == "50%" ? "6" : (string)cboGPReq.SelectedItem == "33%" ? "7" : "");
-            flags += ((string)cboXPReq.SelectedItem == "75%" ? "8" : (string)cboXPReq.SelectedItem == "50%" ? "9" : (string)cboXPReq.SelectedItem == "33%" ? "0" : "");
-            flags += ((string)cboEncounterRate.SelectedItem == "300%" ? "q" : (string)cboEncounterRate.SelectedItem == "200%" ? "w" : (string)cboEncounterRate.SelectedItem == "150%" ? "e" : 
-                (string)cboEncounterRate.SelectedItem == "75%" ? "r" : (string)cboEncounterRate.SelectedItem == "50%" ? "t" : (string)cboEncounterRate.SelectedItem == "33%" ? "y" : 
-                (string)cboEncounterRate.SelectedItem == "25%" ? "u" : "");
+            flags += (radSlightIntensity.Checked ? "_r1" : radModerateIntensity.Checked ? "_r2" : radHeavyIntensity.Checked ? "_r3" : "_r4");
+            flags += ((string)cboGPReq.SelectedItem == "75%" ? "_g1" : (string)cboGPReq.SelectedItem == "50%" ? "_g2" : (string)cboGPReq.SelectedItem == "33%" ? "_g3" : "");
+            flags += ((string)cboXPReq.SelectedItem == "75%" ? "_x1" : (string)cboXPReq.SelectedItem == "50%" ? "_x2" : (string)cboXPReq.SelectedItem == "33%" ? "_x3" : "");
+            flags += ((string)cboEncounterRate.SelectedItem == "300%" ? "_e1" : (string)cboEncounterRate.SelectedItem == "200%" ? "_e2" : (string)cboEncounterRate.SelectedItem == "150%" ? "_e3" : 
+                (string)cboEncounterRate.SelectedItem == "75%" ? "_e4" : (string)cboEncounterRate.SelectedItem == "50%" ? "_e5" : (string)cboEncounterRate.SelectedItem == "33%" ? "_e6" : 
+                (string)cboEncounterRate.SelectedItem == "25%" ? "_e7" : "");
             txtFlags.Text = flags;
         }
 
