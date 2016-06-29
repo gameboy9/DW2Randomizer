@@ -208,14 +208,15 @@ namespace DW2Randomizer
             {
                 if (chkChangeStatsToRemix.Checked) changeStatsToRemix(); // Don't bother if insane random is checked, since all of the stats will change anyway!
                 //if (chkHalfExpGoldReq.Checked)
-                halfExpAndGoldReq();
                 //if (chkDoubleXP.Checked)
                 //doubleExp();
+                halfExpAndGoldReq();
                 superRandomize();
             }
 
             speedUpBattles();
             skipPrologue();
+            reviveAllCharsOnCOD();
             saveRom();
         }
 
@@ -464,6 +465,17 @@ namespace DW2Randomizer
                                 enemyPage2[lnJ] = true;
                             else if (random == 30)
                                 concentration = true;
+                            else if ((random == 7 || random == 8 || random == 21 || random == 22 || random == 24 || random == 25) && lnI <= 32)
+                            {
+                                lnJ--;
+                                continue;
+                            }
+                            else if ((random == 4 || random == 5 || random == 6 || random == 9 || random == 12 || random == 19 || random == 20 || random == 23 || random == 26) && lnI >= 51)
+                            {
+                                lnJ--;
+                                continue;
+                            }
+
                             enemyPatterns[lnJ] = (byte)(random % 16);
                         }
                     }
@@ -647,32 +659,32 @@ namespace DW2Randomizer
                     enemyStats[4] = 255; // Agility = max
                     enemyStats[5] = 1; // Strength = minimum
                 }
-                if (lnI == 0x05)
-                { // Healer
-                    enemyPatterns[0] = (byte)((r1.Next() % 3) + 12); // heal, healmore, healall
-                    enemyPatterns[1] = (byte)((r1.Next() % 3) + 12); // heal, healmore, healall
-                }
-                if (lnI == 0x1F)
-                { // Poison Lily
-                    enemyPatterns[0] = 2;
-                    enemyPage2[0] = false;
-                    enemyPatterns[1] = 10;
-                    enemyPage2[1] = true;
-                }
-                if (lnI == 0x0a || lnI == 0x0e || lnI == 0x1a || lnI == 0x1c || lnI == 0x2f || lnI == 0x40) // Magician, Magidrakee, Magic Baboon, Sorcerer, Magic Vampirus
-                {
-                    enemyPatterns[0] = (byte)((r1.Next() % 15) + 6); // any magic spell
-                    enemyPage2[0] = (enemyPatterns[0] >= 16);
-                    enemyPatterns[1] = (byte)((r1.Next() % 15) + 6); // any magic spell
-                    enemyPage2[1] = (enemyPatterns[1] >= 16);
-                }
-                if (lnI == 0x23 || lnI == 0x46 || lnI == 0x48) // Dragon Fly, Green Dragon, Flame
-                {
-                    enemyPatterns[0] = (byte)((r1.Next() % 3) + 7); // breathe flames
-                    enemyPage2[0] = true;
-                    enemyPatterns[1] = (byte)((r1.Next() % 3) + 7); // breathe flames
-                    enemyPage2[1] = true;
-                }
+                //if (lnI == 0x05)
+                //{ // Healer
+                //    enemyPatterns[0] = (byte)((r1.Next() % 3) + 12); // heal, healmore, healall
+                //    enemyPatterns[1] = (byte)((r1.Next() % 3) + 12); // heal, healmore, healall
+                //}
+                //if (lnI == 0x1F)
+                //{ // Poison Lily
+                //    enemyPatterns[0] = 2;
+                //    enemyPage2[0] = false;
+                //    enemyPatterns[1] = 10;
+                //    enemyPage2[1] = true;
+                //}
+                //if (lnI == 0x0a || lnI == 0x0e || lnI == 0x1a || lnI == 0x1c || lnI == 0x2f || lnI == 0x40) // Magician, Magidrakee, Magic Baboon, Sorcerer, Magic Vampirus
+                //{
+                //    enemyPatterns[0] = (byte)((r1.Next() % 15) + 6); // any magic spell
+                //    enemyPage2[0] = (enemyPatterns[0] >= 16);
+                //    enemyPatterns[1] = (byte)((r1.Next() % 15) + 6); // any magic spell
+                //    enemyPage2[1] = (enemyPatterns[1] >= 16);
+                //}
+                //if (lnI == 0x23 || lnI == 0x46 || lnI == 0x48) // Dragon Fly, Green Dragon, Flame
+                //{
+                //    enemyPatterns[0] = (byte)((r1.Next() % 3) + 7); // breathe flames
+                //    enemyPage2[0] = true;
+                //    enemyPatterns[1] = (byte)((r1.Next() % 3) + 7); // breathe flames
+                //    enemyPage2[1] = true;
+                //}
 
                 if (randomPattern > 0)
                 {
@@ -901,6 +913,7 @@ namespace DW2Randomizer
         private void randomizeEquipment(Random r1)
         {
             // Totally randomize weapons, armor, shields, helmets (13efb-13f1d, 1a00e-1a08b for pricing)
+
             byte[] maxPower = { 0, 0, 0, 0 };
             for (int lnI = 0; lnI < 35; lnI++)
             {
@@ -910,7 +923,7 @@ namespace DW2Randomizer
                 else if (lnI < 16)
                     power = (byte)(Math.Pow(r1.Next() % 500, 2) / 2500); // max 100
                 else if (lnI < 27)
-                    power = (byte)(Math.Pow(r1.Next() % 500, 2) / 3570); // max 70
+                    power = (byte)(Math.Pow(r1.Next() % 500, 2) / 3750); // max 70
                 else if (lnI < 31)
                     power = (byte)(Math.Pow(r1.Next() % 500, 2) / 6250); // max 40
                 else
@@ -924,6 +937,13 @@ namespace DW2Randomizer
                 double price = Math.Round((lnI < 16 ? Math.Pow(power, 2.1) : lnI < 27 ? Math.Pow(power, 2.3) : lnI < 31 ? Math.Pow(power, 2.65) : Math.Pow(power, 2.85)), 0);
                 // TO DO:  Round to the nearest 10 (after 100GP), 50(after 1000 GP), or 100 (after 2500 GP)
                 price = (float)Math.Round(price, 0);
+
+                if ((string)cboGPReq.SelectedValue == "100%")
+                    price *= 2;
+                else if ((string)cboGPReq.SelectedValue == "75%")
+                    price *= 1.5;
+                else if ((string)cboGPReq.SelectedValue == "33%")
+                    price *= .66667;
 
                 romData[0x1a00e + (lnI * 2) + 0] = (byte)(price % 256);
                 romData[0x1a00e + (lnI * 2) + 1] = (byte)(Math.Floor(price / 256));
@@ -1132,8 +1152,8 @@ namespace DW2Randomizer
             List<byte> treasureList = new List<byte>();
             byte[] legalTreasures = { 0x01, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
                                       0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
-                                      0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x28, 0x29, 0x2A, 0x2B, 0x2e, 0x2f,
-                                      0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x37, 0x38, 0x39, 0x3b, 0x3c, 0x3d, 0x40, 0x43, 0x44,
+                                      0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x29, 0x2a, 0x2f,
+                                      0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x38, 0x3b, 0x3c, 0x3d,
                                       0x45, 0x46, 0x47, 0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f };
             for (int lnI = 0; lnI < allTreasure.Length; lnI++)
             {
@@ -1209,7 +1229,7 @@ namespace DW2Randomizer
             for (int lnI = 0; lnI < 19; lnI++)
             {
                 byte[] legalWeapons = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35 };
-                byte[] legalItems = { 37, 38, 41, 42, 46, 47, 48, 49, 50, 51, 52, 53, 56, 57, 59, 60, 61 };
+                byte[] legalItems = { 41, 42, 47, 48, 49, 50, 51, 52, 53, 56, 57, 59, 60, 61 };
                 int byteToUse = 0x19f9a + (lnI * 6);
 
                 for (int lnJ = 0; lnJ < 6; lnJ++)
@@ -1314,14 +1334,58 @@ namespace DW2Randomizer
                 for (int lnI = 0; lnI < 12; lnI++)
                 {
                     int maxGains = 0;
-                    if (lnI % 4 == 0) maxGains = maxStrength - romData[0x13dd1 + lnI];
-                    else if (lnI % 4 == 1) maxGains = maxAgility - romData[0x13dd1 + lnI];
+                    if (lnI % 4 == 0)
+                    {
+                        // establish maxStrength based on maxPower FOR THAT PERSON.  
+                        int maxStrInd = 0;
+                        for (int lnJ = 0; lnJ < 16; lnJ++)
+                        {
+                            if (romData[0x13efb + lnJ] > maxStrInd)
+                                if ((lnI == 0 && romData[0x1a3ce + lnJ] % 2 == 1) || (lnI == 4 && (romData[0x1a3ce + lnJ] % 4) >= 2) || (lnI == 8 && romData[0x1a3ce + lnJ] >= 4))
+                                    maxStrInd = romData[0x13efb + lnJ];
+                        }
+                        maxStrInd = 255 - maxStrInd;
+                        maxGains = maxStrInd - romData[0x13dd1 + lnI];
+                    }
+                    else if (lnI % 4 == 1)
+                    {
+                        int maxStrInd = 0;
+                        int maxEquip = 0;
+                        for (int lnJ = 16; lnJ < 27; lnJ++)
+                        {
+                            if (romData[0x13efb + lnJ] > maxEquip)
+                                if ((lnI == 1 && romData[0x1a3ce + lnJ] % 2 == 1) || (lnI == 5 && (romData[0x1a3ce + lnJ] % 4) >= 2) || (lnI == 9 && romData[0x1a3ce + lnJ] >= 4))
+                                    maxEquip = romData[0x13efb + lnJ];
+                        }
+                        maxStrInd += maxEquip;
+                        maxEquip = 0;
+                        for (int lnJ = 27; lnJ < 31; lnJ++)
+                        {
+                            if (romData[0x13efb + lnJ] > maxEquip)
+                                if ((lnI == 1 && romData[0x1a3ce + lnJ] % 2 == 1) || (lnI == 5 && (romData[0x1a3ce + lnJ] % 4) >= 2) || (lnI == 9 && romData[0x1a3ce + lnJ] >= 4))
+                                    maxEquip = romData[0x13efb + lnJ];
+                        }
+                        maxStrInd += maxEquip;
+                        maxEquip = 0;
+                        for (int lnJ = 31; lnJ < 35; lnJ++)
+                        {
+                            if (romData[0x13efb + lnJ] > maxEquip)
+                                if ((lnI == 1 && romData[0x1a3ce + lnJ] % 2 == 1) || (lnI == 5 && (romData[0x1a3ce + lnJ] % 4) >= 2) || (lnI == 9 && romData[0x1a3ce + lnJ] >= 4))
+                                    maxEquip = romData[0x13efb + lnJ];
+                        }
+                        maxStrInd += maxEquip;
+                        maxStrInd = 510 - (2 * maxStrInd);
+                        maxStrInd = (maxStrInd > 255 ? 255 : maxStrInd);
+
+                        maxGains = maxStrInd - romData[0x13dd1 + lnI];
+                    }
                     else maxGains = 255 - romData[0x13dd1 + lnI];
 
                     if (lnI % 4 == 0) maxGains = (r1.Next() % (maxGains - 70)) + 70;
                     if (lnI % 4 == 1) maxGains = (r1.Next() % (maxGains - 120)) + 120;
                     if (lnI % 4 == 2) maxGains = (r1.Next() % (maxGains - 140)) + 140;
                     if (lnI % 4 == 3) maxGains = (r1.Next() % (maxGains - 140)) + 140;
+                    //if (lnI == 3) maxGains = 0; // No MP for Midenhall
 
                     int arraySize = lnI < 4 ? 50 : lnI < 8 ? 45 : 35;
                     int[] values = new int[arraySize];
@@ -1338,6 +1402,7 @@ namespace DW2Randomizer
                     {
                         int byteToUse = 0x13ddd + adder;
                         int valueToAdd = values[lnJ + 1] - values[lnJ];
+                        if (lnI == 3) valueToAdd = 0;
                         if (lnI % 2 == 0)
                             romData[byteToUse] = (byte)((romData[byteToUse] % 16) + (valueToAdd * 16));
                         else
@@ -1863,8 +1928,8 @@ namespace DW2Randomizer
                         if ((string)cboXPReq.SelectedItem == "50%") xp = xp / 2;
                         if ((string)cboXPReq.SelectedItem == "33%") xp = xp / 3;
 
-                        romData[0x13d35 + (lnI * 2)] = (byte)(special ? 1 : (cannockExpReq[lnI] / 2) % 256);
-                        romData[0x13d36 + (lnI * 2)] = (byte)(special ? 0 : (cannockExpReq[lnI] / 2) / 256);
+                        romData[0x13d35 + (lnI * 2)] = (byte)(special ? 1 : xp % 256);
+                        romData[0x13d36 + (lnI * 2)] = (byte)(special ? 0 : xp / 256);
                     }
                     if (lnI < 34)
                     {
@@ -1874,87 +1939,84 @@ namespace DW2Randomizer
                         if ((string)cboXPReq.SelectedItem == "33%") xp = xp / 3;
                         if (xp > 65535) xp -= 65535;
 
-                        romData[0x13d8d + (lnI * 2)] = (byte)(special ? 1 : (moonbrookeExpReq[lnI] / 2) % 256);
-                        romData[0x13d8e + (lnI * 2)] = (byte)(special ? 0 : (moonbrookeExpReq[lnI] / 2) / 256);
+                        romData[0x13d8d + (lnI * 2)] = (byte)(special ? 1 : xp % 256);
+                        romData[0x13d8e + (lnI * 2)] = (byte)(special ? 0 : xp / 256);
                     }
                 }
             }
 
-            if ((string)cboGPReq.SelectedValue == "100%")
+            // Replace weapon data
+            for (int lnI = 0; lnI < 16; lnI++)
             {
-                // Replace weapon data
-                for (int lnI = 0; lnI < 16; lnI++)
-                {
-                    int gp = weaponcost[lnI];
-                    if ((string)cboGPReq.SelectedItem == "75%") gp = gp * 3 / 4;
-                    if ((string)cboGPReq.SelectedItem == "50%") gp = gp / 2;
-                    if ((string)cboGPReq.SelectedItem == "33%") gp = gp / 3;
-                    romData[0x1a00e + (lnI * 2)] = (byte)(special ? 1 : gp % 256);
-                    romData[0x1a00f + (lnI * 2)] = (byte)(special ? 0 : gp / 256);
-                }
+                int gp = weaponcost[lnI];
+                if ((string)cboGPReq.SelectedItem == "75%") gp = gp * 3 / 4;
+                if ((string)cboGPReq.SelectedItem == "50%") gp = gp / 2;
+                if ((string)cboGPReq.SelectedItem == "33%") gp = gp / 3;
+                romData[0x1a00e + (lnI * 2)] = (byte)(special ? 1 : gp % 256);
+                romData[0x1a00f + (lnI * 2)] = (byte)(special ? 0 : gp / 256);
+            }
 
-                // Replace armor data
-                for (int lnI = 0; lnI < 11; lnI++)
-                {
-                    int gp = armorcost[lnI];
-                    if ((string)cboGPReq.SelectedItem == "75%") gp = gp * 3 / 4;
-                    if ((string)cboGPReq.SelectedItem == "50%") gp = gp / 2;
-                    if ((string)cboGPReq.SelectedItem == "33%") gp = gp / 3;
-                    romData[0x1a02e + (lnI * 2)] = (byte)(special ? 1 : gp % 256);
-                    romData[0x1a02f + (lnI * 2)] = (byte)(special ? 0 : gp / 256);
-                }
+            // Replace armor data
+            for (int lnI = 0; lnI < 11; lnI++)
+            {
+                int gp = armorcost[lnI];
+                if ((string)cboGPReq.SelectedItem == "75%") gp = gp * 3 / 4;
+                if ((string)cboGPReq.SelectedItem == "50%") gp = gp / 2;
+                if ((string)cboGPReq.SelectedItem == "33%") gp = gp / 3;
+                romData[0x1a02e + (lnI * 2)] = (byte)(special ? 1 : gp % 256);
+                romData[0x1a02f + (lnI * 2)] = (byte)(special ? 0 : gp / 256);
+            }
 
-                // Replace shield data
-                for (int lnI = 0; lnI < 5; lnI++)
-                {
-                    int gp = shieldcost[lnI];
-                    if ((string)cboGPReq.SelectedItem == "75%") gp = gp * 3 / 4;
-                    if ((string)cboGPReq.SelectedItem == "50%") gp = gp / 2;
-                    if ((string)cboGPReq.SelectedItem == "33%") gp = gp / 3;
-                    romData[0x1a044 + (lnI * 2)] = (byte)(special ? 1 : gp % 256);
-                    romData[0x1a045 + (lnI * 2)] = (byte)(special ? 0 : gp / 256);
-                }
+            // Replace shield data
+            for (int lnI = 0; lnI < 5; lnI++)
+            {
+                int gp = shieldcost[lnI];
+                if ((string)cboGPReq.SelectedItem == "75%") gp = gp * 3 / 4;
+                if ((string)cboGPReq.SelectedItem == "50%") gp = gp / 2;
+                if ((string)cboGPReq.SelectedItem == "33%") gp = gp / 3;
+                romData[0x1a044 + (lnI * 2)] = (byte)(special ? 1 : gp % 256);
+                romData[0x1a045 + (lnI * 2)] = (byte)(special ? 0 : gp / 256);
+            }
 
-                // Replace helmet data
-                for (int lnI = 0; lnI < 3; lnI++)
-                {
-                    int gp = helmetcost[lnI];
-                    if ((string)cboGPReq.SelectedItem == "75%") gp = gp * 3 / 4;
-                    if ((string)cboGPReq.SelectedItem == "50%") gp = gp / 2;
-                    if ((string)cboGPReq.SelectedItem == "33%") gp = gp / 3;
-                    romData[0x1a04e + (lnI * 2)] = (byte)(special ? 1 : gp % 256);
-                    romData[0x1a04f + (lnI * 2)] = (byte)(special ? 0 : gp / 256);
-                }
+            // Replace helmet data
+            for (int lnI = 0; lnI < 3; lnI++)
+            {
+                int gp = helmetcost[lnI];
+                if ((string)cboGPReq.SelectedItem == "75%") gp = gp * 3 / 4;
+                if ((string)cboGPReq.SelectedItem == "50%") gp = gp / 2;
+                if ((string)cboGPReq.SelectedItem == "33%") gp = gp / 3;
+                romData[0x1a04e + (lnI * 2)] = (byte)(special ? 1 : gp % 256);
+                romData[0x1a04f + (lnI * 2)] = (byte)(special ? 0 : gp / 256);
+            }
 
-                // Replace item data
-                for (int lnI = 0; lnI < 28; lnI++)
-                {
-                    int gp = itemcost[lnI];
-                    if ((string)cboGPReq.SelectedItem == "75%") gp = gp * 3 / 4;
-                    if ((string)cboGPReq.SelectedItem == "50%") gp = gp / 2;
-                    if ((string)cboGPReq.SelectedItem == "33%") gp = gp / 3;
-                    romData[0x1a054 + (lnI * 2)] = (byte)(special ? 1 : gp % 256);
-                    romData[0x1a055 + (lnI * 2)] = (byte)(special ? 0 : gp / 256);
-                }
+            // Replace item data
+            for (int lnI = 0; lnI < 28; lnI++)
+            {
+                int gp = itemcost[lnI];
+                if ((string)cboGPReq.SelectedItem == "75%") gp = gp * 3 / 4;
+                if ((string)cboGPReq.SelectedItem == "50%") gp = gp / 2;
+                if ((string)cboGPReq.SelectedItem == "33%") gp = gp / 3;
+                romData[0x1a054 + (lnI * 2)] = (byte)(special ? 1 : gp % 256);
+                romData[0x1a055 + (lnI * 2)] = (byte)(special ? 0 : gp / 256);
+            }
 
-                // House of healing cost halved
-                int gp1 = 20;
-                if ((string)cboGPReq.SelectedItem == "75%") gp1 = gp1 * 3 / 4;
-                if ((string)cboGPReq.SelectedItem == "50%") gp1 = gp1 / 2;
-                if ((string)cboGPReq.SelectedItem == "33%") gp1 = gp1 / 3;
+            // House of healing cost halved
+            int gp1 = 20;
+            if ((string)cboGPReq.SelectedItem == "75%") gp1 = gp1 * 3 / 4;
+            if ((string)cboGPReq.SelectedItem == "50%") gp1 = gp1 / 2;
+            if ((string)cboGPReq.SelectedItem == "33%") gp1 = gp1 / 3;
 
-                romData[0x18659] = (byte)gp1;
+            romData[0x18659] = (byte)gp1;
 
-                // Inn prices halved
-                byte[] inns = { 4, 6, 8, 12, 20, 2, 25, 30, 40, 30 };
-                for (int lnI = 0; lnI < inns.Length; lnI++)
-                {
-                    int gp = inns[lnI];
-                    if ((string)cboGPReq.SelectedItem == "75%") gp = gp * 3 / 4;
-                    if ((string)cboGPReq.SelectedItem == "50%") gp = gp / 2;
-                    if ((string)cboGPReq.SelectedItem == "33%") gp = gp / 3;
-                    romData[0x19f90 + lnI] = (byte)gp;
-                }
+            // Inn prices halved
+            byte[] inns = { 4, 6, 8, 12, 20, 2, 25, 30, 40, 30 };
+            for (int lnI = 0; lnI < inns.Length; lnI++)
+            {
+                int gp = inns[lnI];
+                if ((string)cboGPReq.SelectedItem == "75%") gp = gp * 3 / 4;
+                if ((string)cboGPReq.SelectedItem == "50%") gp = gp / 2;
+                if ((string)cboGPReq.SelectedItem == "33%") gp = gp / 3;
+                romData[0x19f90 + lnI] = (byte)gp;
             }
         }
 
