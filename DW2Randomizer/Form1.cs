@@ -461,10 +461,6 @@ namespace DW2Randomizer
                         {
                             if (random == 30 && concentration)
                                 continue; // do NOT set the concentration bit again.  Maintain regular attack.
-                            else if (random >= 16)
-                                enemyPage2[lnJ] = true;
-                            else if (random == 30)
-                                concentration = true;
                             else if ((random == 7 || random == 8 || random == 21 || random == 22 || random == 24 || random == 25) && lnI <= 32)
                             {
                                 lnJ--;
@@ -475,6 +471,10 @@ namespace DW2Randomizer
                                 lnJ--;
                                 continue;
                             }
+                            else if (random >= 16)
+                                enemyPage2[lnJ] = true;
+                            else if (random == 30)
+                                concentration = true;
 
                             enemyPatterns[lnJ] = (byte)(random % 16);
                         }
@@ -923,7 +923,7 @@ namespace DW2Randomizer
                 else if (lnI < 16)
                     power = (byte)(Math.Pow(r1.Next() % 500, 2) / 2500); // max 100
                 else if (lnI < 27)
-                    power = (byte)(Math.Pow(r1.Next() % 500, 2) / 3750); // max 70
+                    power = (byte)(Math.Pow(r1.Next() % 500, 2) / 3570); // max 70
                 else if (lnI < 31)
                     power = (byte)(Math.Pow(r1.Next() % 500, 2) / 6250); // max 40
                 else
@@ -1406,7 +1406,7 @@ namespace DW2Randomizer
                         if (lnI % 2 == 0)
                             romData[byteToUse] = (byte)((romData[byteToUse] % 16) + (valueToAdd * 16));
                         else
-                            romData[byteToUse] = (byte)((valueToAdd % 16) + (romData[byteToUse] * 16));
+                            romData[byteToUse] = (byte)((valueToAdd % 16) + romData[byteToUse]);
                         adder += (lnJ >= 44 ? 2 : lnJ >= 34 ? 4 : 6);
                     }
                 }
