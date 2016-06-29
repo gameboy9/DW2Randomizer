@@ -688,10 +688,10 @@ namespace DW2Randomizer
 
                 if (randomPattern > 0)
                 {
-                    enemyStats[10] = (byte)(enemyPatterns[0] + (enemyPatterns[1] * 16));
-                    enemyStats[11] = (byte)(enemyPatterns[2] + (enemyPatterns[3] * 16));
-                    enemyStats[12] = (byte)(enemyPatterns[4] + (enemyPatterns[5] * 16));
-                    enemyStats[13] = (byte)(enemyPatterns[6] + (enemyPatterns[7] * 16));
+                    enemyStats[10] = (byte)((enemyPatterns[0] * 16) + enemyPatterns[1]);
+                    enemyStats[11] = (byte)((enemyPatterns[2] * 16) + enemyPatterns[3]);
+                    enemyStats[12] = (byte)((enemyPatterns[4] * 16) + enemyPatterns[5]);
+                    enemyStats[13] = (byte)((enemyPatterns[6] * 16) + enemyPatterns[7]);
                     enemyStats[14] = (byte)((enemyPage2[0] ? 1 : 0) + (enemyPage2[1] ? 2 : 0) + (enemyPage2[2] ? 4 : 0) + (enemyPage2[3] ? 8 : 0) +
                         (enemyPage2[4] ? 16 : 0) + (enemyPage2[5] ? 32 : 0) + (enemyPage2[6] ? 64 : 0) + (enemyPage2[7] ? 128 : 0));
                 }
