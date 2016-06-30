@@ -171,15 +171,20 @@ namespace DW2Randomizer
                     txtCompare.Text = reader.ReadLine();
                     txtSeed.Text = reader.ReadLine();
                     txtFlags.Text = reader.ReadLine();
+                    txtPrinceName.Text = reader.ReadLine();
+                    txtPrincessName.Text = reader.ReadLine();
                     // flagLoad(); <---- This gets called via the previous line.
                 }
             }
             catch
             {
                 // ignore error
+                txtPrinceName.Text = "Bran";
+                txtPrincessName.Text = "Peta";
             } finally
             {
-                loading = false;}
+                loading = false;
+            }
         }
 
         private void btnNewSeed_Click(object sender, EventArgs e)
@@ -214,10 +219,38 @@ namespace DW2Randomizer
                 superRandomize();
             }
 
+            renamePrincePrincess();
             speedUpBattles();
             skipPrologue();
             reviveAllCharsOnCOD();
             saveRom();
+        }
+
+        private void renamePrincePrincess()
+        {
+            // Rename the starting characters.
+            for (int lnI = 0; lnI < 16; lnI++)
+            {
+                string name = (lnI < 8 ? txtPrinceName.Text : txtPrincessName.Text);
+                for (int lnJ = 0; lnJ < 8; lnJ++)
+                {
+                    romData[0x1ad49 + (8 * lnI) + lnJ] = 0x5f;
+                    try
+                    {
+                        char character = Convert.ToChar(name.Substring(lnJ, 1));
+                        if (character >= 0x30 && character <= 0x39)
+                            romData[0x1ad49 + (8 * lnI) + lnJ] = (byte)(character - 47);
+                        if (character >= 0x41 && character <= 0x5a)
+                            romData[0x1ad49 + (8 * lnI) + lnJ] = (byte)(character - 29);
+                        if (character >= 0x61 && character <= 0x7a)
+                            romData[0x1ad49 + (8 * lnI) + lnJ] = (byte)(character - 87);
+                    }
+                    catch
+                    {
+                        romData[0x1ad49 + (8 * lnI) + lnJ] = 0x5f; // no more characters to process - make the rest of the characters blank
+                    }
+                }
+            }
         }
 
         private void randomizeMonsterStats(Random r1)
@@ -2214,6 +2247,8 @@ namespace DW2Randomizer
                     writer.WriteLine(txtCompare.Text);
                     writer.WriteLine(txtSeed.Text);
                     writer.WriteLine(txtFlags.Text);
+                    writer.WriteLine(txtPrinceName.Text);
+                    writer.WriteLine(txtPrincessName.Text);
                 }
         }
 
