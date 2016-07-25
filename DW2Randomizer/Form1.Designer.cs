@@ -49,6 +49,10 @@
             this.btnNewSeed = new System.Windows.Forms.Button();
             this.tabAll = new System.Windows.Forms.TabControl();
             this.adjustments = new System.Windows.Forms.TabPage();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.txtPrincessName = new System.Windows.Forms.TextBox();
+            this.txtPrinceName = new System.Windows.Forms.TextBox();
             this.cboEncounterRate = new System.Windows.Forms.ComboBox();
             this.label10 = new System.Windows.Forms.Label();
             this.chkGPRandomize = new System.Windows.Forms.CheckBox();
@@ -74,10 +78,6 @@
             this.lblIntensityDesc = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.txtFlags = new System.Windows.Forms.TextBox();
-            this.txtPrinceName = new System.Windows.Forms.TextBox();
-            this.txtPrincessName = new System.Windows.Forms.TextBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
             this.tabAll.SuspendLayout();
             this.adjustments.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -297,6 +297,38 @@
             this.adjustments.Text = "Adjustments";
             this.adjustments.UseVisualStyleBackColor = true;
             // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(6, 144);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(78, 13);
+            this.label12.TabIndex = 22;
+            this.label12.Text = "Princess Name";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 117);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(68, 13);
+            this.label11.TabIndex = 21;
+            this.label11.Text = "Prince Name";
+            // 
+            // txtPrincessName
+            // 
+            this.txtPrincessName.Location = new System.Drawing.Point(115, 141);
+            this.txtPrincessName.Name = "txtPrincessName";
+            this.txtPrincessName.Size = new System.Drawing.Size(100, 20);
+            this.txtPrincessName.TabIndex = 20;
+            // 
+            // txtPrinceName
+            // 
+            this.txtPrinceName.Location = new System.Drawing.Point(115, 115);
+            this.txtPrinceName.Name = "txtPrinceName";
+            this.txtPrinceName.Size = new System.Drawing.Size(100, 20);
+            this.txtPrinceName.TabIndex = 19;
+            // 
             // cboEncounterRate
             // 
             this.cboEncounterRate.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -422,7 +454,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(499, 157);
+            this.tabPage2.Size = new System.Drawing.Size(499, 171);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Randomization";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -539,7 +571,6 @@
             // chkMap
             // 
             this.chkMap.AutoSize = true;
-            this.chkMap.Enabled = false;
             this.chkMap.Location = new System.Drawing.Point(6, 6);
             this.chkMap.Name = "chkMap";
             this.chkMap.Size = new System.Drawing.Size(120, 17);
@@ -581,38 +612,6 @@
             this.txtFlags.Size = new System.Drawing.Size(192, 20);
             this.txtFlags.TabIndex = 30;
             this.txtFlags.TextChanged += new System.EventHandler(this.txtFlags_TextChanged);
-            // 
-            // txtPrinceName
-            // 
-            this.txtPrinceName.Location = new System.Drawing.Point(115, 115);
-            this.txtPrinceName.Name = "txtPrinceName";
-            this.txtPrinceName.Size = new System.Drawing.Size(100, 20);
-            this.txtPrinceName.TabIndex = 19;
-            // 
-            // txtPrincessName
-            // 
-            this.txtPrincessName.Location = new System.Drawing.Point(115, 141);
-            this.txtPrincessName.Name = "txtPrincessName";
-            this.txtPrincessName.Size = new System.Drawing.Size(100, 20);
-            this.txtPrincessName.TabIndex = 20;
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 117);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(68, 13);
-            this.label11.TabIndex = 21;
-            this.label11.Text = "Prince Name";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(6, 144);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(78, 13);
-            this.label12.TabIndex = 22;
-            this.label12.Text = "Princess Name";
             // 
             // Form1
             // 
