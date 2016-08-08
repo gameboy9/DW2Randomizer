@@ -126,6 +126,778 @@ namespace DW2Randomizer
             InitializeComponent();
         }
 
+        private void randomizeMapv2(Random r1)
+        {
+            int[,] map = new int[256, 256];
+            int[,] island = new int[256, 256];
+            for (int lnI = 0; lnI < 256; lnI++)
+                for (int lnJ = 0; lnJ < 256; lnJ++)
+                {
+                    map[lnI, lnJ] = 0x04;
+                    island[lnI, lnJ] = -1;
+                }
+
+            for (int lnI = 0; lnI < 6; lnI++)
+            {
+                int x = 0;
+                int y = 0;
+                bool legal = false;
+                while (!legal)
+                {
+                    int startX = (r1.Next() % 256);
+                    int startY = (r1.Next() % 256);
+                    if (lnI == 3 && island[startY, startX] == 2)
+                    {
+                        int spaces = 0;
+                        while (island[startY, startX] == 2 && spaces <= 256)
+                        {
+                            startY--;
+                            startY = (startY == -1 ? 255 : startY);
+                            spaces++;
+                        }                            
+                        if (mapLegalPlot(island, startY, startX, 0, lnI) && spaces >= 3 && spaces <= 240)
+                        {
+                            startY--;
+                            int startY2 = (startY - 1 < 0 ? startY + 256 - 1 : startY - 1);
+                            int startY3 = (startY2 - 1 < 0 ? startY2 + 256 - 1 : startY2 - 1);
+                            if (map[startY, startX] == 0x04 && map[startY2, startX] == 0x04 && map[startY3, startX] == 0x04)
+                            {
+                                x = startX;
+                                y = startY;
+                                legal = true;
+                                // IMMEDIATELY place the Dragon's Horn towers
+                                map[startY + 3, startX] = 0x0a;
+                                romData[0xa2f6] = (byte)(startY + 3);
+                                romData[0xa2f5] = (byte)(startX);
+
+                                map[startY - 1, startX] = 0x0a;
+                                romData[0xa2f9] = (byte)(startY - 1);
+                                romData[0xa2f8] = (byte)(startX);
+                            }
+                        }
+                    }
+                    else if (lnI == 3) legal = false;
+                    else if (mapLegalStart(island, startY, startX))
+                    {
+                        map[startY, startX] = 0x01;
+                        island[startY, startX] = lnI;
+                        legal = true;
+                        x = startX;
+                        y = startY;
+                    }
+                }
+
+                int islandSize = (lnI == 0 ? 1500 : lnI == 1 ? 2500 : lnI == 2 ? 1500 : lnI == 3 ? 1500 : lnI == 4 ? 5000 : 5000);
+                for (int lnJ = 0; lnJ < islandSize; lnJ++)
+                {
+                    bool legal2 = false;
+                    while (!legal2)
+                    {
+                        // pick a direction at random
+                        int dir = (r1.Next() % 4);
+                        if (mapLegalPlot(island, y, x, dir, lnI))
+                        {
+                            if (dir == 0)
+                                y = (y == 0 ? 255 : y - 1);
+                            else if (dir == 1)
+                                x = (x == 255 ? 0 : x + 1);
+                            if (dir == 2)
+                                y = (y == 255 ? 0 : y + 1);
+                            if (dir == 3)
+                                x = (x == 0 ? 255 : x - 1);
+
+                            if (map[y, x] != 0x04) lnJ--;
+                            if (map[y, x] != 0x0a)
+                            {
+                                map[y, x] = (lnI == 0 ? 0x01 : lnI == 1 ? 0x06 : lnI == 2 ? 0x03 : lnI == 3 ? 0x02 : lnI == 4 ? 0x07 : 0x05);
+                                //if (lnI == 5)
+                                //{
+                                //    int lowY = (y - 1 <= -1 ? y + 256 - 1 : y - 1);
+                                //    int highY = (y + 1 >= 256 ? y - 256 + 1 : y + 1);
+                                //    int lowX = (x - 1 <= -1 ? x + 256 - 1 : x - 1);
+                                //    int highX = (x + 1 >= 256 ? x - 256 + 1 : x + 1);
+
+                                //    map[lowY, x] = 0x05;
+                                //    map[highY, x] = 0x05;
+                                //    map[y, lowX] = 0x05;
+                                //    map[y, highX] = 0x05;
+                                //}
+                            }
+                            //map[y, x] = 0x01;
+                            island[y, x] = lnI;
+                            legal2 = true;
+                        }
+                    }
+                }
+            }
+
+            int lakeNumber = 256;
+            int maxPlots = 0;
+            int maxLake = 0;
+            int lastIsland = 0;
+            for (int lnI = 0; lnI < 256; lnI++)
+                for (int lnJ = 0; lnJ < 256; lnJ++)
+                {
+                    if (island[lnI, lnJ] == -1)
+                    {
+                        int plots = lakePlot(island, map, lakeNumber, lnI, lnJ);
+                        if (plots <= 10)
+                        {
+                            plots = lakePlot(island, map, lakeNumber, lnI, lnJ, true, lastIsland);
+                        }
+                        else if (plots > maxPlots)
+                        {
+                            maxPlots = plots;
+                            maxLake = lakeNumber;
+                        }
+                        lakeNumber++;
+                    } else
+                    {
+                        lastIsland = island[lnI, lnJ];
+                    }
+                }
+
+            for (int lnI = 0; lnI < 256; lnI++)
+                for (int lnJ = 0; lnJ < 256; lnJ++)
+                {
+                    int lowY = (lnI - 1 == -1 ? 255 : lnI - 1);
+                    int highY = (lnI + 1 == 256 ? 0 : lnI + 1);
+                    int lowX = (lnJ - 1 == -1 ? 255 : lnJ - 1);
+                    int highX = (lnJ + 1 == 256 ? 0 : lnJ + 1);
+                    if (island[lnI, lnJ] == 5)
+                    {
+                        map[lowY, lowX] = map[lnI, lowX] = map[lowY, lnJ] = 0x05;
+                        island[lowY, lowX] = island[lnI, lowX] = island[lowY, lnJ] = 5;
+                    }
+                }
+
+            for (int lnI = 0; lnI < 256; lnI++)
+                for (int lnJ = 0; lnJ < 256; lnJ++)
+                {
+                    int lowY = (lnI - 1 == -1 ? 255 : lnI - 1);
+                    int highY = (lnI + 1 == 256 ? 0 : lnI + 1);
+                    int lowX = (lnJ - 1 == -1 ? 255 : lnJ - 1);
+                    int highX = (lnJ + 1 == 256 ? 0 : lnJ + 1);
+                    if (island[lnI, lnJ] == 5)
+                    {
+                        if (island[lowY, lnJ] != maxLake && island[highY, lnJ] != maxLake && island[lnI, lowX] != maxLake && island[lnI, highX] != maxLake)
+                        {
+                            map[lnI, lnJ] = 0x07;
+                            if (map[lowY, lnJ] == 0x04)
+                            {
+                                map[lnI, lnJ] = 0x07;
+                                island[lnI, lnJ] = 5;
+                            }
+                        }
+                    }
+                }
+
+            bool seaLegal = false;
+            while (!seaLegal)
+            {
+                int x = r1.Next() % 251;
+                int y = r1.Next() % 249;
+                if (validPlot(island, map, y, x, 7, 5, new int[] { maxLake }))
+                {
+                    List<int> seaCaveShoals = new List<int> { 1, 2, 3, 5, 6, 8, 9, 10, 14, 15, 19, 20, 24, 25, 26, 28, 29, 31, 32, 33 };
+                    List<int> seaCaveMountains = new List<int> { 7, 11, 12, 13, 16, 18 };
+                    int seaCaveCave = 17;
+                    int lnTileCounter = 0;
+
+                    for (int lnJ = 0; lnJ < 7; lnJ++)
+                        for (int lnK = 0; lnK < 5; lnK++)
+                        {
+                            if (seaCaveMountains.Contains(lnTileCounter)) map[y + lnJ, x + lnK] = 0x05;
+                            else if (seaCaveShoals.Contains(lnTileCounter)) map[y + lnJ, x + lnK] = 0x13;
+                            else if (seaCaveCave == lnTileCounter)
+                            {
+                                map[y + lnJ, x + lnK] = 0x0c;
+                                // Also need to update the ROM to indicate where the Sea Cave is in case the Moon Fragment was used.
+                                romData[0xa2e3] = (byte)(x + lnK);
+                                romData[0xa2e4] = (byte)(y + lnJ);
+
+                                romData[0x198ef] = romData[0x3e154] = (byte)(x - 2);
+                                romData[0x198f3] = romData[0x3e158] = (byte)(x + 5 + 2);
+                                romData[0x198f9] = romData[0x3e15e] = (byte)(y - 2);
+                                romData[0x198fd] = romData[0x3e162] = (byte)(y + 7 + 2);
+                            }
+                            lnTileCounter++;
+                        }
+                    seaLegal = true;
+                }
+            }
+
+            bool treeLegal = false;
+            while (!treeLegal)
+            {
+                int x = r1.Next() % 249;
+                int y = r1.Next() % 250;
+                if (validPlot(island, map, y, x, 7, 5, new int[] { maxLake }))
+                {
+                    List<int> worldTreeMountains;
+                    List<int> worldTreeDesert;
+                    if (r1.Next() % 2 == 0)
+                    {
+                        worldTreeMountains = new List<int> { 1, 2, 3, 4, 5, 7, 8, 12, 13, 20, 21, 27, 28, 29, 33, 34, 36, 37, 38, 39, 40 };
+                        worldTreeDesert = new List<int> { 9, 10, 11, 14, 15, 16, 18, 19, 22, 23, 24, 25, 26, 30, 31, 32 };
+                    }
+                    else
+                    {
+                        worldTreeMountains = new List<int> { 1, 2, 3, 4, 5, 7, 8, 12, 13, 14, 21, 27, 28, 29, 33, 34, 36, 37, 38, 39, 40 };
+                        worldTreeDesert = new List<int> { 9, 10, 11, 15, 16, 18, 19, 20, 22, 23, 24, 25, 26, 30, 31, 32 };
+                    }
+                    int worldTree = 17;
+                    int lnTileCounter = 0;
+
+                    for (int lnJ = 0; lnJ < 6; lnJ++)
+                        for (int lnK = 0; lnK < 7; lnK++)
+                        {
+                            if (worldTreeMountains.Contains(lnTileCounter)) map[lnJ + y, lnK + x] = 0x05;
+                            else if (worldTreeDesert.Contains(lnTileCounter)) map[lnJ + y, lnK + x] = 0x02;
+                            else if (worldTree == lnTileCounter) map[lnJ + y, lnK + x] = 0x03;
+                            // Also need to update the ROM to indicate the World Tree location.
+                            romData[0x19f20] = (byte)(lnK + x);
+                            romData[0x19f21] = (byte)(lnJ + y);
+
+                            lnTileCounter++;
+                        }
+                    treeLegal = true;
+                }
+            }
+
+            bool rubissLegal = false;
+            while (!rubissLegal)
+            {
+                int rubissX = r1.Next() % 256;
+                int rubissY = r1.Next() % 256;
+                if (mapLegalStart(island, rubissY, rubissX, 4, 256))
+                {
+                    map[rubissY, rubissX] = 0x0b;
+                    romData[0xa2d7] = (byte)rubissX;
+                    romData[0xa2d8] = (byte)rubissY;
+                    rubissLegal = true;
+                }
+            }
+
+            bool treasuresLegal = false;
+            while (!treasuresLegal)
+            {
+                int treasuresX = r1.Next() % 256;
+                int treasuresY = r1.Next() % 256;
+                if (mapLegalStart(island, treasuresY, treasuresX, 4, 256))
+                {
+                    map[treasuresY, treasuresX] = 0x13;
+                    // Also need to update the ROM to indicate the treasures spot.  (make sure it's vertical - 1!)
+                    romData[0x19f1c] = (byte)treasuresX;
+                    romData[0x19f1d] = (byte)(treasuresY + 1);
+                    treasuresLegal = true;
+                }
+            }
+
+            bool rhoneLegal = false;
+            while (!rhoneLegal)
+            {
+                int x = r1.Next() % 248;
+                int y = r1.Next() % 250;
+                if (validPlot(island, map, y, x, 6, 8, new int[] { 0, 1, 2, 3, 4 }))
+                {
+                    int rhoneCaveX = r1.Next() % 6;
+                    for (int lnJ = 0; lnJ < 6; lnJ++)
+                        for (int lnK = 0; lnK < 8; lnK++)
+                        {
+                            if (lnJ == 1 && lnK == rhoneCaveX + 1)
+                            {
+                                map[y + lnJ, x + lnK] = 0x0c;
+                                romData[0xa2ef] = (byte)(x + lnK);
+                                romData[0xa2f0] = (byte)(y + lnJ);
+                                romData[0x3e018] = (byte)(x + lnK);
+                                romData[0x3e01e] = (byte)(y + lnJ);
+                            }
+                            else if (lnK != 0 && lnK != 7 && lnJ == 1) map[y + lnJ, x + lnK] = 0x05;
+                            else if (lnK != 0 && lnK != 7 && lnJ > 1) map[y + lnJ, x + lnK] = 0x08;
+                            // Also need to update the ROM to indicate the Rhone Cave location.
+                            romData[0x196a7] = (byte)x;
+                            romData[0x196ab] = (byte)(x + 8);
+                            romData[0x196b1] = (byte)y;
+                            romData[0x196b5] = (byte)(y + 6);
+                        }
+
+                    rhoneLegal = true;
+                }
+            }
+
+            // Moon Tower
+
+            bool moonLegal = false;
+            while (!moonLegal)
+            {
+                int x = r1.Next() % 245;
+                int y = r1.Next() % 245;
+                if (validPlot(island, map, y, x, 10, 10, new int[] { 0, 1, 2, 3, 4 }))
+                {
+                    for (int lnJ = 1; lnJ <= 5; lnJ++)
+                        for (int lnK = 1; lnK <= 5; lnK++)
+                        {
+                            if (lnJ == 1 || lnJ == 5 || lnK == 1 || lnK == 5)
+                            {
+                                map[y + lnJ, x + lnK] = 0x04;
+                                //romData[0xa2ef] = (byte)(x + lnK);
+                                //romData[0xa2f0] = (byte)(y + lnJ);
+                                //romData[0x3e018] = (byte)(x + lnK);
+                                //romData[0x3e01e] = (byte)(y + lnJ);
+                            }
+                            else if (((lnJ == 2 || lnJ == 4) && lnK >= 2 && lnK <= 4) || (lnJ == 3 && (lnK == 2 || lnK == 4)))
+                                map[y + lnJ, x + lnK] = 0x01;
+                            else if (lnJ == 3 && lnK == 3)
+                            {
+                                map[y + lnJ, x + lnK] = 0x0a;
+                                // Place tower location into the ROM data now.
+                                romData[0xa2f2] = (byte)(x + lnK);
+                                romData[0xa2f3] = (byte)(y + lnJ);
+                            }
+                            // Also need to update the ROM to indicate the Rhone Cave location.
+                            //romData[0x196a7] = (byte)x;
+                            //romData[0x196ab] = (byte)(x + 8);
+                            //romData[0x196b1] = (byte)y;
+                            //romData[0x196b5] = (byte)(y + 6);
+                        }
+
+                    for (int lnJ = 6; lnJ <= 8; lnJ++)
+                    {
+                        map[y + 1, x + lnJ] = 0x05;
+                        map[y + 2, x + lnJ] = 0x02;
+                        map[y + 3, x + lnJ] = 0x05;
+                    }
+
+                    // Place tower location into the ROM data now.
+                    romData[0x3dffe] = 0x13;
+                    romData[0x3e004] = 0x12;
+                    romData[0x3e000] = (byte)(y + 2);
+                    romData[0x3e006] = (byte)(x + 5);
+                    romData[0x3e00a] = (byte)(x + 9);
+
+                    int lnRiver = 9;
+                    while (island[y + 2, x + lnRiver] != maxLake)
+                    {
+                        map[y + 2, x + lnRiver] = 0x04;
+                        lnRiver++;
+                    }
+
+                    moonLegal = true;
+                }
+            }
+
+            // Lake Cave
+
+            bool lakeLegal = false;
+            while (!lakeLegal)
+            {
+                int x = r1.Next() % 250;
+                int y = r1.Next() % 250;
+                if (validPlot(island, map, y, x, 7, 7, new int[] { 0, 1 }))
+                {
+                    for (int lnJ = 1; lnJ < 6; lnJ++)
+                        for (int lnK = 1; lnK < 6; lnK++)
+                        {
+                            if (lnJ == 1 || lnJ == 5)
+                            {
+                                if (lnK == 1 || lnK == 5)
+                                    map[y + lnJ, x + lnK] = 0x06;
+                                else
+                                    map[y + lnJ, x + lnK] = 0x04;
+                            }
+                            else if (lnJ == 2 || lnJ == 4)
+                                map[y + lnJ, x + lnK] = 0x04;
+                            else
+                            {
+                                if (lnK == 0 || lnK == 1)
+                                    map[y + lnJ, x + lnK] = 0x09;
+                                else if (lnK == 3)
+                                {
+                                    map[y + lnJ, x + lnK] = 0x0c;
+                                    romData[0xa2e0] = (byte)(x + lnK);
+                                    romData[0xa2e1] = (byte)(y + lnJ);
+                                }
+                                else
+                                    map[y + lnJ, x + lnK] = 0x09;
+                            }
+                        }
+                    lakeLegal = true;
+                }
+            }
+
+            // Mirror Of Ra
+            bool mirrorLegal = false;
+            while (!mirrorLegal)
+            {
+                int x = r1.Next() % 250;
+                int y = r1.Next() % 250;
+                if (validPlot(island, map, y, x, 5, 6, new int[] { 0, 1 }))
+                {
+                    for (int lnJ = 1; lnJ < 4; lnJ++)
+                        for (int lnK = 1; lnK < 5; lnK++)
+                        {
+                            if (lnJ == 1 || lnK == 1 || lnK == 4)
+                                map[y + lnJ, x + lnK] = 0x13;
+                            else
+                                map[y + lnJ, x + lnK] = 0x08;
+                        }
+                    // Also need to update the ROM to indicate the new Mirror Of Ra search spot.
+                    romData[0x19f18] = (byte)(x + 2);
+                    romData[0x19f19] = (byte)(y + 2);
+
+                    mirrorLegal = true;
+                }
+            }
+
+            // We'll place all of the castles now.
+            for (int lnI = 0; lnI < 7; lnI++)
+            {
+                int x = r1.Next() % 253;
+                int y = r1.Next() % 253;
+
+                if (validPlot(island, map, y, x, 2, 2, (lnI == 0 || lnI == 1 ? new int[] { 0 } : lnI == 6 ? new int[] { 5 } : new int[] { 0, 1, 2, 3, 4 })))
+                {
+                    map[y + 0, x + 0] = 0x00;
+                    map[y + 0, x + 1] = 0x12;
+                    map[y + 1, x + 0] = 0x10;
+                    map[y + 1, x + 1] = 0x11;
+
+                    int byteToUse = (lnI == 0 ? 0xa28f : lnI == 1 ? 0xa295 : lnI == 2 ? 0xa29b : lnI == 3 ? 0xa2a1 : lnI == 4 ? 0xa2a4 : lnI == 5 ? 0xa2e9 : 0xa2b3);
+                    romData[byteToUse] = (byte)(x + 1);
+                    romData[byteToUse + 1] = (byte)(y + 1);
+                    if (lnI == 5) // Charlock castle, out of order as far as byte sequence is concerned.
+                    {
+                        romData[0xa334] = (byte)(x);
+                        romData[0xa335] = (byte)(y + 1);
+                    }
+                    else
+                    {
+                        romData[byteToUse + 0x7e] = (byte)(x);
+                        romData[byteToUse + 1 + 0x7e] = (byte)(y + 1);
+                    }
+                    if (lnI == 6)
+                    {
+                        romData[0xa301] = (byte)(x);
+                        romData[0xa302] = (byte)(y + 1);
+                    }
+
+                    // Return points
+                    if (lnI == 0 || lnI == 1 || lnI == 3 || lnI == 4)
+                    {
+                        int byteMultiplier = lnI - (lnI >= 3 ? 1 : 0);
+                        romData[0xa27a + (3 * byteMultiplier)] = (byte)x;
+                        if (map[y + 2, x] == 0x04)
+                            romData[0xa27a + (3 * byteMultiplier) + 1] = (byte)(y + 2);
+                        else
+                            romData[0xa27a + (3 * byteMultiplier) + 1] = (byte)(y + 1);
+                        shipPlacement(island, 0x1bf84 + (2 * byteMultiplier), y, x, maxLake);
+                    }
+                } else
+                    lnI--;
+            }
+
+            // Now we'll place all of the towns now.
+            for (int lnI = 0; lnI < 7; lnI++)
+            {
+                int x = r1.Next() % 253;
+                int y = r1.Next() % 253;
+
+                if (validPlot(island, map, y, x, 1, 2, (lnI == 0 ? new int[] { 0 } : lnI == 1 ? new int[] { 1 } : lnI == 2 ? new int[] { 3 } : new int[] { 0, 1, 2, 3, 4 })))
+                {
+                    map[y, x + 0] = 0x0e;
+                    map[y, x + 1] = 0x0f;
+
+                    int byteToUse2 = (lnI == 0 ? 0xa292 : lnI == 1 ? 0xa298 : lnI == 2 ? 0xa29e : lnI == 3 ? 0xa2a7 : lnI == 4 ? 0xa2aa : lnI == 5 ? 0xa2ad : 0xa2b0);
+                    romData[byteToUse2] = (byte)(x + 1);
+                    romData[byteToUse2 + 1] = (byte)(y);
+                    romData[byteToUse2 + 0x7e] = (byte)(x);
+                    romData[byteToUse2 + 1 + 0x7e] = (byte)(y);
+
+                    // Return points
+                    if (lnI == 2)
+                        shipPlacement(island, 0x3d6be, y, x, maxLake);
+                    // Return points
+                    else if (lnI == 1)
+                    {
+                        romData[0xa27a + 18] = (byte)(x);
+                        if (map[y + 1, x] == 0x04)
+                            romData[0xa27a + 19] = (byte)(y);
+                        else
+                            romData[0xa27a + 19] = (byte)(y + 1);
+                        shipPlacement(island, 0x1bf84 + 12, y, x, maxLake);
+                    }
+                    else if (lnI == 6)
+                    {
+                        romData[0xa27a + 12] = (byte)(x);
+                        if (map[y + 1, x] == 0x04)
+                            romData[0xa27a + 13] = (byte)(y);
+                        else
+                            romData[0xa27a + 13] = (byte)(y + 1);
+                        // We are placing the ship in both Beran and the Rhone Shrine at the same time.
+                        shipPlacement(island, 0x1bf84 + 8, y, x, maxLake);
+                        shipPlacement(island, 0x1bf84 + 10, y, x, maxLake);
+                    }
+                }
+                else
+                    lnI--;
+            }
+
+            // Then the monoliths.
+            for (int lnI = 0; lnI < 12; lnI++)
+            {
+                int x = r1.Next() % 253;
+                int y = r1.Next() % 253;
+
+                if (validPlot(island, map, y, x, 1, 1, (lnI == 1 ? new int[] { 0 } : lnI == 8 ? new int[] { 1 } : lnI == 7 ? new int[] { 2 } : lnI == 6 ? new int[] { 5 } : new int[] { 0, 1, 2, 3, 4 })))
+                {
+                    map[y, x] = 0x0b;
+
+                    int byteToUse2 = (lnI < 11 ? 0xa2b6 + (lnI * 3) : 0xa2da);
+                    romData[byteToUse2] = (byte)(x);
+                    romData[byteToUse2 + 1] = (byte)(y);
+
+                    // Return points
+                    if (lnI == 6)
+                    {
+                        romData[0xa27a + 15] = (byte)(x);
+                        if (map[y + 1, x] == 0x04)
+                            romData[0xa27a + 16] = (byte)(y);
+                        else
+                            romData[0xa27a + 16] = (byte)(y + 1);
+                    }
+                }
+                else
+                    lnI--;
+            }
+
+            // Then the caves.
+            for (int lnI = 0; lnI < 6; lnI++)
+            {
+                int x = r1.Next() % 253;
+                int y = r1.Next() % 253;
+
+                if (validPlot(island, map, y, x, 1, 1, (lnI == 2 ? new int[] { 0 } : lnI == 3 ? new int[] { 1 } : lnI == 4 ? new int[] { 5 } : new int[] { 0, 1, 2, 3, 4 })))
+                {
+                    map[y, x] = 0x0c;
+
+                    int byteToUse2 = (lnI == 0 ? 0xa2dd : lnI == 1 ? 0xa2fb : lnI == 2 ? 0xa2fe : lnI == 3 ? 0xa304 : lnI == 4 ? 0xa307 : 0xa30a);
+                    romData[byteToUse2] = (byte)x;
+                    romData[byteToUse2 + 1] = (byte)(y);
+                }
+                else
+                    lnI--;
+            }
+
+            // Finally the towers
+            for (int lnI = 0; lnI < 2; lnI++)
+            {
+                int x = r1.Next() % 253;
+                int y = r1.Next() % 253;
+
+                if (validPlot(island, map, y, x, 1, 1, (lnI == 0 ? new int[] { 0, 1 } : new int[] { 0, 1, 2, 3, 4 })))
+                {
+                    map[y, x] = 0x0a;
+
+                    int byteToUse2 = (lnI == 0 ? 0xa2e6 : 0xa2ec);
+                    romData[byteToUse2] = (byte)x;
+                    romData[byteToUse2 + 1] = (byte)(y);
+                }
+                else
+                    lnI--;
+            }
+
+            int[,] monsterZones = new int[16, 16];
+            for (int lnI = 0; lnI < 16; lnI++)
+                for (int lnJ = 0; lnJ < 16; lnJ++)
+                    monsterZones[lnI, lnJ] = 0xff;
+
+            for (int lnI = 0; lnI < 256; lnI++)
+                for (int lnJ = 0; lnJ < 256; lnJ++)
+                {
+                    int mzY = lnI / 16;
+                    int mzX = lnJ / 16;
+
+                    if (monsterZones[mzY, mzX] == 0xff)
+                    {
+                        if (island[lnI, lnJ] == 0)
+                            monsterZones[mzY, mzX] = r1.Next() % 9;
+                        else if (island[lnI, lnJ] == 1)
+                            monsterZones[mzY, mzX] = r1.Next() % 5 + 0x0d;
+                        else if (island[lnI, lnJ] == 5)
+                            monsterZones[mzY, mzX] = r1.Next() % 2 + 0x32;
+                        else if (island[lnI, lnJ] >= 2 && island[lnI, lnJ] <= 4)
+                        {
+                            while (monsterZones[mzY, mzX] > 0x27 || (monsterZones[mzY, mzX] >= 0x1c && monsterZones[mzY, mzX] <= 0x1f))
+                                monsterZones[mzY, mzX] = r1.Next() % 19 + 0x15;
+                            if (monsterZones[mzY, mzX] == 0x26) monsterZones[mzY, mzX] = 0x39;
+                            if (monsterZones[mzY, mzX] == 0x27) monsterZones[mzY, mzX] = 0x3b;
+                        }
+
+                        if (island[lnI, lnJ] >= 0 && island[lnI, lnJ] <= 5)
+                            monsterZones[mzY, mzX] += (64 * (r1.Next() % 4));
+                    }
+                }
+
+            // Now let's enter all of this into the ROM...
+            int lnPointer = 0x9f97;
+
+            for (int lnI = 0; lnI <= 256; lnI++) // <---- There is a final pointer for lnI = 256, probably indicating the conclusion of the map.
+            {
+                romData[0xdda5 + (lnI * 2)] = (byte)(lnPointer % 256);
+                romData[0xdda6 + (lnI * 2)] = (byte)(lnPointer / 256);
+
+                int lnJ = 0;
+                while (lnI < 256 && lnJ < 256)
+                {
+                    if (map[lnI, lnJ] >= 1 && map[lnI, lnJ] <= 7)
+                    {
+                        int tileNumber = 0;
+                        int numberToMatch = map[lnI, lnJ];
+                        while (lnJ < 256 && tileNumber < 32 && map[lnI, lnJ] == numberToMatch && tileNumber < 32)
+                        {
+                            tileNumber++;
+                            lnJ++;
+                        }
+                        romData[lnPointer + 0x4010] = (byte)((0x20 * numberToMatch) + (tileNumber - 1));
+                        lnPointer++;
+                    }
+                    else
+                    {
+                        romData[lnPointer + 0x4010] = (byte)map[lnI, lnJ];
+                        lnPointer++;
+                        lnJ++;
+                    }
+                }
+            }
+
+            // Enter monster zones
+            for (int lnI = 0; lnI < 16; lnI++)
+                for (int lnJ = 0; lnJ < 16; lnJ++)
+                {
+                    if (monsterZones[lnI, lnJ] == 0xff)
+                        monsterZones[lnI, lnJ] = (r1.Next() % 60) + ((r1.Next() % 4) * 64);
+                    romData[0x103d6 + (lnI * 16) + lnJ] = (byte)monsterZones[lnI, lnJ];
+                }
+        }
+
+        private bool validPlot(int[,] island, int[,] map, int y, int x, int height, int width, int[] legalIsland)
+        {
+            for (int lnI = 0; lnI < height; lnI++)
+                for (int lnJ = 0; lnJ < width; lnJ++)
+                {
+                    int legalY = (y + lnI >= 256 ? y - 256 + lnI : y + lnI);
+                    int legalX = (x + lnJ >= 256 ? x - 256 + lnJ : x + lnJ);
+
+                    bool ok = false;
+                    for (int lnK = 0; lnK < legalIsland.Length; lnK++)
+                        if (island[legalY, legalX] == legalIsland[lnK])
+                            ok = true;
+                    if (!ok) return false;
+
+                    if (map[legalY, legalX] == 0x00 || map[legalY, legalX] == 0x05 || map[legalY, legalX] == 0x0a || map[legalY, legalX] == 0x0b || map[legalY, legalX] == 0x0c ||
+                        map[legalY, legalX] == 0x0e || map[legalY, legalX] == 0x0f || map[legalY, legalX] == 0x10 || map[legalY, legalX] == 0x11 || map[legalY, legalX] == 0x12)
+                        return false;
+                }
+            return true;
+        }
+
+        private int lakePlot(int[,] island, int[,] map, int lakeNumber, int y, int x, bool fill = false, int islandNumber = -1)
+        {
+            bool first = true;
+            List<int> toPlot = new List<int>();
+            int plots = 1;
+            while (first || toPlot.Count != 0)
+            {
+                if (!first)
+                {
+                    y = toPlot[0];
+                    toPlot.RemoveAt(0);
+                    x = toPlot[0];
+                    toPlot.RemoveAt(0);
+                } else
+                {
+                    if (fill)
+                        map[y, x] = 0x01;
+                    first = false;
+                }
+
+                for (int dir = 0; dir < 4; dir++)
+                {
+                    int dirX = (dir == 3 ? x - 1 : dir == 1 ? x + 1 : x);
+                    dirX = (dirX == 256 ? 0 : dirX == -1 ? 255 : dirX);
+                    int dirY = (dir == 0 ? y - 1 : dir == 2 ? y + 1 : y);
+                    dirY = (dirY == 256 ? 0 : dirY == -1 ? 255 : dirY);
+
+                    if (island[dirY, dirX] == -1 || (island[dirY, dirX] == lakeNumber && fill))
+                    {
+                        plots++;
+                        island[dirY, dirX] = (fill ? islandNumber : lakeNumber);
+                        if (fill)
+                            map[dirY, dirX] = 0x01;
+
+                        toPlot.Add(dirY);
+                        toPlot.Add(dirX);
+                        //plots += lakePlot(island, map, lakeNumber, y, x, fill);
+                    }
+                }
+            }
+
+            return plots;
+        }
+
+        private bool mapLegalStart(int[,] island, int y, int x, int size = 10, int islandNumber = -1)
+        {
+            for (int lnI = 0 - size; lnI <= size; lnI++)
+                for (int lnJ = 0 - size; lnJ <= size; lnJ++)
+                {
+                    int x1 = (x + lnI < 0 ? x + lnI + 256 : x + lnI > 255 ? x + lnI - 256 : x + lnI);
+                    int y1 = (y + lnI < 0 ? y + lnI + 256 : y + lnI > 255 ? y + lnI - 256 : y + lnI);
+                    
+                    if (island[y1, x1] != islandNumber) return false;
+                }
+
+            return true;
+        }
+
+        private bool mapLegalPlot(int[,] island, int y, int x, int dir, int islandNumber)
+        {
+            x = (dir == 1 ? x + 1 : dir == 3 ? x - 1 : x);
+            y = (dir == 0 ? y - 1 : dir == 2 ? y + 1 : y);
+
+            int minRange = (islandNumber == 5 ? -3 : -1);
+            int maxRange = (islandNumber == 5 ? 3 : 1);
+
+            for (int lnI = minRange; lnI <= maxRange; lnI++)
+                for (int lnJ = minRange; lnJ <= maxRange; lnJ++)
+                {
+                    int x1 = (x + lnI < 0 ? x + lnI + 256 : x + lnI > 255 ? x + lnI - 256 : x + lnI);
+                    int y1 = (y + lnJ < 0 ? y + lnJ + 256 : y + lnJ > 255 ? y + lnJ - 256 : y + lnJ);
+
+                    if (island[y1, x1] != islandNumber && island[y1, x1] != -1) return false;
+                }
+
+            return true;
+        }
+
+        private int randomizeTile(Random r1, int lastTile, int upperTile)
+        {
+            // 90% chance of tile repeating
+            if (r1.Next() % 10 != 0)
+                return lastTile;
+
+            // If not, 75% chance of tile repeating the last row's tile.
+            if (r1.Next() % 4 == 0)
+                return upperTile;
+
+            // If not, 33% chance of tile being water straight out.
+            if (r1.Next() % 3 == 0)
+                return 4;
+
+            // Otherwise, straight random tile from 1-7.
+            return ((r1.Next() % 7) + 1);
+        }
+
         private void randomizeMap(Random r1)
         {
             // We need to make four islands.  One to get the prince, one to get the princess, one for the approach to Lianport, one for Lianport itself, 
@@ -899,7 +1671,7 @@ namespace DW2Randomizer
             return randomLand;
         }
 
-        private void shipPlacement(int[,] map, int byteToUse, int top, int left)
+        private void shipPlacement(int[,] island, int byteToUse, int top, int left, int maxLake = 0)
         {
             int minDirection = -99;
             int minDistance = 999;
@@ -916,7 +1688,7 @@ namespace DW2Randomizer
                 {
                     for (lnJ = top; lnJ >= 0; lnJ--)
                     {
-                        if (map[lnJ, lnK] == 0x04)
+                        if (island[lnJ, lnK] == maxLake)
                             break;
                         distance++;
                     }
@@ -924,7 +1696,7 @@ namespace DW2Randomizer
                 {
                     for (lnJ = top; lnJ < 256; lnJ++)
                     {
-                        if (map[lnJ, lnK] == 0x04)
+                        if (island[lnJ, lnK] == maxLake)
                             break;
                         distance++;
                     }
@@ -933,7 +1705,7 @@ namespace DW2Randomizer
                 {
                     for (lnK = left; lnK < 256; lnK++)
                     {
-                        if (map[lnJ, lnK] == 0x04)
+                        if (island[lnJ, lnK] == maxLake)
                             break;
                         distance++;
                     }
@@ -941,7 +1713,7 @@ namespace DW2Randomizer
                 {
                     for (lnK = left; lnK >= 0; lnK--)
                     {
-                        if (map[lnJ, lnK] == 0x04)
+                        if (island[lnJ, lnK] == maxLake)
                             break;
                         distance++;
                     }
@@ -2905,7 +3677,7 @@ namespace DW2Randomizer
             randomLevel = (radSlightIntensity.Checked ? 1 : radModerateIntensity.Checked ? 2 : radHeavyIntensity.Checked ? 3 : 4);
 
             if (chkMap.Checked)
-                randomizeMap(r1);
+                randomizeMapv2(r1);
 
             if (chkEquipment.Checked)
                 randomizeEquipment(r1);
