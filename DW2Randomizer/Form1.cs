@@ -1686,36 +1686,32 @@ namespace DW2Randomizer
                 lnK = left;
                 if (lnI == 0)
                 {
-                    for (lnJ = top; lnJ >= 0; lnJ--)
+                    while (island[lnJ, lnK] != maxLake && distance < 200)
                     {
-                        if (island[lnJ, lnK] == maxLake)
-                            break;
                         distance++;
+                        lnJ = (lnJ == 0 ? 255 : lnJ - 1);
                     }
                 } else if (lnI == 1)
                 {
-                    for (lnJ = top; lnJ < 256; lnJ++)
+                    while (island[lnJ, lnK] != maxLake && distance < 200)
                     {
-                        if (island[lnJ, lnK] == maxLake)
-                            break;
                         distance++;
+                        lnJ = (lnJ == 255 ? 0 : lnJ + 1);
                     }
                 }
                 else if (lnI == 2)
                 {
-                    for (lnK = left; lnK < 256; lnK++)
+                    while (island[lnJ, lnK] != maxLake && distance < 200)
                     {
-                        if (island[lnJ, lnK] == maxLake)
-                            break;
                         distance++;
+                        lnK = (lnK == 255 ? 0 : lnK + 1);
                     }
                 } else
                 {
-                    for (lnK = left; lnK >= 0; lnK--)
+                    while (island[lnJ, lnK] != maxLake && distance < 200)
                     {
-                        if (island[lnJ, lnK] == maxLake)
-                            break;
                         distance++;
+                        lnK = (lnK == 0 ? 255 : lnK - 1);
                     }
                 }
                 if (distance < minDistance)
