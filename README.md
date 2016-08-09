@@ -2,6 +2,7 @@
 ## Features
 - Adjust enemy attributes to DW2 Remix values. **
 - Reduce gold and experience requirements to reduce grinding.
+- Randomize the world map
 - Rename the prince and princess to whatever you want.
 - Randomize XP/GP gains.
 - Randomize equipment powers, as well as who can equip those items.
@@ -18,7 +19,10 @@
 ** If this is done, Army Ant's XP/GP will increase to 6XP/7GP so they are more in line with other enemies in its' class.  Also, Metal Babbles and Metal Slime's attributes will change so they have a very high chance of running, in line with other Dragon Warrior games.
 
 ## To Do/Wishlist
-- Figure out a way to adjust the interface so magic can be randomized effectively without UI confusion. (this will be a 2.0 feature)
+- Figure out a way to adjust the interface so magic can be randomized effectively without UI confusion.
+- Reduce the map to 192x192, 128x128, and 64x64, so completion time can be drastically reduced.
+- Add an option to shrink dungeons, also to shorten completion time.  All the tiles are 2x2; they can be 1x1 instead.  The lighthouse is a big obstacle though...
+- Randomize dungeons (whoa!)
 
 ## Special Thanks
 - Mcgrew, for his Dragon Warrior 1 Randomizer(https://github.com/mcgrew/dwrandomizer), giving me the inspiration to create this randomizer.  Twitch:  http://www.twitch.tv/mcgrew
