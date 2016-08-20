@@ -271,6 +271,39 @@ namespace DW2Randomizer
                     }
                 }
 
+            // Make sure Hargon's Castle is blocked off by mountains
+            for (int lnI = 0; lnI < 256; lnI++)
+                for (int lnJ = 0; lnJ < 256; lnJ++)
+                {
+                    int lowY = (lnI - 1 == -1 ? 255 : lnI - 1);
+                    int lowY2 = (lowY - 1 == -1 ? 255 : lowY - 1);
+                    int highY = (lnI + 1 == 256 ? 0 : lnI + 1);
+                    int highY2 = (highY + 1 == 256 ? 0 : highY + 1);
+                    int lowX = (lnJ - 1 == -1 ? 255 : lnJ - 1);
+                    int lowX2 = (lowX - 1 == -1 ? 255 : lowX - 1);
+                    int highX = (lnJ + 1 == 256 ? 0 : lnJ + 1);
+                    int highX2 = (highX + 1 == 256 ? 0 : highX + 1);
+                    if (island[lnI, lnJ] == 5)
+                    {
+                        if (island[lowY, lnJ] != 5 && island[highY, lnJ] == 5 && island[highY2, lnJ] != 5)
+                        {
+                            map[lowY, lnJ] = 0x05;
+                            map[highY2, lnJ] = 0x05;
+                            island[lowY, lnJ] = 5;
+                            island[highY2, lnJ] = 5;
+                        }
+                        if (island[lnI, lowX] != 5 && island[lnI, highX] == 5 && island[lnI, highX2] != 5)
+                        {
+                            map[lnI, lowX] = 0x05;
+                            map[lnI, highX2] = 0x05;
+                            island[lnI, lowX] = 5;
+                            island[lnI, highX2] = 5;
+                        }
+                    }
+                }
+
+
+            // Make sure Hargon's Castle is blocked off by mountains
             for (int lnI = 0; lnI < 256; lnI++)
                 for (int lnJ = 0; lnJ < 256; lnJ++)
                 {
@@ -299,31 +332,34 @@ namespace DW2Randomizer
                 int y = r1.Next() % 249;
                 if (validPlot(island, map, y, x, 7, 5, new int[] { maxLake }))
                 {
-                    List<int> seaCaveShoals = new List<int> { 1, 2, 3, 5, 6, 8, 9, 10, 14, 15, 19, 20, 24, 25, 26, 28, 29, 31, 32, 33 };
-                    List<int> seaCaveMountains = new List<int> { 7, 11, 12, 13, 16, 18 };
-                    int seaCaveCave = 17;
-                    int lnTileCounter = 0;
+                    if (validSeaPlot(island, y, x, maxLake, 12))
+                    {
+                        List<int> seaCaveShoals = new List<int> { 1, 2, 3, 5, 6, 8, 9, 10, 14, 15, 19, 20, 24, 25, 26, 28, 29, 31, 32, 33 };
+                        List<int> seaCaveMountains = new List<int> { 7, 11, 12, 13, 16, 18 };
+                        int seaCaveCave = 17;
+                        int lnTileCounter = 0;
 
-                    for (int lnJ = 0; lnJ < 7; lnJ++)
-                        for (int lnK = 0; lnK < 5; lnK++)
-                        {
-                            if (seaCaveMountains.Contains(lnTileCounter)) map[y + lnJ, x + lnK] = 0x05;
-                            else if (seaCaveShoals.Contains(lnTileCounter)) map[y + lnJ, x + lnK] = 0x13;
-                            else if (seaCaveCave == lnTileCounter)
+                        for (int lnJ = 0; lnJ < 7; lnJ++)
+                            for (int lnK = 0; lnK < 5; lnK++)
                             {
-                                map[y + lnJ, x + lnK] = 0x0c;
-                                // Also need to update the ROM to indicate where the Sea Cave is in case the Moon Fragment was used.
-                                romData[0xa2e3] = (byte)(x + lnK);
-                                romData[0xa2e4] = (byte)(y + lnJ);
+                                if (seaCaveMountains.Contains(lnTileCounter)) map[y + lnJ, x + lnK] = 0x05;
+                                else if (seaCaveShoals.Contains(lnTileCounter)) map[y + lnJ, x + lnK] = 0x13;
+                                else if (seaCaveCave == lnTileCounter)
+                                {
+                                    map[y + lnJ, x + lnK] = 0x0c;
+                                    // Also need to update the ROM to indicate where the Sea Cave is in case the Moon Fragment was used.
+                                    romData[0xa2e3] = (byte)(x + lnK);
+                                    romData[0xa2e4] = (byte)(y + lnJ);
 
-                                romData[0x198ef] = romData[0x3e154] = (byte)(x - 2);
-                                romData[0x198f3] = romData[0x3e158] = (byte)(x + 5 + 2);
-                                romData[0x198f9] = romData[0x3e15e] = (byte)(y - 2);
-                                romData[0x198fd] = romData[0x3e162] = (byte)(y + 7 + 2);
+                                    romData[0x198ef] = romData[0x3e154] = (byte)(x - 2);
+                                    romData[0x198f3] = romData[0x3e158] = (byte)(x + 5 + 2);
+                                    romData[0x198f9] = romData[0x3e15e] = (byte)(y - 2);
+                                    romData[0x198fd] = romData[0x3e162] = (byte)(y + 7 + 2);
+                                }
+                                lnTileCounter++;
                             }
-                            lnTileCounter++;
-                        }
-                    seaLegal = true;
+                        seaLegal = true;
+                    }
                 }
             }
 
@@ -334,34 +370,41 @@ namespace DW2Randomizer
                 int y = r1.Next() % 250;
                 if (validPlot(island, map, y, x, 7, 5, new int[] { maxLake }))
                 {
-                    List<int> worldTreeMountains;
-                    List<int> worldTreeDesert;
-                    if (r1.Next() % 2 == 0)
+                    // Confirm that the starting point is no more than 12 squares away from main land.
+                    if (validSeaPlot(island, y, x, maxLake, 12))
                     {
-                        worldTreeMountains = new List<int> { 1, 2, 3, 4, 5, 7, 8, 12, 13, 20, 21, 27, 28, 29, 33, 34, 36, 37, 38, 39, 40 };
-                        worldTreeDesert = new List<int> { 9, 10, 11, 14, 15, 16, 18, 19, 22, 23, 24, 25, 26, 30, 31, 32 };
-                    }
-                    else
-                    {
-                        worldTreeMountains = new List<int> { 1, 2, 3, 4, 5, 7, 8, 12, 13, 14, 21, 27, 28, 29, 33, 34, 36, 37, 38, 39, 40 };
-                        worldTreeDesert = new List<int> { 9, 10, 11, 15, 16, 18, 19, 20, 22, 23, 24, 25, 26, 30, 31, 32 };
-                    }
-                    int worldTree = 17;
-                    int lnTileCounter = 0;
-
-                    for (int lnJ = 0; lnJ < 6; lnJ++)
-                        for (int lnK = 0; lnK < 7; lnK++)
+                        List<int> worldTreeMountains;
+                        List<int> worldTreeDesert;
+                        if (r1.Next() % 2 == 0)
                         {
-                            if (worldTreeMountains.Contains(lnTileCounter)) map[lnJ + y, lnK + x] = 0x05;
-                            else if (worldTreeDesert.Contains(lnTileCounter)) map[lnJ + y, lnK + x] = 0x02;
-                            else if (worldTree == lnTileCounter) map[lnJ + y, lnK + x] = 0x03;
-                            // Also need to update the ROM to indicate the World Tree location.
-                            romData[0x19f20] = (byte)(lnK + x);
-                            romData[0x19f21] = (byte)(lnJ + y);
-
-                            lnTileCounter++;
+                            worldTreeMountains = new List<int> { 1, 2, 3, 4, 5, 7, 8, 12, 13, 20, 21, 27, 28, 29, 33, 34, 36, 37, 38, 39, 40 };
+                            worldTreeDesert = new List<int> { 9, 10, 11, 14, 15, 16, 18, 19, 22, 23, 24, 25, 26, 30, 31, 32 };
                         }
-                    treeLegal = true;
+                        else
+                        {
+                            worldTreeMountains = new List<int> { 1, 2, 3, 4, 5, 7, 8, 12, 13, 14, 21, 27, 28, 29, 33, 34, 36, 37, 38, 39, 40 };
+                            worldTreeDesert = new List<int> { 9, 10, 11, 15, 16, 18, 19, 20, 22, 23, 24, 25, 26, 30, 31, 32 };
+                        }
+                        int worldTree = 17;
+                        int lnTileCounter = 0;
+
+                        for (int lnJ = 0; lnJ < 6; lnJ++)
+                            for (int lnK = 0; lnK < 7; lnK++)
+                            {
+                                if (worldTreeMountains.Contains(lnTileCounter)) map[lnJ + y, lnK + x] = 0x05;
+                                else if (worldTreeDesert.Contains(lnTileCounter)) map[lnJ + y, lnK + x] = 0x02;
+                                else if (worldTree == lnTileCounter)
+                                {
+                                    map[lnJ + y, lnK + x] = 0x03;
+                                    // Also need to update the ROM to indicate the World Tree location.
+                                    romData[0x19f20] = (byte)(lnK + x);
+                                    romData[0x19f21] = (byte)(lnJ + y);
+                                }
+
+                                lnTileCounter++;
+                            }
+                        treeLegal = true;
+                    }
                 }
             }
 
@@ -372,10 +415,13 @@ namespace DW2Randomizer
                 int rubissY = r1.Next() % 256;
                 if (mapLegalStart(island, rubissY, rubissX, 4, 256))
                 {
-                    map[rubissY, rubissX] = 0x0b;
-                    romData[0xa2d7] = (byte)rubissX;
-                    romData[0xa2d8] = (byte)rubissY;
-                    rubissLegal = true;
+                    if (validSeaPlot(island, rubissY, rubissX, maxLake, 8))
+                    {
+                        map[rubissY, rubissX] = 0x0b;
+                        romData[0xa2d7] = (byte)rubissX;
+                        romData[0xa2d8] = (byte)rubissY;
+                        rubissLegal = true;
+                    }
                 }
             }
 
@@ -386,11 +432,14 @@ namespace DW2Randomizer
                 int treasuresY = r1.Next() % 256;
                 if (mapLegalStart(island, treasuresY, treasuresX, 4, 256))
                 {
-                    map[treasuresY, treasuresX] = 0x13;
-                    // Also need to update the ROM to indicate the treasures spot.  (make sure it's vertical - 1!)
-                    romData[0x19f1c] = (byte)treasuresX;
-                    romData[0x19f1d] = (byte)(treasuresY + 1);
-                    treasuresLegal = true;
+                    if (validSeaPlot(island, treasuresY, treasuresX, 8))
+                    {
+                        map[treasuresY, treasuresX] = 0x13;
+                        // Also need to update the ROM to indicate the treasures spot.  (make sure it's vertical - 1!)
+                        romData[0x19f1c] = (byte)treasuresX;
+                        romData[0x19f1d] = (byte)(treasuresY + 1);
+                        treasuresLegal = true;
+                    }
                 }
             }
 
@@ -695,13 +744,14 @@ namespace DW2Randomizer
                 int x = r1.Next() % 253;
                 int y = r1.Next() % 253;
 
-                if (validPlot(island, map, y, x, 1, 1, (lnI == 0 ? new int[] { 0, 1 } : new int[] { 0, 1, 2, 3, 4 })))
+                // Need to make sure it's a valid 7x7 plot due to dropping with the Cloak of wind...
+                if (validPlot(island, map, y, x, 7, 7, (lnI == 0 ? new int[] { 0, 1 } : new int[] { 0, 1, 2, 3, 4 })))
                 {
-                    map[y, x] = 0x0a;
+                    map[y + 3, x + 3] = 0x0a;
 
                     int byteToUse2 = (lnI == 0 ? 0xa2e6 : 0xa2ec);
-                    romData[byteToUse2] = (byte)x;
-                    romData[byteToUse2 + 1] = (byte)(y);
+                    romData[byteToUse2] = (byte)(x + 3);
+                    romData[byteToUse2 + 1] = (byte)(y + 3);
                 }
                 else
                     lnI--;
@@ -779,6 +829,41 @@ namespace DW2Randomizer
                         monsterZones[lnI, lnJ] = (r1.Next() % 60) + ((r1.Next() % 4) * 64);
                     romData[0x103d6 + (lnI * 16) + lnJ] = (byte)monsterZones[lnI, lnJ];
                 }
+        }
+
+        private bool validSeaPlot(int[,] island, int y, int x, int maxLake, int steps = 8)
+        {
+            int y1 = y;
+            int x1 = x;
+            for (int lnI = 0; lnI < steps; lnI++)
+            {
+                y1--;
+                y1 = (y1 < 0 ? y1 + 256 : y1);
+                if (island[y1, x1] != maxLake) return true;
+            }
+            y1 = y;
+            for (int lnI = 0; lnI < steps; lnI++)
+            {
+                y1++;
+                y1 = (y1 >= 256 ? y1 - 256 : y1);
+                if (island[y1, x1] != maxLake) return true;
+            }
+
+            y1 = y;
+            for (int lnI = 0; lnI < steps; lnI++)
+            {
+                x1++;
+                x1 = (x1 >= 256 ? x1 - 256 : x1);
+                if (island[y1, x1] != maxLake) return true;
+            }
+            x1 = x;
+            for (int lnI = 0; lnI < steps; lnI++)
+            {
+                x1--;
+                x1 = (x1 < 0 ? x1 + 256 : x1);
+                if (island[y1, x1] != maxLake) return true;
+            }
+            return false;
         }
 
         private bool validPlot(int[,] island, int[,] map, int y, int x, int height, int width, int[] legalIsland)
