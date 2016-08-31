@@ -126,15 +126,23 @@ namespace DW2Randomizer
             InitializeComponent();
         }
 
-        private void randomizeMapv2(Random r1)
+        private bool randomizeMapv2(Random r1)
         {
             int[,] map = new int[256, 256];
             int[,] island = new int[256, 256];
             for (int lnI = 0; lnI < 256; lnI++)
                 for (int lnJ = 0; lnJ < 256; lnJ++)
                 {
-                    map[lnI, lnJ] = 0x04;
-                    island[lnI, lnJ] = -1;
+                    if (chkSmallMap.Checked && (lnI >= 128 || lnJ >= 128))
+                    {
+                        map[lnI, lnJ] = 0x05;
+                        island[lnI, lnJ] = 200;
+                    }
+                    else
+                    {
+                        map[lnI, lnJ] = 0x04;
+                        island[lnI, lnJ] = -1;
+                    }
                 }
 
             for (int lnI = 0; lnI < 6; lnI++)
@@ -144,18 +152,18 @@ namespace DW2Randomizer
                 bool legal = false;
                 while (!legal)
                 {
-                    int startX = (r1.Next() % 256);
-                    int startY = (r1.Next() % 256);
+                    int startX = (r1.Next() % (chkSmallMap.Checked ? 128 : 256));
+                    int startY = (r1.Next() % (chkSmallMap.Checked ? 128 : 256));
                     if (lnI == 3 && island[startY, startX] == 2)
                     {
                         int spaces = 0;
-                        while (island[startY, startX] == 2 && spaces <= 256)
+                        while (island[startY, startX] == 2 && startY >= 5) // spaces <= 256
                         {
                             startY--;
-                            startY = (startY == -1 ? 255 : startY);
+                            //startY = (startY == -1 ? 255 : startY);
                             spaces++;
                         }                            
-                        if (mapLegalPlot(island, startY, startX, 0, lnI) && spaces >= 3 && spaces <= 240)
+                        if (mapLegalPlot(island, startY, startX, 0, lnI) && spaces >= 3 && spaces <= 240 && startY >= 5)
                         {
                             startY--;
                             int startY2 = (startY - 1 < 0 ? startY + 256 - 1 : startY - 1);
@@ -188,6 +196,8 @@ namespace DW2Randomizer
                 }
 
                 int islandSize = (lnI == 0 ? 1500 : lnI == 1 ? 2500 : lnI == 2 ? 1500 : lnI == 3 ? 1500 : lnI == 4 ? 5000 : 5000);
+                islandSize /= (chkSmallMap.Checked ? 4 : 1);
+                int mapTries = 0;
                 for (int lnJ = 0; lnJ < islandSize; lnJ++)
                 {
                     bool legal2 = false;
@@ -197,6 +207,11 @@ namespace DW2Randomizer
                         int dir = (r1.Next() % 4);
                         if (mapLegalPlot(island, y, x, dir, lnI))
                         {
+                            int maxLimit = (chkSmallMap.Checked ? 126 : 254);
+                            if (dir == 0 && y == 1) continue;
+                            if (dir == 1 && x == maxLimit) continue;
+                            if (dir == 2 && y == maxLimit) continue;
+                            if (dir == 3 && x == 1) continue;
                             if (dir == 0)
                                 y = (y == 0 ? 255 : y - 1);
                             else if (dir == 1)
@@ -206,12 +221,20 @@ namespace DW2Randomizer
                             if (dir == 3)
                                 x = (x == 0 ? 255 : x - 1);
 
-                            if (map[y, x] != 0x04) lnJ--;
+                            if (map[y, x] != 0x04) { lnJ--; mapTries++; }
                             if (map[y, x] != 0x0a)
                                 map[y, x] = (lnI == 0 ? 0x01 : lnI == 1 ? 0x06 : lnI == 2 ? 0x03 : lnI == 3 ? 0x02 : lnI == 4 ? 0x07 : 0x05);
                             island[y, x] = lnI;
                             legal2 = true;
+                        } else
+                        {
+                            mapTries++;
                         }
+                    }
+                    if (mapTries >= 50000)
+                    {
+                        // Retry the map again.
+                        return false;
                     }
                 }
             }
@@ -242,9 +265,44 @@ namespace DW2Randomizer
                     }
                 }
 
+            // Remove tiny gaps
+            for (int lnI = 3; lnI < (chkSmallMap.Checked ? 128 : 256); lnI++)
+                for (int lnJ = 3; lnJ < (chkSmallMap.Checked ? 128 : 256); lnJ++)
+                {
+                    int lowY = (lnI - 1 == -1 ? 255 : lnI - 1);
+                    int lowY2 = (lowY - 1 == -1 ? 255 : lowY - 1);
+                    int lowY3 = (lowY2 - 1 == -1 ? 255 : lowY2 - 1);
+                    int lowX = (lnJ - 1 == -1 ? 255 : lnJ - 1);
+                    int lowX2 = (lowX - 1 == -1 ? 255 : lowX - 1);
+                    int lowX3 = (lowX2 - 1 == -1 ? 255 : lowX2 - 1);
+
+                    int islandUsed = island[lnI, lnJ];
+                    if (islandUsed <= 5 && map[lowY, lnJ] == 0x04 && island[lowY2, lnJ] == islandUsed)
+                    {
+                        island[lowY, lnJ] = islandUsed;
+                        map[lowY, lnJ] = (islandUsed == 0 ? 0x01 : islandUsed == 1 ? 0x06 : islandUsed == 2 ? 0x03 : islandUsed == 3 ? 0x02 : islandUsed == 4 ? 0x07 : 0x05);
+                    }
+                    if (islandUsed <= 5 && map[lowY, lnJ] == 0x04 && map[lowY2, lnJ] == 0x04 && island[lowY3, lnJ] == islandUsed)
+                    {
+                        island[lowY, lnJ] = island[lowY2, lnJ] = islandUsed;
+                        map[lowY, lnJ] = map[lowY2, lnJ] = (islandUsed == 0 ? 0x01 : islandUsed == 1 ? 0x06 : islandUsed == 2 ? 0x03 : islandUsed == 3 ? 0x02 : islandUsed == 4 ? 0x07 : 0x05);
+                    }
+
+                    if (islandUsed <= 5 && map[lnI, lowX] == 0x04 && island[lnI, lowX2] == islandUsed)
+                    {
+                        island[lnI, lowX] = islandUsed;
+                        map[lnI, lowX] = (islandUsed == 0 ? 0x01 : islandUsed == 1 ? 0x06 : islandUsed == 2 ? 0x03 : islandUsed == 3 ? 0x02 : islandUsed == 4 ? 0x07 : 0x05);
+                    }
+                    if (islandUsed <= 5 && map[lnI, lowX] == 0x04 && map[lnI, lowX2] == 0x04 && island[lnI, lowX3] == islandUsed)
+                    {
+                        island[lnI, lowX] = island[lnI, lowX2] = islandUsed;
+                        map[lnI, lowX] = map[lnI, lowX2] = (islandUsed == 0 ? 0x01 : islandUsed == 1 ? 0x06 : islandUsed == 2 ? 0x03 : islandUsed == 3 ? 0x02 : islandUsed == 4 ? 0x07 : 0x05);
+                    }
+                }
+
             // Make sure Hargon's Castle is thick enough so we can have a path...
-            for (int lnI = 0; lnI < 256; lnI++)
-                for (int lnJ = 0; lnJ < 256; lnJ++)
+            for (int lnI = 2; lnI < (chkSmallMap.Checked ? 128 : 256); lnI++)
+                for (int lnJ = 2; lnJ < (chkSmallMap.Checked ? 128 : 256); lnJ++)
                 {
                     int lowY = (lnI - 1 == -1 ? 255 : lnI - 1);
                     int lowY2 = (lowY - 1 == -1 ? 255 : lowY - 1);
@@ -257,40 +315,9 @@ namespace DW2Randomizer
                     }
                 }
 
-            // Make sure Hargon's Castle is thick enough so we can have a path...
-            //for (int lnI = 0; lnI < 256; lnI++)
-            //    for (int lnJ = 0; lnJ < 256; lnJ++)
-            //    {
-            //        int lowY = (lnI - 1 == -1 ? 255 : lnI - 1);
-            //        int lowY2 = (lowY - 1 == -1 ? 255 : lowY - 1);
-            //        int highY = (lnI + 1 == 256 ? 0 : lnI + 1);
-            //        int highY2 = (highY + 1 == 256 ? 0 : highY + 1);
-            //        int lowX = (lnJ - 1 == -1 ? 255 : lnJ - 1);
-            //        int lowX2 = (lowX - 1 == -1 ? 255 : lowX - 1);
-            //        int highX = (lnJ + 1 == 256 ? 0 : lnJ + 1);
-            //        int highX2 = (highX + 1 == 256 ? 0 : highX + 1);
-            //        if (island[lnI, lnJ] == 5)
-            //        {
-            //            if (island[lowY, lnJ] != 5 && island[highY, lnJ] == 5 && island[highY2, lnJ] != 5)
-            //            {
-            //                map[lowY, lnJ] = 0x05;
-            //                map[highY2, lnJ] = 0x05;
-            //                island[lowY, lnJ] = 5;
-            //                island[highY2, lnJ] = 5;
-            //            }
-            //            if (island[lnI, lowX] != 5 && island[lnI, highX] == 5 && island[lnI, highX2] != 5)
-            //            {
-            //                map[lnI, lowX] = 0x05;
-            //                map[lnI, highX2] = 0x05;
-            //                island[lnI, lowX] = 5;
-            //                island[lnI, highX2] = 5;
-            //            }
-            //        }
-            //    }
-
             // Make sure Hargon's Castle is blocked off by mountains
-            for (int lnI = 0; lnI < 256; lnI++)
-                for (int lnJ = 0; lnJ < 256; lnJ++)
+            for (int lnI = 1; lnI < (chkSmallMap.Checked ? 127 : 255); lnI++)
+                for (int lnJ = 1; lnJ < (chkSmallMap.Checked ? 127 : 255); lnJ++)
                 {
                     int lowY = (lnI - 1 == -1 ? 255 : lnI - 1);
                     int highY = (lnI + 1 == 256 ? 0 : lnI + 1);
@@ -315,8 +342,8 @@ namespace DW2Randomizer
             bool moonLegal = false;
             while (!moonLegal)
             {
-                int x = r1.Next() % 245;
-                int y = r1.Next() % 245;
+                int x = r1.Next() % (chkSmallMap.Checked ? 117 : 245);
+                int y = r1.Next() % (chkSmallMap.Checked ? 117 : 245);
                 if (validPlot(island, map, y, x, 10, 10, new int[] { 0, 1, 2, 3, 4 }))
                 {
                     for (int lnJ = 1; lnJ <= 5; lnJ++)
@@ -374,8 +401,8 @@ namespace DW2Randomizer
             bool seaLegal = false;
             while (!seaLegal)
             {
-                int x = r1.Next() % 251;
-                int y = r1.Next() % 249;
+                int x = r1.Next() % (chkSmallMap.Checked ? 123 : 251);
+                int y = r1.Next() % (chkSmallMap.Checked ? 121 : 249);
                 if (validPlot(island, map, y, x, 7, 5, new int[] { maxLake }))
                 {
                     if (validSeaPlot(island, y, x, maxLake, 12))
@@ -412,8 +439,8 @@ namespace DW2Randomizer
             bool treeLegal = false;
             while (!treeLegal)
             {
-                int x = r1.Next() % 249;
-                int y = r1.Next() % 250;
+                int x = r1.Next() % (chkSmallMap.Checked ? 121 : 249);
+                int y = r1.Next() % (chkSmallMap.Checked ? 122 : 250);
                 if (validPlot(island, map, y, x, 1, 1, new int[] { maxLake }))
                 {
                     // Confirm that the starting point is no more than 8 squares away from main land.
@@ -432,8 +459,8 @@ namespace DW2Randomizer
             bool rubissLegal = false;
             while (!rubissLegal)
             {
-                int rubissX = r1.Next() % 256;
-                int rubissY = r1.Next() % 256;
+                int rubissX = r1.Next() % (chkSmallMap.Checked ? 128 : 256);
+                int rubissY = r1.Next() % (chkSmallMap.Checked ? 128 : 256);
                 if (mapLegalStart(island, rubissY, rubissX, 4, 256))
                 {
                     if (validSeaPlot(island, rubissY, rubissX, maxLake))
@@ -449,8 +476,8 @@ namespace DW2Randomizer
             bool treasuresLegal = false;
             while (!treasuresLegal)
             {
-                int treasuresX = r1.Next() % 256;
-                int treasuresY = r1.Next() % 256;
+                int treasuresX = r1.Next() % (chkSmallMap.Checked ? 128 : 256);
+                int treasuresY = r1.Next() % (chkSmallMap.Checked ? 128 : 256);
                 if (mapLegalStart(island, treasuresY, treasuresX, 4, 256))
                 {
                     if (validSeaPlot(island, treasuresY, treasuresX, maxLake))
@@ -467,8 +494,8 @@ namespace DW2Randomizer
             bool rhoneLegal = false;
             while (!rhoneLegal)
             {
-                int x = r1.Next() % 248;
-                int y = r1.Next() % 250;
+                int x = r1.Next() % (chkSmallMap.Checked ? 120 : 248);
+                int y = r1.Next() % (chkSmallMap.Checked ? 122 : 250);
                 if (validPlot(island, map, y, x, 6, 8, new int[] { 0, 1, 2, 3, 4 }))
                 {
                     int rhoneCaveX = r1.Next() % 6;
@@ -501,8 +528,8 @@ namespace DW2Randomizer
             bool lakeLegal = false;
             while (!lakeLegal)
             {
-                int x = r1.Next() % 250;
-                int y = r1.Next() % 250;
+                int x = r1.Next() % (chkSmallMap.Checked ? 128 : 256);
+                int y = r1.Next() % (chkSmallMap.Checked ? 128 : 256);
                 if (validPlot(island, map, y, x, 1, 1, new int[] { 0, 1 }))
                 {
                     map[y, x] = 0x0c;
@@ -542,8 +569,8 @@ namespace DW2Randomizer
             bool mirrorLegal = false;
             while (!mirrorLegal)
             {
-                int x = r1.Next() % 250;
-                int y = r1.Next() % 250;
+                int x = r1.Next() % (chkSmallMap.Checked ? 122 : 250);
+                int y = r1.Next() % (chkSmallMap.Checked ? 122 : 250);
                 if (validPlot(island, map, y, x, 5, 6, new int[] { 0, 1 }))
                 {
                     for (int lnJ = 1; lnJ < 4; lnJ++)
@@ -565,8 +592,8 @@ namespace DW2Randomizer
             // We'll place all of the castles now.
             for (int lnI = 0; lnI < 7; lnI++)
             {
-                int x = r1.Next() % 253;
-                int y = r1.Next() % 253;
+                int x = r1.Next() % (chkSmallMap.Checked ? 125 : 253);
+                int y = r1.Next() % (chkSmallMap.Checked ? 125 : 253);
 
                 if (validPlot(island, map, y, x, 2, 2, (lnI == 0 || lnI == 1 ? new int[] { 0 } : lnI == 6 ? new int[] { 5 } : new int[] { 0, 1, 2, 3, 4 })))
                 {
@@ -613,8 +640,8 @@ namespace DW2Randomizer
             // Now we'll place all of the towns now.
             for (int lnI = 0; lnI < 7; lnI++)
             {
-                int x = r1.Next() % 253;
-                int y = r1.Next() % 253;
+                int x = r1.Next() % (chkSmallMap.Checked ? 125 : 253);
+                int y = r1.Next() % (chkSmallMap.Checked ? 125 : 253);
 
                 if (validPlot(island, map, y, x, 1, 2, (lnI == 0 ? new int[] { 0 } : lnI == 1 ? new int[] { 1 } : lnI == 2 ? new int[] { 3 } : new int[] { 0, 1, 2, 3, 4 })))
                 {
@@ -659,8 +686,8 @@ namespace DW2Randomizer
             // Then the monoliths.
             for (int lnI = 0; lnI < 12; lnI++)
             {
-                int x = r1.Next() % 253;
-                int y = r1.Next() % 253;
+                int x = r1.Next() % (chkSmallMap.Checked ? 125 : 253);
+                int y = r1.Next() % (chkSmallMap.Checked ? 125 : 253);
 
                 if (validPlot(island, map, y, x, 1, 1, (lnI == 1 ? new int[] { 0 } : lnI == 8 ? new int[] { 1 } : lnI == 7 ? new int[] { 2 } : lnI == 6 ? new int[] { 5 } : new int[] { 0, 1, 2, 3, 4 })))
                 {
@@ -687,8 +714,8 @@ namespace DW2Randomizer
             // Then the caves.
             for (int lnI = 0; lnI < 6; lnI++)
             {
-                int x = r1.Next() % 253;
-                int y = r1.Next() % 253;
+                int x = r1.Next() % (chkSmallMap.Checked ? 123 : 253);
+                int y = r1.Next() % (chkSmallMap.Checked ? 123 : 253);
 
                 if (validPlot(island, map, y, x, 1, 1, (lnI == 2 ? new int[] { 0 } : lnI == 3 ? new int[] { 1 } : lnI == 4 ? new int[] { 5 } : new int[] { 0, 1, 2, 3, 4 })))
                 {
@@ -705,8 +732,8 @@ namespace DW2Randomizer
             // Finally the towers
             for (int lnI = 0; lnI < 2; lnI++)
             {
-                int x = r1.Next() % 253;
-                int y = r1.Next() % 253;
+                int x = r1.Next() % (chkSmallMap.Checked ? 125 : 253);
+                int y = r1.Next() % (chkSmallMap.Checked ? 125 : 253);
 
                 // Need to make sure it's a valid 7x7 plot due to dropping with the Cloak of wind...
                 if (validPlot(island, map, y, x, 7, 7, (lnI == 0 ? new int[] { 0, 1 } : new int[] { 0, 1, 2, 3, 4 })))
@@ -792,6 +819,17 @@ namespace DW2Randomizer
                 // Must compress the map by getting rid of further 1 byte lakes
             }
 
+            if (chkSmallMap.Checked)
+            {
+                romData[0x10083] = 0x85;
+                romData[0x10084] = 0xd5;
+                romData[0x10085] = 0xa5;
+                romData[0x10086] = 0x17;
+                romData[0x10087] = 0x29;
+                romData[0x10088] = 0x78;
+                romData[0x10089] = 0x0a;
+            }
+
             // Enter monster zones
             for (int lnI = 0; lnI < 16; lnI++)
                 for (int lnJ = 0; lnJ < 16; lnJ++)
@@ -800,6 +838,8 @@ namespace DW2Randomizer
                         monsterZones[lnI, lnJ] = (r1.Next() % 60) + ((r1.Next() % 4) * 64);
                     romData[0x103d6 + (lnI * 16) + lnJ] = (byte)monsterZones[lnI, lnJ];
                 }
+
+            return true;
         }
 
         private bool validSeaPlot(int[,] island, int y, int x, int maxLake, int steps = 8)
@@ -809,6 +849,7 @@ namespace DW2Randomizer
             for (int lnI = 0; lnI < steps; lnI++)
             {
                 y1--;
+                if (y1 == 0 || y1 == (chkSmallMap.Checked ? 128 : 256)) return false;
                 y1 = (y1 < 0 ? y1 + 256 : y1);
                 if (island[y1, x1] != maxLake && lnI == 0) return false;
                 if (island[y1, x1] != maxLake) return true;
@@ -817,6 +858,7 @@ namespace DW2Randomizer
             for (int lnI = 0; lnI < steps; lnI++)
             {
                 y1++;
+                if (y1 == 0 || y1 == (chkSmallMap.Checked ? 128 : 256)) return false;
                 y1 = (y1 >= 256 ? y1 - 256 : y1);
                 if (island[y1, x1] != maxLake && lnI == 0) return false;
                 if (island[y1, x1] != maxLake) return true;
@@ -826,6 +868,7 @@ namespace DW2Randomizer
             for (int lnI = 0; lnI < steps; lnI++)
             {
                 x1++;
+                if (x1 == 0 || x1 == (chkSmallMap.Checked ? 128 : 256)) return false;
                 x1 = (x1 >= 256 ? x1 - 256 : x1);
                 if (island[y1, x1] != maxLake && lnI == 0) return false;
                 if (island[y1, x1] != maxLake) return true;
@@ -834,6 +877,7 @@ namespace DW2Randomizer
             for (int lnI = 0; lnI < steps; lnI++)
             {
                 x1--;
+                if (x1 == 0 || x1 == (chkSmallMap.Checked ? 128 : 256)) return false;
                 x1 = (x1 < 0 ? x1 + 256 : x1);
                 if (island[y1, x1] != maxLake && lnI == 0) return false;
                 if (island[y1, x1] != maxLake) return true;
@@ -848,6 +892,8 @@ namespace DW2Randomizer
             for (int lnI = 0; lnI < height; lnI++)
                 for (int lnJ = 0; lnJ < width; lnJ++)
                 {
+                    if (y + lnI >= (chkSmallMap.Checked ? 128 : 256) || x + lnJ >= (chkSmallMap.Checked ? 128 : 256)) return false;
+
                     int legalY = (y + lnI >= 256 ? y - 256 + lnI : y + lnI);
                     int legalX = (x + lnJ >= 256 ? x - 256 + lnJ : x + lnJ);
 
@@ -913,8 +959,9 @@ namespace DW2Randomizer
             for (int lnI = 0 - size; lnI <= size; lnI++)
                 for (int lnJ = 0 - size; lnJ <= size; lnJ++)
                 {
+                    if (x + lnI < 0 || x + lnI >= (chkSmallMap.Checked ? 128 : 256) || y + lnJ < 0 || y + lnJ >= (chkSmallMap.Checked ? 128 : 256)) return false;
                     int x1 = (x + lnI < 0 ? x + lnI + 256 : x + lnI > 255 ? x + lnI - 256 : x + lnI);
-                    int y1 = (y + lnI < 0 ? y + lnI + 256 : y + lnI > 255 ? y + lnI - 256 : y + lnI);
+                    int y1 = (y + lnJ < 0 ? y + lnJ + 256 : y + lnJ > 255 ? y + lnJ - 256 : y + lnJ);
                     
                     if (island[y1, x1] != islandNumber) return false;
                 }
@@ -933,6 +980,7 @@ namespace DW2Randomizer
             for (int lnI = minRange; lnI <= maxRange; lnI++)
                 for (int lnJ = minRange; lnJ <= maxRange; lnJ++)
                 {
+                    if (x + lnI < 0 || x + lnI >= (chkSmallMap.Checked ? 128 : 256) || y + lnJ < 0 || y + lnJ >= (chkSmallMap.Checked ? 128 : 256)) return false;
                     int x1 = (x + lnI < 0 ? x + lnI + 256 : x + lnI > 255 ? x + lnI - 256 : x + lnI);
                     int y1 = (y + lnJ < 0 ? y + lnJ + 256 : y + lnJ > 255 ? y + lnJ - 256 : y + lnJ);
 
@@ -3735,7 +3783,12 @@ namespace DW2Randomizer
             randomLevel = (radSlightIntensity.Checked ? 1 : radModerateIntensity.Checked ? 2 : radHeavyIntensity.Checked ? 3 : 4);
 
             if (chkMap.Checked)
-                randomizeMapv2(r1);
+            {
+                bool goodMap = false;
+                while (!goodMap)
+                    goodMap = randomizeMapv2(r1);
+            }
+                
 
             if (chkEquipment.Checked)
                 randomizeEquipment(r1);
@@ -3951,6 +4004,7 @@ namespace DW2Randomizer
             chkXPRandomize.Checked = (txtFlags.Text.Contains("X"));
             chkGPRandomize.Checked = (txtFlags.Text.Contains("G"));
             chkMap.Checked = (txtFlags.Text.Contains("U"));
+            chkSmallMap.Checked = (txtFlags.Text.Contains("u"));
             chkEquipment.Checked = (txtFlags.Text.Contains("Q"));
             chkWhoCanEquip.Checked = (txtFlags.Text.Contains("W"));
             chkEquipEffects.Checked = (txtFlags.Text.Contains("E"));
@@ -3986,6 +4040,8 @@ namespace DW2Randomizer
                 flags += "G";
             if (chkMap.Checked)
                 flags += "U";
+            if (chkSmallMap.Checked)
+                flags += "u";
             if (chkEquipment.Checked)
                 flags += "Q";
             if (chkWhoCanEquip.Checked)

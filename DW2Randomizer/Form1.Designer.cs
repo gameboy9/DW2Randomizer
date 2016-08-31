@@ -78,6 +78,7 @@
             this.lblIntensityDesc = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.txtFlags = new System.Windows.Forms.TextBox();
+            this.chkSmallMap = new System.Windows.Forms.CheckBox();
             this.tabAll.SuspendLayout();
             this.adjustments.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -440,6 +441,7 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.chkSmallMap);
             this.tabPage2.Controls.Add(this.chkTreasures);
             this.tabPage2.Controls.Add(this.chkSpellStrengths);
             this.tabPage2.Controls.Add(this.chkHeroStats);
@@ -462,7 +464,7 @@
             // chkTreasures
             // 
             this.chkTreasures.AutoSize = true;
-            this.chkTreasures.Location = new System.Drawing.Point(236, 94);
+            this.chkTreasures.Location = new System.Drawing.Point(236, 96);
             this.chkTreasures.Name = "chkTreasures";
             this.chkTreasures.Size = new System.Drawing.Size(145, 17);
             this.chkTreasures.TabIndex = 10;
@@ -473,7 +475,7 @@
             // chkSpellStrengths
             // 
             this.chkSpellStrengths.AutoSize = true;
-            this.chkSpellStrengths.Location = new System.Drawing.Point(236, 28);
+            this.chkSpellStrengths.Location = new System.Drawing.Point(236, 30);
             this.chkSpellStrengths.Name = "chkSpellStrengths";
             this.chkSpellStrengths.Size = new System.Drawing.Size(169, 17);
             this.chkSpellStrengths.TabIndex = 9;
@@ -484,7 +486,7 @@
             // chkHeroStats
             // 
             this.chkHeroStats.AutoSize = true;
-            this.chkHeroStats.Location = new System.Drawing.Point(236, 50);
+            this.chkHeroStats.Location = new System.Drawing.Point(236, 52);
             this.chkHeroStats.Name = "chkHeroStats";
             this.chkHeroStats.Size = new System.Drawing.Size(149, 17);
             this.chkHeroStats.TabIndex = 8;
@@ -495,7 +497,7 @@
             // chkHeroStores
             // 
             this.chkHeroStores.AutoSize = true;
-            this.chkHeroStores.Location = new System.Drawing.Point(236, 72);
+            this.chkHeroStores.Location = new System.Drawing.Point(236, 74);
             this.chkHeroStores.Name = "chkHeroStores";
             this.chkHeroStores.Size = new System.Drawing.Size(128, 17);
             this.chkHeroStores.TabIndex = 7;
@@ -506,7 +508,7 @@
             // chkSpellLearning
             // 
             this.chkSpellLearning.AutoSize = true;
-            this.chkSpellLearning.Location = new System.Drawing.Point(236, 5);
+            this.chkSpellLearning.Location = new System.Drawing.Point(236, 7);
             this.chkSpellLearning.Name = "chkSpellLearning";
             this.chkSpellLearning.Size = new System.Drawing.Size(164, 17);
             this.chkSpellLearning.TabIndex = 6;
@@ -517,7 +519,7 @@
             // chkMonsterStats
             // 
             this.chkMonsterStats.AutoSize = true;
-            this.chkMonsterStats.Location = new System.Drawing.Point(6, 94);
+            this.chkMonsterStats.Location = new System.Drawing.Point(6, 116);
             this.chkMonsterStats.Name = "chkMonsterStats";
             this.chkMonsterStats.Size = new System.Drawing.Size(165, 17);
             this.chkMonsterStats.TabIndex = 5;
@@ -528,7 +530,7 @@
             // chkMonsterZones
             // 
             this.chkMonsterZones.AutoSize = true;
-            this.chkMonsterZones.Location = new System.Drawing.Point(6, 116);
+            this.chkMonsterZones.Location = new System.Drawing.Point(6, 138);
             this.chkMonsterZones.Name = "chkMonsterZones";
             this.chkMonsterZones.Size = new System.Drawing.Size(169, 17);
             this.chkMonsterZones.TabIndex = 4;
@@ -539,7 +541,7 @@
             // chkEquipEffects
             // 
             this.chkEquipEffects.AutoSize = true;
-            this.chkEquipEffects.Location = new System.Drawing.Point(6, 72);
+            this.chkEquipEffects.Location = new System.Drawing.Point(6, 94);
             this.chkEquipEffects.Name = "chkEquipEffects";
             this.chkEquipEffects.Size = new System.Drawing.Size(184, 17);
             this.chkEquipEffects.TabIndex = 3;
@@ -550,7 +552,7 @@
             // chkEquipment
             // 
             this.chkEquipment.AutoSize = true;
-            this.chkEquipment.Location = new System.Drawing.Point(6, 28);
+            this.chkEquipment.Location = new System.Drawing.Point(6, 50);
             this.chkEquipment.Name = "chkEquipment";
             this.chkEquipment.Size = new System.Drawing.Size(149, 17);
             this.chkEquipment.TabIndex = 2;
@@ -560,7 +562,7 @@
             // chkWhoCanEquip
             // 
             this.chkWhoCanEquip.AutoSize = true;
-            this.chkWhoCanEquip.Location = new System.Drawing.Point(6, 50);
+            this.chkWhoCanEquip.Location = new System.Drawing.Point(6, 72);
             this.chkWhoCanEquip.Name = "chkWhoCanEquip";
             this.chkWhoCanEquip.Size = new System.Drawing.Size(177, 17);
             this.chkWhoCanEquip.TabIndex = 1;
@@ -612,6 +614,17 @@
             this.txtFlags.Size = new System.Drawing.Size(192, 20);
             this.txtFlags.TabIndex = 30;
             this.txtFlags.TextChanged += new System.EventHandler(this.txtFlags_TextChanged);
+            // 
+            // chkSmallMap
+            // 
+            this.chkSmallMap.AutoSize = true;
+            this.chkSmallMap.Location = new System.Drawing.Point(6, 28);
+            this.chkSmallMap.Name = "chkSmallMap";
+            this.chkSmallMap.Size = new System.Drawing.Size(106, 17);
+            this.chkSmallMap.TabIndex = 11;
+            this.chkSmallMap.Text = "128x128 Map (u)";
+            this.chkSmallMap.UseVisualStyleBackColor = true;
+            this.chkSmallMap.CheckedChanged += new System.EventHandler(this.determineFlags);
             // 
             // Form1
             // 
@@ -708,6 +721,7 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox txtPrincessName;
         private System.Windows.Forms.TextBox txtPrinceName;
+        private System.Windows.Forms.CheckBox chkSmallMap;
     }
 }
 
