@@ -655,11 +655,11 @@ namespace DW2Randomizer
                         romData[byteToUse + 0x7e] = (byte)(x);
                         romData[byteToUse + 1 + 0x7e] = (byte)(y + 1);
                     }
-                    if (lnI == 6)
-                    {
-                        romData[0xa301] = (byte)(x);
-                        romData[0xa302] = (byte)(y + 1);
-                    }
+                    //if (lnI == 6)
+                    //{
+                    //    romData[0xa301] = (byte)(x);
+                    //    romData[0xa302] = (byte)(y + 1);
+                    //}
 
                     // Return points
                     if (lnI == 0 || lnI == 1 || lnI == 3 || lnI == 4)
@@ -1595,11 +1595,11 @@ namespace DW2Randomizer
                         romData[byteToUse + 0x7e] = (byte)(x);
                         romData[byteToUse + 1 + 0x7e] = (byte)(y + 1);
                     }
-                    if (lnI == 6)
-                    {
-                        romData[0xa301] = (byte)(x);
-                        romData[0xa302] = (byte)(y + 1);
-                    }
+                    //if (lnI == 6)
+                    //{
+                    //    romData[0xa331] = (byte)(x);
+                    //    romData[0xa332] = (byte)(y + 1);
+                    //}
 
                     // Return points
                     if (lnI == 0 || lnI == 1 || lnI == 3 || lnI == 4)
@@ -2997,9 +2997,9 @@ namespace DW2Randomizer
 
                 int byteValStart = 0x13805 + (15 * lnI);
 
-                // evade rate...
+                // evade rate... randomize from 0-8 / 64
                 if (randomLevel == 4)
-                    enemyStats[1] = (byte)((r1.Next() % 16) * 16);
+                    enemyStats[1] = (byte)((r1.Next() % 9) * 16);
                 else
                 {
                     enemyStats[1] = (byte)(adjustEnemyStat(r1, enemyStats[1] / 16, 1) * 16);
@@ -3066,12 +3066,13 @@ namespace DW2Randomizer
                     res6 = (r1.Next() % 8);
                 } else
                 {
-                    res1 = adjustEnemyStat(r1, res1, 2);
-                    res2 = adjustEnemyStat(r1, res2, 2);
-                    res3 = adjustEnemyStat(r1, res3, 2);
-                    res4 = adjustEnemyStat(r1, res4, 2);
-                    res5 = adjustEnemyStat(r1, res5, 2);
-                    res6 = adjustEnemyStat(r1, res6, 2);
+                    res3 = (r1.Next() % (int)(Math.Round((decimal)(8 * lnI / 80)) + 1));
+                    //res1 = adjustEnemyStat(r1, res1, 2);
+                    //res2 = adjustEnemyStat(r1, res2, 2);
+                    //res3 = adjustEnemyStat(r1, res3, 2);
+                    //res4 = adjustEnemyStat(r1, res4, 2);
+                    //res5 = adjustEnemyStat(r1, res5, 2);
+                    //res6 = adjustEnemyStat(r1, res6, 2);
                 }
                 
                 enemyStats[7] = (byte)(((r1.Next() % 4) * 64) + (res1 * 8) + res2);
@@ -3167,11 +3168,11 @@ namespace DW2Randomizer
                 if (randomLevel == 4)
                 {
                     randomPattern = 4;
-                } else if (randomLevel == 3)
+                } else if (randomLevel == 3) // Basically make it equivalent to mcgrew's DW1 Randomizer
                 {
-                    int rp = (r1.Next() % 4);
-                    if (rp == 0 || rp == 1) randomPattern = 4;
-                    if (rp == 2) randomPattern = 3; else randomPattern = 2;
+                    int rp = (r1.Next() % 100);
+                    if (rp >= 50) randomPattern = 4;
+                    else if (rp >= 35) randomPattern = 2; else randomPattern = 1;
                 } else if (randomLevel == 2)
                 {
                     randomPattern = (r1.Next() % 5);
@@ -3190,12 +3191,12 @@ namespace DW2Randomizer
                         {
                             if (random == 30 && concentration)
                                 continue; // do NOT set the concentration bit again.  Maintain regular attack.
-                            else if ((random == 7 || random == 8 || random == 21 || random == 22 || random == 24 || random == 25) && lnI <= 32)
+                            else if ((random == 7 || random == 8 || random == 21 || random == 22 || random == 24 || random == 25) && lnI <= 32 && randomLevel == 4)
                             {
                                 lnJ--;
                                 continue;
                             }
-                            else if ((random == 4 || random == 5 || random == 6 || random == 9 || random == 12 || random == 19 || random == 20 || random == 23 || random == 26) && lnI >= 51)
+                            else if ((random == 4 || random == 5 || random == 6 || random == 9 || random == 12 || random == 19 || random == 20 || random == 23 || random == 26) && lnI >= 51 && randomLevel == 4)
                             {
                                 lnJ--;
                                 continue;
@@ -3955,6 +3956,7 @@ namespace DW2Randomizer
 
         private void randomizeStores(Random r1)
         {
+            // Adjust prices 
             // Totally randomize stores (cannot have Jailor's Key in a weapons store) (19f9a-1a00b)
             for (int lnI = 0; lnI < 19; lnI++)
             {
@@ -4174,9 +4176,9 @@ namespace DW2Randomizer
                             randomModifier2 = 0;
                     } else
                     {
-                        if (stats[statToUse1] + randomModifier1 > 255)
+                        if (stats[statToUse1] + randomModifier1 > 250)
                             randomModifier1 = 0;
-                        if (stats[statToUse2] + randomModifier2 > 255)
+                        if (stats[statToUse2] + randomModifier2 > 250)
                             randomModifier2 = 0;
                     }
 
@@ -5064,6 +5066,28 @@ namespace DW2Randomizer
         private void determineFlags(object sender, EventArgs e)
         {
             determineFlag();
+        }
+
+        private void btnUltraRando_Click(object sender, EventArgs e)
+        {
+            chkMap.Checked = true;
+            chkEquipment.Checked = false;
+            chkEquipEffects.Checked = false;
+            chkWhoCanEquip.Checked = true;
+            chkMonsterStats.Checked = true;
+            chkMonsterZones.Checked = true;
+            chkSpellLearning.Checked = true;
+            chkSpellStrengths.Checked = false;
+            chkHeroStats.Checked = true;
+            chkHeroStores.Checked = true;
+            chkTreasures.Checked = true;
+
+            radSlightIntensity.Checked = false;
+            radModerateIntensity.Checked = false;
+            radHeavyIntensity.Checked = true;
+            radInsaneIntensity.Checked = false;
+
+            chkChangeStatsToRemix.Checked = true;
         }
     }
 }

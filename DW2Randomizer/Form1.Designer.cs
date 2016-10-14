@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.txtFileName = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.btnBrowse = new System.Windows.Forms.Button();
@@ -63,6 +64,7 @@
             this.label8 = new System.Windows.Forms.Label();
             this.chkChangeStatsToRemix = new System.Windows.Forms.CheckBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.chkSmallMap = new System.Windows.Forms.CheckBox();
             this.chkTreasures = new System.Windows.Forms.CheckBox();
             this.chkSpellStrengths = new System.Windows.Forms.CheckBox();
             this.chkHeroStats = new System.Windows.Forms.CheckBox();
@@ -78,10 +80,15 @@
             this.lblIntensityDesc = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.txtFlags = new System.Windows.Forms.TextBox();
-            this.chkSmallMap = new System.Windows.Forms.CheckBox();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.btnUltraRando = new System.Windows.Forms.Button();
+            this.btnLudicrousRando = new System.Windows.Forms.Button();
+            this.ttUltra = new System.Windows.Forms.ToolTip(this.components);
+            this.ttLudicrous = new System.Windows.Forms.ToolTip(this.components);
             this.tabAll.SuspendLayout();
             this.adjustments.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             this.SuspendLayout();
             // 
             // txtFileName
@@ -269,6 +276,7 @@
             // 
             this.tabAll.Controls.Add(this.adjustments);
             this.tabAll.Controls.Add(this.tabPage2);
+            this.tabAll.Controls.Add(this.tabPage1);
             this.tabAll.Location = new System.Drawing.Point(13, 213);
             this.tabAll.Name = "tabAll";
             this.tabAll.SelectedIndex = 0;
@@ -461,6 +469,17 @@
             this.tabPage2.Text = "Randomization";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // chkSmallMap
+            // 
+            this.chkSmallMap.AutoSize = true;
+            this.chkSmallMap.Location = new System.Drawing.Point(6, 28);
+            this.chkSmallMap.Name = "chkSmallMap";
+            this.chkSmallMap.Size = new System.Drawing.Size(106, 17);
+            this.chkSmallMap.TabIndex = 11;
+            this.chkSmallMap.Text = "128x128 Map (u)";
+            this.chkSmallMap.UseVisualStyleBackColor = true;
+            this.chkSmallMap.CheckedChanged += new System.EventHandler(this.determineFlags);
+            // 
             // chkTreasures
             // 
             this.chkTreasures.AutoSize = true;
@@ -615,16 +634,35 @@
             this.txtFlags.TabIndex = 30;
             this.txtFlags.TextChanged += new System.EventHandler(this.txtFlags_TextChanged);
             // 
-            // chkSmallMap
+            // tabPage1
             // 
-            this.chkSmallMap.AutoSize = true;
-            this.chkSmallMap.Location = new System.Drawing.Point(6, 28);
-            this.chkSmallMap.Name = "chkSmallMap";
-            this.chkSmallMap.Size = new System.Drawing.Size(106, 17);
-            this.chkSmallMap.TabIndex = 11;
-            this.chkSmallMap.Text = "128x128 Map (u)";
-            this.chkSmallMap.UseVisualStyleBackColor = true;
-            this.chkSmallMap.CheckedChanged += new System.EventHandler(this.determineFlags);
+            this.tabPage1.Controls.Add(this.btnLudicrousRando);
+            this.tabPage1.Controls.Add(this.btnUltraRando);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Size = new System.Drawing.Size(499, 171);
+            this.tabPage1.TabIndex = 2;
+            this.tabPage1.Text = "Shortcuts";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // btnUltraRando
+            // 
+            this.btnUltraRando.Location = new System.Drawing.Point(13, 13);
+            this.btnUltraRando.Name = "btnUltraRando";
+            this.btnUltraRando.Size = new System.Drawing.Size(167, 23);
+            this.btnUltraRando.TabIndex = 0;
+            this.btnUltraRando.Text = "Ultra Randomization";
+            this.btnUltraRando.UseVisualStyleBackColor = true;
+            this.btnUltraRando.Click += new System.EventHandler(this.btnUltraRando_Click);
+            // 
+            // btnLudicrousRando
+            // 
+            this.btnLudicrousRando.Location = new System.Drawing.Point(13, 42);
+            this.btnLudicrousRando.Name = "btnLudicrousRando";
+            this.btnLudicrousRando.Size = new System.Drawing.Size(167, 23);
+            this.btnLudicrousRando.TabIndex = 1;
+            this.btnLudicrousRando.Text = "Ludicrous Randomization";
+            this.btnLudicrousRando.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -664,6 +702,7 @@
             this.adjustments.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
+            this.tabPage1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -722,6 +761,11 @@
         private System.Windows.Forms.TextBox txtPrincessName;
         private System.Windows.Forms.TextBox txtPrinceName;
         private System.Windows.Forms.CheckBox chkSmallMap;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.Button btnLudicrousRando;
+        private System.Windows.Forms.Button btnUltraRando;
+        private System.Windows.Forms.ToolTip ttUltra;
+        private System.Windows.Forms.ToolTip ttLudicrous;
     }
 }
 
