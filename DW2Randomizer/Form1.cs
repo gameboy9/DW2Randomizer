@@ -591,7 +591,7 @@ namespace DW2Randomizer
             {
                 int x = 300;
                 int y = 300;
-                while (x >= 256 && y >= 256)
+                while (x >= (chkSmallMap.Checked ? 128 : 256) || y >= (chkSmallMap.Checked ? 128 : 256) || x <= 0 || y <= 0)
                 {
                     x = r1.Next() % (chkSmallMap.Checked ? 28 : 56) - (chkSmallMap.Checked ? 14 : 28) + midenX;
                     y = r1.Next() % (chkSmallMap.Checked ? 28 : 56) - (chkSmallMap.Checked ? 14 : 28) + midenY;
@@ -624,7 +624,7 @@ namespace DW2Randomizer
                 if (lnI == 0) { x = midenX; y = midenY; }
                 else if (lnI == 1)
                 {
-                    while (x >= 256 && y >= 256)
+                    while (x >= (chkSmallMap.Checked ? 127 : 255) && y >= (chkSmallMap.Checked ? 127 : 255) || x <= 0 || y <= 0)
                     {
                         x = r1.Next() % (chkSmallMap.Checked ? 30 : 60) - (chkSmallMap.Checked ? 15 : 30) + midenX;
                         y = r1.Next() % (chkSmallMap.Checked ? 30 : 60) - (chkSmallMap.Checked ? 15 : 30) + midenY;
@@ -678,17 +678,25 @@ namespace DW2Randomizer
             }
 
             // Now we'll place all of the towns now.
-            // Leftwyne must be 48 squares or less away from Midenhall.  Hamlin has to be 64 squares or less away from Midenhall.
+            // Leftwyne must be 15 squares or less away from Midenhall.  Hamlin has to be 30 squares or less away from Midenhall.
             for (int lnI = 0; lnI < 7; lnI++)
             {
                 int x = 300;
                 int y = 300;
                 if (lnI == 0)
                 {
-                    while (x >= 256 && y >= 256)
+                    while (x >= (chkSmallMap.Checked ? 127 : 255) && y >= (chkSmallMap.Checked ? 127 : 255) || x <= 0 || y <= 0)
                     {
                         x = r1.Next() % (chkSmallMap.Checked ? 30 : 60) - (chkSmallMap.Checked ? 15 : 30) + midenX;
                         y = r1.Next() % (chkSmallMap.Checked ? 30 : 60) - (chkSmallMap.Checked ? 15 : 30) + midenY;
+                    }
+                }
+                else if (lnI == 1)
+                {
+                    while (x >= (chkSmallMap.Checked ? 127 : 255) || y >= (chkSmallMap.Checked ? 127 : 255) || x <= 0 || y <= 0)
+                    {
+                        x = r1.Next() % (chkSmallMap.Checked ? 60 : 120) - (chkSmallMap.Checked ? 30 : 60) + midenX;
+                        y = r1.Next() % (chkSmallMap.Checked ? 60 : 120) - (chkSmallMap.Checked ? 30 : 60) + midenY;
                     }
                 }
                 else
@@ -774,7 +782,7 @@ namespace DW2Randomizer
                 int y = 300;
                 if (lnI == 1 || lnI == 5)
                 {
-                    while (x >= 256 && y >= 256)
+                    while (x >= (chkSmallMap.Checked ? 127 : 255) && y >= (chkSmallMap.Checked ? 127 : 255) || x <= 0 || y <= 0)
                     {
                         x = r1.Next() % (chkSmallMap.Checked ? 32 : 64) - (chkSmallMap.Checked ? 16 : 32) + midenX;
                         y = r1.Next() % (chkSmallMap.Checked ? 32 : 64) - (chkSmallMap.Checked ? 16 : 32) + midenY;
@@ -806,7 +814,7 @@ namespace DW2Randomizer
                 int y = 300;
                 if (lnI == 0)
                 {
-                    while (x >= 256 && y >= 256)
+                    while (x >= (chkSmallMap.Checked ? 127 : 255) && y >= (chkSmallMap.Checked ? 127 : 255) || x <= 0 || y <= 0)
                     {
                         x = r1.Next() % (chkSmallMap.Checked ? 28 : 14) - (chkSmallMap.Checked ? 14 : 28) + midenX;
                         y = r1.Next() % (chkSmallMap.Checked ? 28 : 14) - (chkSmallMap.Checked ? 14 : 28) + midenY;
@@ -3776,9 +3784,9 @@ namespace DW2Randomizer
                 if (lnI == 4 || lnI == 8 || lnI == 20 || lnI == 24) continue; // Heal/Healmore MUST be learned at level 1, so leave that byte alone.
 
                 if (lnI < 16)
-                    level = (byte)((r1.Next() % 26) + 2);
+                    level = (byte)((r1.Next() % 25) + 2);
                 else
-                    level = (byte)((r1.Next() % 23) + 2);
+                    level = (byte)((r1.Next() % 20) + 2);
 
                 romData[0x13edb + lnI] = level;
             }
@@ -3842,6 +3850,156 @@ namespace DW2Randomizer
                         lnJ = lnI;
                     }
                 }
+
+            // Shuffle prince fight spells
+            int[] spellsLearned = { 1, 9, 6, 11, 3, 10, 4, 12 };
+            for (int lnI = 0; lnI < 100; lnI++)
+            {
+                int numberToSwap1 = (r1.Next() % 8);
+                int numberToSwap2 = (r1.Next() % 8);
+                int swappy = spellsLearned[numberToSwap1];
+                spellsLearned[numberToSwap1] = spellsLearned[numberToSwap2];
+                spellsLearned[numberToSwap2] = swappy;
+            }
+
+            for (int lnI = 0; lnI < 8; lnI++)
+                romData[0x1ae86 + lnI] = (byte)(spellsLearned[lnI]);
+
+            // Shuffle prince command spells
+            spellsLearned = new int[] { 9, 16, 20, 18, 11, 22, 23 };
+            for (int lnI = 0; lnI < 100; lnI++)
+            {
+                int numberToSwap1 = (r1.Next() % 7);
+                int numberToSwap2 = (r1.Next() % 7);
+                int swappy = spellsLearned[numberToSwap1];
+                spellsLearned[numberToSwap1] = spellsLearned[numberToSwap2];
+                spellsLearned[numberToSwap2] = swappy;
+            }
+
+            for (int lnI = 0; lnI < 7; lnI++)
+                romData[0x1ae76 + lnI] = (byte)(spellsLearned[lnI]);
+
+            // Shuffle princess fight spells
+            spellsLearned = new int[] { 2, 11, 5, 8, 7, 13, 14, 15 };
+            for (int lnI = 0; lnI < 100; lnI++)
+            {
+                int numberToSwap1 = (r1.Next() % 8);
+                int numberToSwap2 = (r1.Next() % 8);
+                int swappy = spellsLearned[numberToSwap1];
+                spellsLearned[numberToSwap1] = spellsLearned[numberToSwap2];
+                spellsLearned[numberToSwap2] = swappy;
+            }
+
+            for (int lnI = 0; lnI < 8; lnI++)
+                romData[0x1ae8e + lnI] = (byte)(spellsLearned[lnI]);
+
+            // Shuffle princess command spells
+            spellsLearned = new int[] { 11, 19, 16, 13, 18, 22, 21 };
+            for (int lnI = 0; lnI < 100; lnI++)
+            {
+                int numberToSwap1 = (r1.Next() % 7);
+                int numberToSwap2 = (r1.Next() % 7);
+                int swappy = spellsLearned[numberToSwap1];
+                spellsLearned[numberToSwap1] = spellsLearned[numberToSwap2];
+                spellsLearned[numberToSwap2] = swappy;
+            }
+
+            for (int lnI = 0; lnI < 7; lnI++)
+                romData[0x1ae7e + lnI] = (byte)(spellsLearned[lnI]);
+
+            // Now time to enter the text of each spell for each character.
+            int textByte = 0x1b634;
+            for (int lnI = 0; lnI < 32; lnI++)
+            {
+                if (lnI < 8)
+                    textByte += fillInSpells(textByte, romData[0x1ae86 + (lnI % 8)]);
+                else if (lnI < 16)
+                    textByte += fillInSpells(textByte, romData[0x1ae76 + (lnI % 8)]);
+                else if (lnI < 24)
+                    textByte += fillInSpells(textByte, romData[0x1ae8e + (lnI % 8)]);
+                else
+                    textByte += fillInSpells(textByte, romData[0x1ae7e + (lnI % 8)]);
+            }
+            // textByte should always finish at 0x1b727.
+
+            // Finally, assign text slot for each spell.  You want to look through the order of each spell to accomplish this.
+            for (int lnI = 1; lnI <= 23; lnI++)
+            {
+                int byteToUse = 0x1ae5f + lnI - 1;
+                if (byteToUse == 0x1ae6f) continue; // This spell is not used.
+                for (int lnJ = 0; lnJ < 32; lnJ++)
+                {
+                    int spellToCompare = 0xff;
+                    if (lnJ < 8)
+                        spellToCompare = romData[0x1ae86 + (lnJ % 8)];
+                    else if (lnJ < 16)
+                        spellToCompare = romData[0x1ae76 + (lnJ % 8)];
+                    else if (lnJ < 24)
+                        spellToCompare = romData[0x1ae8e + (lnJ % 8)];
+                    else
+                        spellToCompare = romData[0x1ae7e + (lnJ % 8)];
+
+                    if (spellToCompare == lnI)
+                    {
+                        romData[byteToUse] = (byte)(lnJ);
+                        break;
+                    }
+                }
+            }
+        }
+
+        private int fillInSpells(int byteToUse, int spellToUse)
+        {
+            int[] byteArray;
+            if (spellToUse == 0x01)
+                byteArray = new int[] { 0x29, 0x12, 0x1b, 0x0e, 0x0b, 0x0a, 0x15, 0xff };
+            else if (spellToUse == 0x02)
+                byteArray = new int[] { 0x36, 0x15, 0x0e, 0x0e, 0x19, 0xff };
+            else if (spellToUse == 0x03)
+                byteArray = new int[] { 0x29, 0x12, 0x1b, 0x0e, 0x0b, 0x0a, 0x17, 0x0e, 0xff };
+            else if (spellToUse == 0x04)
+                byteArray = new int[] { 0x27, 0x0e, 0x0f, 0x0e, 0x0a, 0x1d, 0xff };
+            else if (spellToUse == 0x05)
+                byteArray = new int[] { 0x2c, 0x17, 0x0f, 0x0e, 0x1b, 0x17, 0x18, 0x1c, 0xff };
+            else if (spellToUse == 0x06)
+                byteArray = new int[] { 0x36, 0x1d, 0x18, 0x19, 0x1c, 0x19, 0x0e, 0x15, 0x15, 0xff };
+            else if (spellToUse == 0x07)
+                byteArray = new int[] { 0x36, 0x1e, 0x1b, 0x1b, 0x18, 0x1e, 0x17, 0x0d, 0xff };
+            else if (spellToUse == 0x08)
+                byteArray = new int[] { 0x27, 0x0e, 0x0f, 0x0e, 0x17, 0x0c, 0x0e, 0xff };
+            else if (spellToUse == 0x09)
+                byteArray = new int[] { 0x2b, 0x0e, 0x0a, 0x15, 0xff };
+            else if (spellToUse == 0x0a)
+                byteArray = new int[] { 0x2c, 0x17, 0x0c, 0x1b, 0x0e, 0x0a, 0x1c, 0x0e, 0xff };
+            else if (spellToUse == 0x0b)
+                byteArray = new int[] { 0x2b, 0x0e, 0x0a, 0x15, 0x16, 0x18, 0x1b, 0x0e, 0xff };
+            else if (spellToUse == 0x0c)
+                byteArray = new int[] { 0x36, 0x0a, 0x0c, 0x1b, 0x12, 0x0f, 0x12, 0x0c, 0x0e, 0xff };
+            else if (spellToUse == 0x0d)
+                byteArray = new int[] { 0x2b, 0x0e, 0x0a, 0x15, 0x0a, 0x15, 0x15, 0xff };
+            else if (spellToUse == 0x0e)
+                byteArray = new int[] { 0x28, 0x21, 0x19, 0x15, 0x18, 0x0d, 0x0e, 0x1d, 0xff };
+            else if (spellToUse == 0x0f)
+                byteArray = new int[] { 0x26, 0x11, 0x0a, 0x17, 0x0c, 0x0e, 0xff };
+            else if (spellToUse == 0x10)
+                byteArray = new int[] { 0x24, 0x17, 0x1d, 0x12, 0x0d, 0x18, 0x1d, 0x0e, 0xff };
+            else if (spellToUse == 0x12)
+                byteArray = new int[] { 0x32, 0x1e, 0x1d, 0x1c, 0x12, 0x0d, 0x0e, 0xff };
+            else if (spellToUse == 0x13)
+                byteArray = new int[] { 0x35, 0x0e, 0x19, 0x0e, 0x15, 0xff };
+            else if (spellToUse == 0x14)
+                byteArray = new int[] { 0x35, 0x0e, 0x1d, 0x1e, 0x1b, 0x17, 0xff };
+            else if (spellToUse == 0x15)
+                byteArray = new int[] { 0x32, 0x19, 0x0e, 0x17, 0xff };
+            else if (spellToUse == 0x16)
+                byteArray = new int[] { 0x36, 0x1d, 0x0e, 0x19, 0x10, 0x1e, 0x0a, 0x1b, 0x0d, 0xff };
+            else if (spellToUse == 0x17)
+                byteArray = new int[] { 0x35, 0x0e, 0x1f, 0x12, 0x1f, 0x0e, 0xff };
+            else
+                byteArray = new int[] { 0xff };
+            for (int lnI = 0; lnI < byteArray.Length; lnI++)
+                romData[byteToUse + lnI] = (byte)byteArray[lnI];
+            return byteArray.Length;
         }
 
         private void randomizeTreasures(Random r1)
@@ -4129,6 +4287,9 @@ namespace DW2Randomizer
                         if (values[lnJ + 1] > values[lnJ] + 15)
                             values[lnJ + 1] = values[lnJ] + 15;
 
+                    // Starting stat should be values[0].  This is what I'm doing wrong...
+                    romData[0x13dd1 + lnI] = (byte)values[0];
+
                     int adder = (lnI / 2);
                     for (int lnJ = 0; lnJ < arraySize - 1; lnJ++)
                     {
@@ -4136,7 +4297,7 @@ namespace DW2Randomizer
                         int valueToAdd = values[lnJ + 1] - values[lnJ];
                         if (lnI == 3) valueToAdd = 0;
                         if (lnI % 2 == 0)
-                            romData[byteToUse] = (byte)((romData[byteToUse] % 16) + (valueToAdd * 16));
+                            romData[byteToUse] = (byte)(valueToAdd * 16); // You can reset the 2nd nibble since it's about to be changed anyway.  (byte)((romData[byteToUse] % 16) + (valueToAdd * 16));
                         else
                             romData[byteToUse] = (byte)((valueToAdd % 16) + romData[byteToUse]);
                         adder += (lnJ >= 44 ? 2 : lnJ >= 34 ? 4 : 6);
@@ -4154,31 +4315,32 @@ namespace DW2Randomizer
                     int randomModifier1 = (romData[byteToUse] / 16);
                     int randomModifier2 = (romData[byteToUse] % 16);
 
-                    if (randomLevel == 1)
-                    {
-                        randomModifier1 += (r1.Next() % 3) - 1;
-                        randomModifier2 += (r1.Next() % 3) - 1;
-                    } else if (randomLevel == 2)
-                    {
-                        randomModifier1 += (r1.Next() % 5) - 2;
-                        randomModifier2 += (r1.Next() % 5) - 2;
-                    }
-                    else if (randomLevel == 3)
-                    {
-                        randomModifier1 += (r1.Next() % 7) - 3;
-                        randomModifier2 += (r1.Next() % 7) - 3;
-                    }
+                    randomModifier1 += (r1.Next() % (randomLevel == 1 ? 3 : randomLevel == 2 ? 5 : 7)) - randomLevel;
+                    randomModifier2 += (r1.Next() % (randomLevel == 1 ? 3 : randomLevel == 2 ? 5 : 7)) - randomLevel;
+                    //if (randomLevel == 1)
+                    //{
+                    //    randomModifier2 += (r1.Next() % 3) - 1;
+                    //} else if (randomLevel == 2)
+                    //{
+                    //    randomModifier1 += (r1.Next() % 5) - 2;
+                    //    randomModifier2 += (r1.Next() % 5) - 2;
+                    //}
+                    //else if (randomLevel == 3)
+                    //{
+                    //    randomModifier1 += (r1.Next() % 7) - 3;
+                    //    randomModifier2 += (r1.Next() % 7) - 3;
+                    //}
                     if (lnI % 2 == 0)
                     {
-                        if (stats[statToUse1] + randomModifier1 > maxStrength)
+                        if (stats[statToUse1] + randomModifier1 > maxStrength || randomModifier1 < 0)
                             randomModifier1 = 0;
-                        if (stats[statToUse2] + randomModifier2 > maxAgility)
+                        if (stats[statToUse2] + randomModifier2 > maxAgility || randomModifier2 < 0)
                             randomModifier2 = 0;
                     } else
                     {
-                        if (stats[statToUse1] + randomModifier1 > 250)
+                        if (stats[statToUse1] + randomModifier1 > 250 || randomModifier1 < 0)
                             randomModifier1 = 0;
-                        if (stats[statToUse2] + randomModifier2 > 250)
+                        if (stats[statToUse2] + randomModifier2 > 250 || statToUse2 == 3 || randomModifier2 < 0)
                             randomModifier2 = 0;
                     }
 
