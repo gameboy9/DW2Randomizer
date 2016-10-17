@@ -851,8 +851,8 @@ namespace DW2Randomizer
             for (int lnI = 0; lnI < 16; lnI++)
                 for (int lnJ = 0; lnJ < 16; lnJ++)
                 {
-                    int mzY = lnI;
-                    int mzX = lnJ;
+                    int mzY = lnJ;
+                    int mzX = lnI;
 
                     if (midenMZX - mzX >= -1 && midenMZX - mzX <= 1 && midenMZY - mzY >= -1 && midenMZY - mzY <= 1)
                         monsterZones[mzY, mzX] = r1.Next() % 9;
@@ -2923,6 +2923,11 @@ namespace DW2Randomizer
                 superRandomize();
             }
 
+            // Temporary duplicate key item check removal
+            romData[0x19db8] = 0x4c;
+            romData[0x19db9] = 0xba;
+            romData[0x19dba] = 0x9d;
+
             renamePrincePrincess();
             speedUpBattles();
             skipPrologue();
@@ -4941,7 +4946,6 @@ namespace DW2Randomizer
                 while (!goodMap)
                     goodMap = (chkSmallMap.Checked ? randomizeMapv3(r1) : randomizeMapv2(r1));
             }
-                
 
             if (chkEquipment.Checked)
                 randomizeEquipment(r1);
