@@ -3655,42 +3655,100 @@ namespace DW2Randomizer
 
         private void randomizeEquipment(Random r1)
         {
+            int[] weaponOrder = { 0, 4, 5, 1, 6, 7, 2, 9, 10, 14, 3, 12, 13, 15, 11 };
+            int[] weaponStray = { 8 };
+            int[] armorOrder = { 16, 20, 21, 24, 17, 23, 25, 20, 18, 26, 22 };
+            int[] shieldOrder = { 27, 29, 28, 31, 30 };
+            int[] helmetOrder = { 33, 32, 34 };
+
+            int[] weaponPower = inverted_power_curve(2, 100, weaponOrder.Length, .5, r1);
+            int[] weaponStrayPower = inverted_power_curve(2, 100, weaponStray.Length, .5, r1);
+            int[] armorPower = inverted_power_curve(2, 70, armorOrder.Length, .5, r1);
+            int[] shieldPower = inverted_power_curve(2, 40, shieldOrder.Length, .5, r1);
+            int[] helmetPower = inverted_power_curve(2, 30, helmetOrder.Length, .5, r1);
+
+            for (int lnI = 0; lnI < weaponPower.Length; lnI++)
+            {
+                romData[0x13efb + weaponOrder[lnI]] = (byte)weaponPower[lnI];
+                double price = Math.Round(Math.Pow(weaponPower[lnI], 2.3));
+                price *= ((string)cboGPReq.SelectedItem == "75%" ? .75 : (string)cboGPReq.SelectedItem == "50%" ? .5 : (string)cboGPReq.SelectedItem == "33%" ? .33 : 1);
+                romData[0x1a00e + (weaponOrder[lnI] * 2) + 0] = (byte)(price % 256);
+                romData[0x1a00e + (weaponOrder[lnI] * 2) + 1] = (byte)(Math.Floor(price / 256));
+                maxPower[0] = (weaponPower[lnI] > maxPower[0] ? weaponPower[lnI] : maxPower[0]);
+            }
+            for (int lnI = 0; lnI < weaponStrayPower.Length; lnI++)
+            {
+                romData[0x13efb + weaponStray[lnI]] = (byte)weaponStrayPower[lnI];
+                double price = Math.Round(Math.Pow(weaponStrayPower[lnI], 2.35));
+                price *= ((string)cboGPReq.SelectedItem == "75%" ? .75 : (string)cboGPReq.SelectedItem == "50%" ? .5 : (string)cboGPReq.SelectedItem == "33%" ? .33 : 1);
+                romData[0x1a00e + (weaponStray[lnI] * 2) + 0] = (byte)(price % 256);
+                romData[0x1a00e + (weaponStray[lnI] * 2) + 1] = (byte)(Math.Floor(price / 256));
+                maxPower[0] = (weaponPower[lnI] > maxPower[0] ? weaponPower[lnI] : maxPower[0]);
+            }
+            for (int lnI = 0; lnI < armorPower.Length; lnI++)
+            {
+                romData[0x13efb + armorOrder[lnI]] = (byte)armorPower[lnI];
+                double price = Math.Round(Math.Pow(armorPower[lnI], 2.49));
+                price *= ((string)cboGPReq.SelectedItem == "75%" ? .75 : (string)cboGPReq.SelectedItem == "50%" ? .5 : (string)cboGPReq.SelectedItem == "33%" ? .33 : 1);
+                romData[0x1a00e + (armorOrder[lnI] * 2) + 0] = (byte)(price % 256);
+                romData[0x1a00e + (armorOrder[lnI] * 2) + 1] = (byte)(Math.Floor(price / 256));
+                maxPower[1] = (armorOrder[lnI] > maxPower[1] ? armorOrder[lnI] : maxPower[1]);
+            }
+            for (int lnI = 0; lnI < shieldPower.Length; lnI++)
+            {
+                romData[0x13efb + shieldOrder[lnI]] = (byte)shieldPower[lnI];
+                double price = Math.Round(Math.Pow(shieldPower[lnI], 2.84));
+                price *= ((string)cboGPReq.SelectedItem == "75%" ? .75 : (string)cboGPReq.SelectedItem == "50%" ? .5 : (string)cboGPReq.SelectedItem == "33%" ? .33 : 1);
+                romData[0x1a00e + (shieldOrder[lnI] * 2) + 0] = (byte)(price % 256);
+                romData[0x1a00e + (shieldOrder[lnI] * 2) + 1] = (byte)(Math.Floor(price / 256));
+                maxPower[2] = (shieldOrder[lnI] > maxPower[2] ? shieldOrder[lnI] : maxPower[2]);
+            }
+            for (int lnI = 0; lnI < helmetPower.Length; lnI++)
+            {
+                romData[0x13efb + helmetOrder[lnI]] = (byte)helmetPower[lnI];
+                double price = Math.Round(Math.Pow(helmetPower[lnI], 3.07));
+                price *= ((string)cboGPReq.SelectedItem == "75%" ? .75 : (string)cboGPReq.SelectedItem == "50%" ? .5 : (string)cboGPReq.SelectedItem == "33%" ? .33 : 1);
+                romData[0x1a00e + (helmetOrder[lnI] * 2) + 0] = (byte)(price % 256);
+                romData[0x1a00e + (helmetOrder[lnI] * 2) + 1] = (byte)(Math.Floor(price / 256));
+                maxPower[3] = (helmetOrder[lnI] > maxPower[3] ? helmetOrder[lnI] : maxPower[3]);
+            }
+
             // Totally randomize weapons, armor, shields, helmets (13efb-13f1d, 1a00e-1a08b for pricing)
 
-            byte[] maxPower = { 0, 0, 0, 0 };
-            for (int lnI = 0; lnI < 35; lnI++)
-            {
-                byte power = 0;
-                if (lnI == 0 || lnI == 16)
-                    power = (byte)(r1.Next() % 10);
-                else if (lnI < 16)
-                    power = (byte)(Math.Pow(r1.Next() % 500, 2) / 2500); // max 100
-                else if (lnI < 27)
-                    power = (byte)(Math.Pow(r1.Next() % 500, 2) / 3570); // max 70
-                else if (lnI < 31)
-                    power = (byte)(Math.Pow(r1.Next() % 500, 2) / 6250); // max 40
-                else
-                    power = (byte)(Math.Pow(r1.Next() % 500, 2) / 8333); // max 30
-                //power = (byte)(r1.Next() % (lnI < 16 ? (7 * (lnI + 1)) : lnI < 27 ? (7 * (lnI - 15)) : lnI < 31 ? (7 * (lnI - 26)) : (7 * (lnI - 30))));
-                power += (byte)((lnI < 16 ? lnI : lnI < 27 ? lnI - 16 : lnI < 31 ? lnI - 27 : lnI - 31) + 1); // To avoid 0 power... and a non-selling item...
-                maxPower[(lnI < 16 ? 0 : lnI < 27 ? 1 : lnI < 31 ? 2 : 3)] = (power > maxPower[(lnI < 16 ? 0 : lnI < 27 ? 1 : lnI < 31 ? 2 : 3)] ? power :
-                    maxPower[(lnI < 16 ? 0 : lnI < 27 ? 1 : lnI < 31 ? 2 : 3)]);
-                romData[0x13efb + lnI] = power;
+            //byte[] maxPower = { 0, 0, 0, 0 };
+            //for (int lnI = 0; lnI < 35; lnI++)
+            //{
+            //    byte power = 0;
+            //    if (lnI == 0 || lnI == 16)
+            //        power = (byte)(r1.Next() % 10);
+            //    else if (lnI < 16)
+            //        power = (byte)(Math.Pow(r1.Next() % 500, 2) / 2500); // max 100
+            //    else if (lnI < 27)
+            //        power = (byte)(Math.Pow(r1.Next() % 500, 2) / 3570); // max 70
+            //    else if (lnI < 31)
+            //        power = (byte)(Math.Pow(r1.Next() % 500, 2) / 6250); // max 40
+            //    else
+            //        power = (byte)(Math.Pow(r1.Next() % 500, 2) / 8333); // max 30
+            //    //power = (byte)(r1.Next() % (lnI < 16 ? (7 * (lnI + 1)) : lnI < 27 ? (7 * (lnI - 15)) : lnI < 31 ? (7 * (lnI - 26)) : (7 * (lnI - 30))));
+            //    power += (byte)((lnI < 16 ? lnI : lnI < 27 ? lnI - 16 : lnI < 31 ? lnI - 27 : lnI - 31) + 1); // To avoid 0 power... and a non-selling item...
+            //    maxPower[(lnI < 16 ? 0 : lnI < 27 ? 1 : lnI < 31 ? 2 : 3)] = (power > maxPower[(lnI < 16 ? 0 : lnI < 27 ? 1 : lnI < 31 ? 2 : 3)] ? power :
+            //        maxPower[(lnI < 16 ? 0 : lnI < 27 ? 1 : lnI < 31 ? 2 : 3)]);
+            //    romData[0x13efb + lnI] = power;
 
-                double price = Math.Round((lnI < 16 ? Math.Pow(power, 2.1) : lnI < 27 ? Math.Pow(power, 2.3) : lnI < 31 ? Math.Pow(power, 2.65) : Math.Pow(power, 2.85)), 0);
-                // TO DO:  Round to the nearest 10 (after 100GP), 50(after 1000 GP), or 100 (after 2500 GP)
-                
-                if ((string)cboGPReq.SelectedItem == "100%")
-                    price *= 2;
-                else if ((string)cboGPReq.SelectedItem == "75%")
-                    price *= 1.5;
-                else if ((string)cboGPReq.SelectedItem == "33%")
-                    price = price * 2 / 3;
-                price = (float)Math.Round(price, 0);
+            //    double price = Math.Round((lnI < 16 ? Math.Pow(power, 2.1) : lnI < 27 ? Math.Pow(power, 2.3) : lnI < 31 ? Math.Pow(power, 2.65) : Math.Pow(power, 2.85)), 0);
+            //    // TO DO:  Round to the nearest 10 (after 100GP), 50(after 1000 GP), or 100 (after 2500 GP)
 
-                romData[0x1a00e + (lnI * 2) + 0] = (byte)(price % 256);
-                romData[0x1a00e + (lnI * 2) + 1] = (byte)(Math.Floor(price / 256));
-            }
+            //    if ((string)cboGPReq.SelectedItem == "100%")
+            //        price *= 2;
+            //    else if ((string)cboGPReq.SelectedItem == "75%")
+            //        price *= 1.5;
+            //    else if ((string)cboGPReq.SelectedItem == "33%")
+            //        price = price * 2 / 3;
+            //    price = (float)Math.Round(price, 0);
+
+            //    romData[0x1a00e + (lnI * 2) + 0] = (byte)(price % 256);
+            //    romData[0x1a00e + (lnI * 2) + 1] = (byte)(Math.Floor(price / 256));
+            //}
 
             // Randomize starting equipment. (3c79f-3c7b6)  Target range:  6-24 attack, 4-16 defense.  If it can't be reached, assign lowest weapon and armor.
             // Remember to add 64 to the starting equipment!!!
@@ -3700,9 +3758,24 @@ namespace DW2Randomizer
             {
                 // Just give them the bamboo pole and the clothes for now.  We might randomize starting equipment later.
                 int byteToUse = 0x3c79f + (8 * lnI);
-                romData[byteToUse + 0] = 64 + 1;
-                romData[byteToUse + 1] = 64 + 17;
+                // Randomize clothes, club, copper sword / clothes, leather armor
+                romData[byteToUse + 0] = (byte)(64 + 1 + weaponOrder[r1.Next() % 3]);
+                romData[byteToUse + 1] = (byte)(64 + 1 + armorOrder[r1.Next() % 2]);
             }
+        }
+
+        private int[] inverted_power_curve(int min, int max, int arraySize, double powToUse, Random r1)
+        {
+            int range = max - min;
+            double p_range = Math.Pow(range, 1 / powToUse);
+            int[] points = new int[arraySize];
+            for (int i = 0; i < arraySize; i++)
+            {
+                double section = (double)r1.Next() / int.MaxValue;
+                points[i] = (int)Math.Round(max - Math.Pow(section * p_range, powToUse));
+            }
+            Array.Sort(points);
+            return points;
         }
 
         private void randomizeWhoEquip(Random r1)
@@ -4201,12 +4274,13 @@ namespace DW2Randomizer
             {
                 if (lnI == 3) // Midenhall starts with 0 MP.
                     continue;
+
                 switch (lnI % 4)
                 {
                     case 0:
                     case 1:
                     case 3:
-                        randomModifier = (r1.Next() % 16);
+                        randomModifier = 4 + (r1.Next() % 16);
                         break;
                     case 2:
                         randomModifier = 24 + (r1.Next() % 16);
@@ -4228,6 +4302,7 @@ namespace DW2Randomizer
             {
                 for (int lnI = 0; lnI < 12; lnI++)
                 {
+                    if (lnI == 3) continue;
                     int maxGains = 0;
                     if (lnI % 4 == 0)
                     {
