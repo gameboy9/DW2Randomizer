@@ -200,7 +200,6 @@ namespace DW2Randomizer
                                 terrain = 4;
                                 while (terrain == 4 || terrain == 5)
                                     terrain = r1.Next() % 7 + 1;
-                                terrain = terrain;
                             }
                             if (map[y, x] != 0x0a)
                                 map[y, x] = terrain; // (lnI == 0 ? 0x01 : lnI == 1 ? 0x06 : lnI == 2 ? 0x03 : lnI == 3 ? 0x02 : lnI == 4 ? 0x07 : 0x05);
@@ -930,6 +929,7 @@ namespace DW2Randomizer
                 // Must compress the map by getting rid of further 1 byte lakes
             }
 
+            // Ensure monster zones are 8x8
             if (chkSmallMap.Checked)
             {
                 romData[0x10083] = 0x85;
@@ -1085,7 +1085,7 @@ namespace DW2Randomizer
             for (int lnI = 0; lnI < 256; lnI++)
                 for (int lnJ = 0; lnJ < 256; lnJ++)
                 {
-                    if (lnI == 9 && lnJ == 65) lastIsland = lastIsland;
+                    //if (lnI == 9 && lnJ == 65) lastIsland = lastIsland;
                     if (island[lnI, lnJ] == -1)
                     {
                         int plots = lakePlot(lakeNumber, lnI, lnJ);
@@ -1260,7 +1260,7 @@ namespace DW2Randomizer
                         previousTerrain = map[lnI, 0];
                         for (int lnJ = 0; lnJ < 256; lnJ++)
                         {
-                            if (lnI == 9 && lnJ == 64) sameTerrain = sameTerrain;
+                            //if (lnI == 9 && lnJ == 64) sameTerrain = sameTerrain;
                             if (map[lnI, lnJ] == previousTerrain)
                             {
                                 sameTerrain++;
@@ -1807,6 +1807,7 @@ namespace DW2Randomizer
                 // Must compress the map by getting rid of further 1 byte lakes
             }
 
+            // Adjust monster zones
             if (chkSmallMap.Checked)
             {
                 romData[0x10083] = 0x85;
@@ -3672,6 +3673,7 @@ namespace DW2Randomizer
                 romData[0x13efb + weaponOrder[lnI]] = (byte)weaponPower[lnI];
                 double price = Math.Round(Math.Pow(weaponPower[lnI], 2.3));
                 price *= ((string)cboGPReq.SelectedItem == "75%" ? .75 : (string)cboGPReq.SelectedItem == "50%" ? .5 : (string)cboGPReq.SelectedItem == "33%" ? .33 : 1);
+                price = (price < 5 ? 5 : price);
                 romData[0x1a00e + (weaponOrder[lnI] * 2) + 0] = (byte)(price % 256);
                 romData[0x1a00e + (weaponOrder[lnI] * 2) + 1] = (byte)(Math.Floor(price / 256));
                 maxPower[0] = (weaponPower[lnI] > maxPower[0] ? weaponPower[lnI] : maxPower[0]);
@@ -3681,6 +3683,7 @@ namespace DW2Randomizer
                 romData[0x13efb + weaponStray[lnI]] = (byte)weaponStrayPower[lnI];
                 double price = Math.Round(Math.Pow(weaponStrayPower[lnI], 2.35));
                 price *= ((string)cboGPReq.SelectedItem == "75%" ? .75 : (string)cboGPReq.SelectedItem == "50%" ? .5 : (string)cboGPReq.SelectedItem == "33%" ? .33 : 1);
+                price = (price < 5 ? 5 : price);
                 romData[0x1a00e + (weaponStray[lnI] * 2) + 0] = (byte)(price % 256);
                 romData[0x1a00e + (weaponStray[lnI] * 2) + 1] = (byte)(Math.Floor(price / 256));
                 maxPower[0] = (weaponPower[lnI] > maxPower[0] ? weaponPower[lnI] : maxPower[0]);
@@ -3690,6 +3693,7 @@ namespace DW2Randomizer
                 romData[0x13efb + armorOrder[lnI]] = (byte)armorPower[lnI];
                 double price = Math.Round(Math.Pow(armorPower[lnI], 2.49));
                 price *= ((string)cboGPReq.SelectedItem == "75%" ? .75 : (string)cboGPReq.SelectedItem == "50%" ? .5 : (string)cboGPReq.SelectedItem == "33%" ? .33 : 1);
+                price = (price < 5 ? 5 : price);
                 romData[0x1a00e + (armorOrder[lnI] * 2) + 0] = (byte)(price % 256);
                 romData[0x1a00e + (armorOrder[lnI] * 2) + 1] = (byte)(Math.Floor(price / 256));
                 maxPower[1] = (armorOrder[lnI] > maxPower[1] ? armorOrder[lnI] : maxPower[1]);
@@ -3699,6 +3703,7 @@ namespace DW2Randomizer
                 romData[0x13efb + shieldOrder[lnI]] = (byte)shieldPower[lnI];
                 double price = Math.Round(Math.Pow(shieldPower[lnI], 2.84));
                 price *= ((string)cboGPReq.SelectedItem == "75%" ? .75 : (string)cboGPReq.SelectedItem == "50%" ? .5 : (string)cboGPReq.SelectedItem == "33%" ? .33 : 1);
+                price = (price < 5 ? 5 : price);
                 romData[0x1a00e + (shieldOrder[lnI] * 2) + 0] = (byte)(price % 256);
                 romData[0x1a00e + (shieldOrder[lnI] * 2) + 1] = (byte)(Math.Floor(price / 256));
                 maxPower[2] = (shieldOrder[lnI] > maxPower[2] ? shieldOrder[lnI] : maxPower[2]);
@@ -3708,6 +3713,7 @@ namespace DW2Randomizer
                 romData[0x13efb + helmetOrder[lnI]] = (byte)helmetPower[lnI];
                 double price = Math.Round(Math.Pow(helmetPower[lnI], 3.07));
                 price *= ((string)cboGPReq.SelectedItem == "75%" ? .75 : (string)cboGPReq.SelectedItem == "50%" ? .5 : (string)cboGPReq.SelectedItem == "33%" ? .33 : 1);
+                price = (price < 5 ? 5 : price);
                 romData[0x1a00e + (helmetOrder[lnI] * 2) + 0] = (byte)(price % 256);
                 romData[0x1a00e + (helmetOrder[lnI] * 2) + 1] = (byte)(Math.Floor(price / 256));
                 maxPower[3] = (helmetOrder[lnI] > maxPower[3] ? helmetOrder[lnI] : maxPower[3]);
@@ -3756,11 +3762,14 @@ namespace DW2Randomizer
             List<byte> legalArmor = new List<byte>();
             for (int lnI = 0; lnI < 3; lnI++)
             {
-                // Just give them the bamboo pole and the clothes for now.  We might randomize starting equipment later.
                 int byteToUse = 0x3c79f + (8 * lnI);
                 // Randomize clothes, club, copper sword / clothes, leather armor
                 romData[byteToUse + 0] = (byte)(64 + 1 + weaponOrder[r1.Next() % 3]);
                 romData[byteToUse + 1] = (byte)(64 + 1 + armorOrder[r1.Next() % 2]);
+                // Need to make sure that the person is allowed to equip the randomly selected equipment.
+                for (int lnJ = 0; lnJ < 2; lnJ++)
+                    if (romData[0x1a3ce + (romData[byteToUse + lnJ] - 64)] % Math.Pow(2, lnI + 1) < Math.Pow(2, lnI))
+                        romData[0x1a3ce + (romData[byteToUse + lnJ] - 64)] += (byte)Math.Pow(2, lnI);
             }
         }
 
@@ -3783,8 +3792,13 @@ namespace DW2Randomizer
             // Totally randomize who can equip (1a3ce-1a3f0).  At least one person can equip something...
             for (int lnI = 0; lnI < 35; lnI++)
             {
-                if (lnI == 0 || lnI == 16) romData[0x1a3ce + lnI] = 7; // everyone can equip the first weapon and armor.
-                else romData[0x1a3ce + lnI] = (byte)((r1.Next() % 7) + 1);
+                romData[0x1a3ce + lnI] = (byte)((r1.Next() % 7) + 1);
+                for (int lnJ = 0; lnJ < 3; lnJ++)
+                {
+                    int byteToUse = 0x3c79f + (8 * lnJ);
+                    if (romData[0x1a3ce + lnI] % Math.Pow(2, lnJ + 1) < Math.Pow(2, lnJ) && (romData[byteToUse + 0] == lnI - 64 || romData[byteToUse + 1] == lnI - 64))
+                        romData[0x1a3ce + lnI] += (byte)Math.Pow(2, lnJ);
+                }
             }
         }
 
