@@ -748,6 +748,8 @@ namespace DW2Randomizer
             // All of these can go anywhere.
             for (int lnI = 0; lnI < 13; lnI++)
             {
+                if ((lnI == 0 || lnI == 6) && chkSmallMap.Checked) continue; // Remove the Midenhall Island shrine which is of no importance and the Rhone Shrine due to buggy character acquisition.
+
                 int x = r1.Next() % (chkSmallMap.Checked ? 125 : 253);
                 int y = r1.Next() % (chkSmallMap.Checked ? 125 : 253);
 
@@ -809,6 +811,7 @@ namespace DW2Randomizer
             // Need to make sure the wind tower is no more than 64 squares outside of Midenhall
             for (int lnI = 0; lnI < 5; lnI++)
             {
+                if ((lnI == 3 || lnI == 4) && chkSmallMap.Checked) continue; // Remove the Dragon's Horns from the small map
                 int x = 300;
                 int y = 300;
                 if (lnI == 0)
@@ -844,8 +847,8 @@ namespace DW2Randomizer
                 for (int lnJ = 0; lnJ < 16; lnJ++)
                     monsterZones[lnI, lnJ] = 0xff;
 
-            int midenMZX = midenX / 16;
-            int midenMZY = midenY / 16;
+            int midenMZX = midenX / 8;
+            int midenMZY = midenY / 8;
 
             for (int lnI = 0; lnI < 16; lnI++)
                 for (int lnJ = 0; lnJ < 16; lnJ++)
@@ -853,11 +856,11 @@ namespace DW2Randomizer
                     int mzY = lnJ;
                     int mzX = lnI;
 
-                    if (midenMZX - mzX >= -1 && midenMZX - mzX <= 1 && midenMZY - mzY >= -1 && midenMZY - mzY <= 1)
+                    if (Math.Abs(midenMZX - mzX) <= 1 && Math.Abs(midenMZY - mzY) <= 1)
                         monsterZones[mzY, mzX] = r1.Next() % 9;
-                    else if (midenMZX - mzX >= -2 && midenMZX - mzX <= 2 && midenMZY - mzY >= -2 && midenMZY - mzY <= 2)
+                    else if (Math.Abs(midenMZX - mzX) <= 2 && Math.Abs(midenMZY - mzY) <= 2)
                         monsterZones[mzY, mzX] = r1.Next() % 18;
-                    else if (midenMZX - mzX >= -4 && midenMZX - mzX <= 4 && midenMZY - mzY >= -4 && midenMZY - mzY <= 4)
+                    else if (Math.Abs(midenMZX - mzX) <= 3 && Math.Abs(midenMZY - mzY) <= 3)
                         monsterZones[mzY, mzX] = r1.Next() % 5 + 0x0d;
                     else
                     {
@@ -3185,8 +3188,8 @@ namespace DW2Randomizer
                 } else if (randomLevel == 3) // Basically make it equivalent to mcgrew's DW1 Randomizer
                 {
                     int rp = (r1.Next() % 100);
-                    if (rp >= 50) randomPattern = 4;
-                    else if (rp >= 35) randomPattern = 2; else randomPattern = 1;
+                    if (rp >= 40) randomPattern = 4;
+                    else if (rp >= 30) randomPattern = 2; else randomPattern = 1;
                 } else if (randomLevel == 2)
                 {
                     randomPattern = (r1.Next() % 5);
@@ -3205,22 +3208,25 @@ namespace DW2Randomizer
                         {
                             if (random == 30 && concentration)
                                 continue; // do NOT set the concentration bit again.  Maintain regular attack.
-                            else if ((random == 7 || random == 8 || random == 21 || random == 22 || random == 24 || random == 25) && lnI <= 32 && randomLevel == 4)
-                            {
-                                lnJ--;
-                                continue;
-                            }
-                            else if ((random == 4 || random == 5 || random == 6 || random == 9 || random == 12 || random == 19 || random == 20 || random == 23 || random == 26) && lnI >= 51 && randomLevel == 4)
-                            {
-                                lnJ--;
-                                continue;
-                            }
+                            //else if ((random == 7 || random == 8 || random == 21 || random == 22 || random == 24 || random == 25) && lnI <= 32 && randomLevel == 4)
+                            //{
+                            //    lnJ--;
+                            //    continue;
+                            //}
+                            //else if ((random == 4 || random == 5 || random == 6 || random == 9 || random == 12 || random == 19 || random == 20 || random == 23 || random == 26) && lnI >= 51 && randomLevel == 4)
+                            //{
+                            //    lnJ--;
+                            //    continue;
+                            //}
                             else if (random >= 16)
                                 enemyPage2[lnJ] = true;
                             else if (random == 30)
                                 concentration = true;
 
                             enemyPatterns[lnJ] = (byte)(random % 16);
+                        } else
+                        {
+
                         }
                     }
                 } else if (randomPattern == 3)
@@ -3249,40 +3255,60 @@ namespace DW2Randomizer
                 {
                     for (int lnJ = 0; lnJ < 8; lnJ++)
                     {
-                        // 50% chance of setting a different attack.
-                        byte random = (byte)(r1.Next() % 10);
-                        switch (random)
+                        // The higher the monster is, the more chances of double attack, from 5% to 80%.
+                        if (r1.Next() % 100 <= lnI)
                         {
-                            case 1:
-                                enemyPatterns[lnJ] = 1;
-                                break;
-                            case 2:
-                                enemyPatterns[lnJ] = 2;
-                                break;
-                            case 3:
-                                enemyPatterns[lnJ] = 3;
-                                break;
-                            case 4:
-                                enemyPatterns[lnJ] = 4;
-                                break;
-                            case 5:
-                                enemyPatterns[lnJ] = 13;
-                                enemyPage2[lnJ] = true;
-                                break;
-                            case 6:
-                                if (!concentration)
-                                {
-                                    enemyPatterns[lnJ] = 14;
+                            enemyPatterns[lnJ] = 13;
+                            enemyPage2[lnJ] = true;
+                        }
+                        else
+                        {
+                            // 50% chance of setting a different attack.
+                            byte random = (byte)(r1.Next() % 10);
+                            switch (random)
+                            {
+                                case 1:
+                                    enemyPatterns[lnJ] = 1;
+                                    break;
+                                case 2:
+                                    enemyPatterns[lnJ] = 2;
+                                    break;
+                                case 3:
+                                    enemyPatterns[lnJ] = 3;
+                                    break;
+                                case 4:
+                                    enemyPatterns[lnJ] = 4;
+                                    break;
+                                case 5:
+                                    enemyPatterns[lnJ] = 13;
                                     enemyPage2[lnJ] = true;
-                                    concentration = true;
-                                }
-                                break;
+                                    break;
+                                case 6:
+                                    if (!concentration)
+                                    {
+                                        enemyPatterns[lnJ] = 14;
+                                        enemyPage2[lnJ] = true;
+                                        concentration = true;
+                                    }
+                                    break;
+                            }
                         }
                     }
                 } else if (randomPattern == 1)
                 {
                     for (int lnJ = 0; lnJ < 8; lnJ++)
-                        enemyPatterns[lnJ] = 0;
+                    {
+                        // The higher the monster is, the more chances of double attack, from 5% to 80%.
+                        if (r1.Next() % 100 <= lnI)
+                        {
+                            enemyPatterns[lnJ] = 13;
+                            enemyPage2[lnJ] = true;
+                        }
+                        else
+                        {
+                            enemyPatterns[lnJ] = 0;
+                        }
+                    }
                 } else
                 {
                     // keep pattern the way it is.
@@ -3658,9 +3684,17 @@ namespace DW2Randomizer
         {
             int[] weaponOrder = { 0, 4, 5, 1, 6, 7, 2, 9, 10, 14, 3, 12, 13, 15, 11 };
             int[] weaponStray = { 8 };
-            int[] armorOrder = { 16, 20, 21, 24, 17, 23, 25, 20, 18, 26, 22 };
+            int[] armorOrder = { 16, 20, 21, 24, 17, 23, 19, 18, 25, 26, 22 };
             int[] shieldOrder = { 27, 29, 28, 31, 30 };
             int[] helmetOrder = { 33, 32, 34 };
+
+            if (randomLevel == 4)
+            {
+                weaponOrder = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15 };
+                armorOrder = new int[] { 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26 };
+                shieldOrder = new int[] { 27, 28, 29, 30, 31 };
+                helmetOrder = new int[] { 32, 33, 34 };
+            }
 
             int[] weaponPower = inverted_power_curve(2, 100, weaponOrder.Length, .5, r1);
             int[] weaponStrayPower = inverted_power_curve(2, 100, weaponStray.Length, .5, r1);
@@ -3767,9 +3801,8 @@ namespace DW2Randomizer
                 romData[byteToUse + 0] = (byte)(64 + 1 + weaponOrder[r1.Next() % 3]);
                 romData[byteToUse + 1] = (byte)(64 + 1 + armorOrder[r1.Next() % 2]);
                 // Need to make sure that the person is allowed to equip the randomly selected equipment.
-                for (int lnJ = 0; lnJ < 2; lnJ++)
-                    if (romData[0x1a3ce + (romData[byteToUse + lnJ] - 64)] % Math.Pow(2, lnI + 1) < Math.Pow(2, lnI))
-                        romData[0x1a3ce + (romData[byteToUse + lnJ] - 64)] += (byte)Math.Pow(2, lnI);
+                romData[0x1a3ce + weaponOrder[0]] = romData[0x1a3ce + weaponOrder[1]] = romData[0x1a3ce + weaponOrder[2]] = 
+                    romData[0x1a3ce + armorOrder[0]] = romData[0x1a3ce + armorOrder[1]] = 7;
             }
         }
 
@@ -3792,26 +3825,35 @@ namespace DW2Randomizer
             // Totally randomize who can equip (1a3ce-1a3f0).  At least one person can equip something...
             for (int lnI = 0; lnI < 35; lnI++)
             {
+                if ((lnI == 0 || lnI == 4 || lnI == 5 || lnI == 16 || lnI == 20) && chkEquipment.Checked) continue; // It's already set so everyone can equip, so let's not screw that up.
                 romData[0x1a3ce + lnI] = (byte)((r1.Next() % 7) + 1);
-                for (int lnJ = 0; lnJ < 3; lnJ++)
-                {
-                    int byteToUse = 0x3c79f + (8 * lnJ);
-                    if (romData[0x1a3ce + lnI] % Math.Pow(2, lnJ + 1) < Math.Pow(2, lnJ) && (romData[byteToUse + 0] == lnI - 64 || romData[byteToUse + 1] == lnI - 64))
-                        romData[0x1a3ce + lnI] += (byte)Math.Pow(2, lnJ);
-                }
+                //for (int lnJ = 0; lnJ < 3; lnJ++)
+                //{
+                //    int byteToUse = 0x3c79f + (8 * lnJ);
+                //    if (romData[0x1a3ce + lnI] % Math.Pow(2, lnJ + 1) < Math.Pow(2, lnJ) && (romData[byteToUse + 0] == lnI - 64 || romData[byteToUse + 1] == lnI - 64))
+                //        romData[0x1a3ce + lnI] += (byte)Math.Pow(2, lnJ);
+                //}
             }
         }
 
         private void randomizeSpellStrengths(Random r1)
         {
             // Totally randomize spell strengths (18be0, 13be8, 13bf0, 127d5-1286a for strength, 134fa-13508 for cost, 13509-13517 for 3/4 cost)
-            byte healScore = (byte)(r1.Next() % 255);
+            byte healScore = (byte)((r1.Next() % 128) + 32);
+            byte healMoreScore = (byte)((r1.Next() % 160) + 64);
+            byte temp = 0;
+            if (healMoreScore < healScore && randomLevel != 4)
+            {
+                temp = healScore;
+                healScore = healMoreScore;
+                healMoreScore = temp;
+            }
             romData[0x18be0] = romData[0x127fe] = healScore;
-            byte healMoreScore = (byte)(r1.Next() % 255);
             romData[0x18be8] = romData[0x12808] = healMoreScore;
-            byte herbScore = (byte)(r1.Next() % 255);
+
+            byte herbScore = (byte)((r1.Next() % 128) + 96);
             romData[0x19602] = romData[0x1285d] = herbScore;
-            byte shieldScore = (byte)(r1.Next() % 255);
+            byte shieldScore = (byte)((r1.Next() % 192) + 32);
             romData[0x12857] = shieldScore;
 
             int[] allySpells = { 0x127fd, 0x12807, 0x12811, 0x12857, 0x1285c };
@@ -3830,22 +3872,41 @@ namespace DW2Randomizer
             for (int lnI = 0; lnI < monsterSpells.Length; lnI++)
             {
                 int byteToUse = monsterSpells[lnI];
-                int target = ((r1.Next() % 3) + 2);
-                romData[byteToUse + 0] = (byte)(target);
-                romData[byteToUse + 1] = (byte)(r1.Next() % 160);
-                int cmdTarget = (target <= 3 ? 1 : 0);
-                romData[monsterCmd[lnI]] = (byte)cmdTarget;
+                if (randomLevel == 4)
+                {
+                    int target = ((r1.Next() % 3) + 2);
+                    romData[byteToUse + 0] = (byte)(target);
+                    int cmdTarget = (target <= 3 ? 1 : 0);
+                    romData[monsterCmd[lnI]] = (byte)cmdTarget;
+                }
+                romData[byteToUse + 1] = (byte)((r1.Next() % 208) + 16);
             }
 
-            int[] constMonsSpells = { 0x127e4, 0x1280c, 0x127da, 0x127f3, 0x127ee };
-            int[] constMonsCmd = { 0x1352b, 0x13533, 0x13529, 0x1352e, 0x1352d };
-            for (int lnI = 0; lnI < constMonsSpells.Length; lnI++)
+            if (randomLevel != 4)
             {
-                int byteToUse = monsterSpells[lnI];
-                int target = ((r1.Next() % 3) + 2);
-                romData[byteToUse + 0] = (byte)(target);
-                int cmdTarget = (target <= 3 ? 1 : 0);
-                romData[monsterCmd[lnI]] = (byte)cmdTarget;
+                for (int lnI = 0; lnI < 4; lnI++)
+                    for (int lnJ = lnI + 1; lnJ < 4; lnJ++)
+                        if (romData[monsterSpells[lnJ] + 1] < romData[monsterSpells[lnI] + 1])
+                        {
+                            int tempPower = romData[monsterSpells[lnI] + 1];
+                            romData[monsterSpells[lnI] + 1] = romData[monsterSpells[lnJ] + 1];
+                            romData[monsterSpells[lnJ] + 1] = (byte)tempPower;
+                            lnJ = lnI;
+                        }
+            }
+
+            if (randomLevel == 4)
+            {
+                int[] constMonsSpells = { 0x127e4, 0x1280c, 0x127da, 0x127f3, 0x127ee };
+                int[] constMonsCmd = { 0x1352b, 0x13533, 0x13529, 0x1352e, 0x1352d };
+                for (int lnI = 0; lnI < constMonsSpells.Length; lnI++)
+                {
+                    int byteToUse = monsterSpells[lnI];
+                    int target = ((r1.Next() % 3) + 2);
+                    romData[byteToUse + 0] = (byte)(target);
+                    int cmdTarget = (target <= 3 ? 1 : 0);
+                    romData[monsterCmd[lnI]] = (byte)cmdTarget;
+                }
             }
 
             // Don't randomize the defense spell for now.
@@ -4097,6 +4158,21 @@ namespace DW2Randomizer
         private void randomizeTreasures(Random r1)
         {
             // Totally randomize treasures... but make sure key items exist before they are needed! (19e41-19f15, 19f1a-19f2a, 19c79, 19c84)
+            // Midenhall = 0x19e41, 0x19e45, 0x19e49, 0x19e4d, 0x19e51, 0x19e55
+            // Spring of Bravery = 0x19ed9, 0x19edd, 0x19ee1
+            // Cannock = 0x19e59
+            // Lake Cave = 0x19e79, 0x19e7d, 0x19e81, 0x19e85, 0x19e89, 0x19e8d, 0x19e91
+            // Hamlin = 0x19f26
+            // Fire shrine = 0x19f2a
+            // Wind Tower = 0x19f0d, 0x19f11, 0x19f15
+            // World Map = 0x19f1a, 0x19f1e, 0x19f22
+            // Zahan = 0x19f32, 0x19e65
+            // Charlock = 0x19eb5, 0x19e69, 0x19e6d, 0x19e71, 0x19e75
+            // Osterfair = 0x19e5d, 0x19e61
+            // Moon Tower = 0x19ee5, 0x19ee9, 0x19eed, 0x19ef1, 0x19ef5
+            // Lighthouse = 0x19ef9, 0x19f01, 0x19f05, 0x19f09
+            // Sea Cave = 0x19e95, 0x19e99, 0x19e9d, 0x19ea1, 0x19ea5, 0x19ea9, 0x19ead, 0x19eb1
+            // Rhone Cave = 0x19eb9, 0x19ebd, 0x19ec1, 0x19ec5, 0x19ec9, 0x19ecd, 0x19ed1, 0x19ed5
             int[] treasureAddrZ0 = { 0x19e41, 0x19c79 }; // 2
             int[] treasureAddrZ1 = { 0x19ed9, 0x19edd, 0x19ee1, 0x19e79, 0x19e7d,
                                      0x19e81, 0x19e85, 0x19e89, 0x19e8d, 0x19e91,
@@ -4134,7 +4210,7 @@ namespace DW2Randomizer
                                       0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
                                       0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x29, 0x2a, 0x2f,
                                       0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x38, 0x3b, 0x3c, 0x3d,
-                                      0x45, 0x46, 0x47, 0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f };
+                                      0x47, 0x49, 0x4a, 0x4b, 0x4d, 0x4e, 0x4f, 0x50, 0x5d, 0x60, 0x61, 0x62, 0x56 };
             for (int lnI = 0; lnI < allTreasure.Length; lnI++)
             {
                 if (lnI == 1)
@@ -4165,6 +4241,8 @@ namespace DW2Randomizer
             byte[] keyIStore = { 24, 24, 54, 66, 66, 66, 66, 66, 66 };
             for (int lnI = 0; lnI < keyItems.Length; lnI++)
             {
+                // Cloak of wind and Moon fragment are not required in the small map.
+                if (chkSmallMap.Checked && chkMap.Checked && (keyItems[lnI] == 0x2e || keyItems[lnI] == 0x26)) continue;
                 bool legal = false;
                 for (int lnJ = 0; lnJ < keyTreasure[lnI]; lnJ++)
                 {
@@ -4198,6 +4276,86 @@ namespace DW2Randomizer
                         {
                             romData[allTreasure[tRand]] = keyItems[lnI];
                             legal = true;
+                            // Set echoing flute locations if there's a crest involved.  0x40 = Sun(0x199A3-4), 0x43 = Water(0x1999D-E), 0x44 = Life(0x199A9-A)
+                            if (keyItems[lnI] == 0x40 || keyItems[lnI] == 0x43 || keyItems[lnI] == 0x44)
+                            {
+                                int crestByte = (keyItems[lnI] == 0x40 ? 0x199a3 : keyItems[lnI] == 0x43 ? 0x1999d : 0x199a9);
+                                if (new List<int> { 0x19eb9, 0x19ebd, 0x19ec1, 0x19ec5, 0x19ec9, 0x19ecd, 0x19ed1, 0x19ed5 }.Contains(allTreasure[tRand]))
+                                {
+                                    romData[crestByte] = 0x37;
+                                    romData[crestByte + 1] = 0x3f + 1;
+                                }
+                                else if (new List<int> { 0x19e41, 0x19e45, 0x19e49, 0x19e4d, 0x19e51, 0x19e55 }.Contains(allTreasure[tRand]))
+                                {
+                                    romData[crestByte] = 0x02;
+                                    romData[crestByte + 1] = 0x04 + 1;
+                                }
+                                else if (new List<int> { 0x19ed9, 0x19edd, 0x19ee1 }.Contains(allTreasure[tRand]))
+                                {
+                                    romData[crestByte] = 0x40;
+                                    romData[crestByte + 1] = 0x40 + 1;
+                                }
+                                else if (new List<int> { 0x19e59 }.Contains(allTreasure[tRand]))
+                                {
+                                    romData[crestByte] = 0x06;
+                                    romData[crestByte + 1] = 0x06 + 1;
+                                }
+                                else if (new List<int> { 0x19e79, 0x19e7d, 0x19e81, 0x19e85, 0x19e89, 0x19e8d, 0x19e91 }.Contains(allTreasure[tRand]))
+                                {
+                                    romData[crestByte] = 0x2c;
+                                    romData[crestByte + 1] = 0x2d + 1;
+                                }
+                                else if (new List<int> { 0x19f26 }.Contains(allTreasure[tRand]))
+                                {
+                                    romData[crestByte] = 0x07;
+                                    romData[crestByte + 1] = 0x08 + 1;
+                                }
+                                else if (new List<int> { 0x19f2a }.Contains(allTreasure[tRand]))
+                                {
+                                    romData[crestByte] = 0x1e;
+                                    romData[crestByte + 1] = 0x1e + 1;
+                                }
+                                else if (new List<int> { 0x19f0d, 0x19f11, 0x19f15 }.Contains(allTreasure[tRand]))
+                                {
+                                    romData[crestByte] = 0x58;
+                                    romData[crestByte + 1] = 0x5f + 1;
+                                }
+                                else if (new List<int> { 0x19f1a, 0x19f1e, 0x19f22 }.Contains(allTreasure[tRand]))
+                                {
+                                    romData[crestByte] = 0x01;
+                                    romData[crestByte + 1] = 0x01 + 1;
+                                }
+                                else if (new List<int> { 0x19f32, 0x19e65 }.Contains(allTreasure[tRand]))
+                                {
+                                    romData[crestByte] = 0x10;
+                                    romData[crestByte + 1] = 0x10 + 1;
+                                }
+                                else if (new List<int> { 0x19eb5, 0x19e69, 0x19e6d, 0x19e71, 0x19e75 }.Contains(allTreasure[tRand]))
+                                {
+                                    romData[crestByte] = 0x34;
+                                    romData[crestByte + 1] = 0x36 + 1;
+                                }
+                                else if (new List<int> { 0x19e5d, 0x19e61 }.Contains(allTreasure[tRand]))
+                                {
+                                    romData[crestByte] = 0x0f;
+                                    romData[crestByte + 1] = 0x0f + 1;
+                                }
+                                else if (new List<int> { 0x19ee5, 0x19ee9, 0x19eed, 0x19ef1, 0x19ef5 }.Contains(allTreasure[tRand]))
+                                {
+                                    romData[crestByte] = 0x49;
+                                    romData[crestByte + 1] = 0x4f + 1;
+                                }
+                                else if (new List<int> { 0x19ef9, 0x19f01, 0x19f05, 0x19f09 }.Contains(allTreasure[tRand]))
+                                {
+                                    romData[crestByte] = 0x50;
+                                    romData[crestByte + 1] = 0x57 + 1;
+                                }
+                                else if (new List<int> { 0x19e95, 0x19e99, 0x19e9d, 0x19ea1, 0x19ea5, 0x19ea9, 0x19ead, 0x19eb1 }.Contains(allTreasure[tRand]))
+                                {
+                                    romData[crestByte] = 0x2e;
+                                    romData[crestByte + 1] = 0x33 + 1;
+                                }
+                            }
                         }
                     }
                 }
@@ -4206,7 +4364,34 @@ namespace DW2Randomizer
 
         private void randomizeStores(Random r1)
         {
-            // Adjust prices 
+            if (!chkEquipment.Checked)
+            {
+                byte[] weapons = new byte[] { 2, 12, 27, 45, 8, 10, 15, 20, 7, 30, 40, 105, 55, 70, 40, 95 };
+                int[] weaponcost = new int[] { 20, 200, 2500, 26000, 60, 100, 330, 770, 25000, 1500, 4000, 15000, 8000, 16000, 4000, 30000 };
+                byte[] armor = new byte[] { 2, 35, 65, 60, 6, 12, 87, 35, 25, 47, 75 };
+                int[] armorcost = new int[] { 30, 1250, 24000, 12000, 150, 390, 6400, 1250, 1000, 10000, 30000 };
+                byte[] shields = new byte[] { 4, 18, 10, 40, 30 };
+                int[] shieldcost = new int[] { 90, 21500, 2000, 8800, 30000 };
+                byte[] helmets = new byte[] { 8, 6, 20 };
+                int[] helmetcost = new int[] { 20000, 3150, 20000 };
+
+                // Replace weapon data
+                for (int lnI = 0; lnI < 16; lnI++)
+                    romData[0x13efb + lnI] = weapons[lnI];
+
+                // Replace armor data
+                for (int lnI = 0; lnI < 11; lnI++)
+                    romData[0x13f0b + lnI] = armor[lnI];
+
+                // Replace shield data
+                for (int lnI = 0; lnI < 5; lnI++)
+                    romData[0x13f16 + lnI] = shields[lnI];
+
+                // Replace helmet data
+                for (int lnI = 0; lnI < 3; lnI++)
+                    romData[0x13f1b + lnI] = helmets[lnI];
+            }
+
             // Totally randomize stores (cannot have Jailor's Key in a weapons store) (19f9a-1a00b)
             for (int lnI = 0; lnI < 19; lnI++)
             {
@@ -4312,7 +4497,7 @@ namespace DW2Randomizer
             int maxAgility = 510 - ((maxPower[1] + maxPower[2] + maxPower[3]) * 2);
             maxAgility = (maxAgility > 255 ? 255 : maxAgility);
 
-            if (randomLevel == 4)
+            if (randomLevel == 3 || randomLevel == 4)
             {
                 for (int lnI = 0; lnI < 12; lnI++)
                 {
@@ -5326,16 +5511,19 @@ namespace DW2Randomizer
         private void btnUltraRando_Click(object sender, EventArgs e)
         {
             chkMap.Checked = true;
-            chkEquipment.Checked = false;
+            chkSmallMap.Checked = true;
+            chkEquipment.Checked = true;
             chkEquipEffects.Checked = false;
             chkWhoCanEquip.Checked = true;
             chkMonsterStats.Checked = true;
             chkMonsterZones.Checked = true;
             chkSpellLearning.Checked = true;
-            chkSpellStrengths.Checked = false;
+            chkSpellStrengths.Checked = true;
             chkHeroStats.Checked = true;
             chkHeroStores.Checked = true;
             chkTreasures.Checked = true;
+            chkXPRandomize.Checked = false;
+            chkGPRandomize.Checked = false;
 
             radSlightIntensity.Checked = false;
             radModerateIntensity.Checked = false;
