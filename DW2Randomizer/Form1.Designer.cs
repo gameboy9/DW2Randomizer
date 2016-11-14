@@ -76,15 +76,17 @@
             this.chkEquipment = new System.Windows.Forms.CheckBox();
             this.chkWhoCanEquip = new System.Windows.Forms.CheckBox();
             this.chkMap = new System.Windows.Forms.CheckBox();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.btnLudicrousRando = new System.Windows.Forms.Button();
+            this.btnUltraRando = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             this.lblIntensityDesc = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.txtFlags = new System.Windows.Forms.TextBox();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.btnUltraRando = new System.Windows.Forms.Button();
-            this.btnLudicrousRando = new System.Windows.Forms.Button();
             this.ttUltra = new System.Windows.Forms.ToolTip(this.components);
             this.ttLudicrous = new System.Windows.Forms.ToolTip(this.components);
+            this.chkSpeedHacks = new System.Windows.Forms.CheckBox();
+            this.chkExperimental = new System.Windows.Forms.CheckBox();
             this.tabAll.SuspendLayout();
             this.adjustments.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -277,7 +279,7 @@
             this.tabAll.Controls.Add(this.adjustments);
             this.tabAll.Controls.Add(this.tabPage2);
             this.tabAll.Controls.Add(this.tabPage1);
-            this.tabAll.Location = new System.Drawing.Point(13, 213);
+            this.tabAll.Location = new System.Drawing.Point(12, 213);
             this.tabAll.Name = "tabAll";
             this.tabAll.SelectedIndex = 0;
             this.tabAll.Size = new System.Drawing.Size(507, 197);
@@ -285,6 +287,8 @@
             // 
             // adjustments
             // 
+            this.adjustments.Controls.Add(this.chkExperimental);
+            this.adjustments.Controls.Add(this.chkSpeedHacks);
             this.adjustments.Controls.Add(this.label12);
             this.adjustments.Controls.Add(this.label11);
             this.adjustments.Controls.Add(this.txtPrincessName);
@@ -600,6 +604,36 @@
             this.chkMap.UseVisualStyleBackColor = true;
             this.chkMap.CheckedChanged += new System.EventHandler(this.determineFlags);
             // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.btnLudicrousRando);
+            this.tabPage1.Controls.Add(this.btnUltraRando);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Size = new System.Drawing.Size(499, 171);
+            this.tabPage1.TabIndex = 2;
+            this.tabPage1.Text = "Shortcuts";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // btnLudicrousRando
+            // 
+            this.btnLudicrousRando.Location = new System.Drawing.Point(13, 42);
+            this.btnLudicrousRando.Name = "btnLudicrousRando";
+            this.btnLudicrousRando.Size = new System.Drawing.Size(167, 23);
+            this.btnLudicrousRando.TabIndex = 1;
+            this.btnLudicrousRando.Text = "Ludicrous Randomization";
+            this.btnLudicrousRando.UseVisualStyleBackColor = true;
+            // 
+            // btnUltraRando
+            // 
+            this.btnUltraRando.Location = new System.Drawing.Point(13, 13);
+            this.btnUltraRando.Name = "btnUltraRando";
+            this.btnUltraRando.Size = new System.Drawing.Size(167, 23);
+            this.btnUltraRando.TabIndex = 0;
+            this.btnUltraRando.Text = "Ultra Randomization";
+            this.btnUltraRando.UseVisualStyleBackColor = true;
+            this.btnUltraRando.Click += new System.EventHandler(this.btnUltraRando_Click);
+            // 
             // label6
             // 
             this.label6.AutoSize = true;
@@ -634,35 +668,27 @@
             this.txtFlags.TabIndex = 30;
             this.txtFlags.TextChanged += new System.EventHandler(this.txtFlags_TextChanged);
             // 
-            // tabPage1
+            // chkSpeedHacks
             // 
-            this.tabPage1.Controls.Add(this.btnLudicrousRando);
-            this.tabPage1.Controls.Add(this.btnUltraRando);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Size = new System.Drawing.Size(499, 171);
-            this.tabPage1.TabIndex = 2;
-            this.tabPage1.Text = "Shortcuts";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.chkSpeedHacks.AutoSize = true;
+            this.chkSpeedHacks.Location = new System.Drawing.Point(269, 117);
+            this.chkSpeedHacks.Name = "chkSpeedHacks";
+            this.chkSpeedHacks.Size = new System.Drawing.Size(122, 17);
+            this.chkSpeedHacks.TabIndex = 23;
+            this.chkSpeedHacks.Text = "Speed up battles (A)";
+            this.chkSpeedHacks.UseVisualStyleBackColor = true;
+            this.chkSpeedHacks.CheckedChanged += new System.EventHandler(this.determineFlags);
             // 
-            // btnUltraRando
+            // chkExperimental
             // 
-            this.btnUltraRando.Location = new System.Drawing.Point(13, 13);
-            this.btnUltraRando.Name = "btnUltraRando";
-            this.btnUltraRando.Size = new System.Drawing.Size(167, 23);
-            this.btnUltraRando.TabIndex = 0;
-            this.btnUltraRando.Text = "Ultra Randomization";
-            this.btnUltraRando.UseVisualStyleBackColor = true;
-            this.btnUltraRando.Click += new System.EventHandler(this.btnUltraRando_Click);
-            // 
-            // btnLudicrousRando
-            // 
-            this.btnLudicrousRando.Location = new System.Drawing.Point(13, 42);
-            this.btnLudicrousRando.Name = "btnLudicrousRando";
-            this.btnLudicrousRando.Size = new System.Drawing.Size(167, 23);
-            this.btnLudicrousRando.TabIndex = 1;
-            this.btnLudicrousRando.Text = "Ludicrous Randomization";
-            this.btnLudicrousRando.UseVisualStyleBackColor = true;
+            this.chkExperimental.AutoSize = true;
+            this.chkExperimental.Location = new System.Drawing.Point(269, 143);
+            this.chkExperimental.Name = "chkExperimental";
+            this.chkExperimental.Size = new System.Drawing.Size(165, 17);
+            this.chkExperimental.TabIndex = 24;
+            this.chkExperimental.Text = "Experimental speed hacks (a)";
+            this.chkExperimental.UseVisualStyleBackColor = true;
+            this.chkExperimental.CheckedChanged += new System.EventHandler(this.determineFlags);
             // 
             // Form1
             // 
@@ -766,6 +792,8 @@
         private System.Windows.Forms.Button btnUltraRando;
         private System.Windows.Forms.ToolTip ttUltra;
         private System.Windows.Forms.ToolTip ttLudicrous;
+        private System.Windows.Forms.CheckBox chkExperimental;
+        private System.Windows.Forms.CheckBox chkSpeedHacks;
     }
 }
 

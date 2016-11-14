@@ -128,6 +128,11 @@ namespace DW2Randomizer
             InitializeComponent();
         }
 
+        private void turnIntoDogs()
+        {
+            // Start at A6E1, turn them into 0x09, and take it from there...
+        }
+
         private bool randomizeMapv3(Random r1)
         {
             for (int lnI = 0; lnI < 256; lnI++)
@@ -2933,7 +2938,10 @@ namespace DW2Randomizer
             romData[0x19dba] = 0x9d;
 
             renamePrincePrincess();
-            speedUpBattles();
+            if (chkSpeedHacks.Checked)
+                speedUpBattles();
+            if (chkExperimental.Checked)
+                experimentalSpeedHacks();
             skipPrologue();
             reviveAllCharsOnCOD();
             saveRom();
@@ -4546,22 +4554,37 @@ namespace DW2Randomizer
                         maxStrInd = 510 - (2 * maxStrInd);
                         maxStrInd = (maxStrInd > 255 ? 255 : maxStrInd);
 
-                        maxGains = maxStrInd - romData[0x13dd1 + lnI];
+                        maxGains = maxStrInd; // - romData[0x13dd1 + lnI];
                     }
-                    else maxGains = 255 - romData[0x13dd1 + lnI];
+                    else maxGains = 255; // - romData[0x13dd1 + lnI];
 
-                    if (lnI % 4 == 0) maxGains = (r1.Next() % (maxGains - 70)) + 70;
-                    if (lnI % 4 == 1) maxGains = (r1.Next() % (maxGains - 120)) + 120;
-                    if (lnI % 4 == 2) maxGains = (r1.Next() % (maxGains - 140)) + 140;
-                    if (lnI % 4 == 3) maxGains = (r1.Next() % (maxGains - 140)) + 140;
+                    if (randomLevel == 3)
+                    {
+                        if (lnI % 4 == 0)
+                            maxGains = (lnI == 0 ? maxGains : lnI == 4 ? maxGains - 30 : maxGains - 70);
+                        if (lnI % 4 == 1)
+                            maxGains = (lnI == 1 ? maxGains - 80 : lnI == 5 ? maxGains - 40 : maxGains);
+                        if (lnI % 4 == 2)
+                            maxGains = (lnI == 2 ? 250 : lnI == 6 ? 210 : 170);
+                        if (lnI % 4 == 3)
+                            maxGains = (lnI == 7 ? 200 : 250);
+                    }
+                    else
+                    {
+                        if (lnI % 4 == 0) maxGains = (r1.Next() % (maxGains - 70)) + 70;
+                        if (lnI % 4 == 1) maxGains = (r1.Next() % (maxGains - 120)) + 120;
+                        if (lnI % 4 == 2) maxGains = (r1.Next() % (maxGains - 140)) + 140;
+                        if (lnI % 4 == 3) maxGains = (r1.Next() % (maxGains - 140)) + 140;
+                    }
                     //if (lnI == 3) maxGains = 0; // No MP for Midenhall
 
                     int arraySize = lnI < 4 ? 50 : lnI < 8 ? 45 : 35;
-                    int[] values = new int[arraySize];
-                    for (int lnJ = 0; lnJ < arraySize; lnJ++)
-                        values[lnJ] = romData[0x13dd1 + lnI] + (r1.Next() % maxGains);
+                    int[] values = inverted_power_curve(romData[0x13dd1 + lnI], maxGains, arraySize, 1.3, r1);
+                    
+                    //for (int lnJ = 0; lnJ < arraySize; lnJ++)
+                    //    values[lnJ] = romData[0x13dd1 + lnI] + (r1.Next() % maxGains);
 
-                    Array.Sort(values);
+                    //Array.Sort(values);
                     for (int lnJ = 0; lnJ < arraySize - 1; lnJ++)
                         if (values[lnJ + 1] > values[lnJ] + 15)
                             values[lnJ + 1] = values[lnJ] + 15;
@@ -4682,6 +4705,26 @@ namespace DW2Randomizer
             //}
         }
 
+        private void experimentalSpeedHacks()
+        {
+            //romData[0xb734] = 0x36;
+            //romData[0xb735] = 0xbf;
+
+            //romData[0xbf46] = 0xa9;
+            //romData[0xbf47] = 0x0f;
+            //romData[0xbf48] = 0x20;
+            //romData[0xbf49] = 0xff;
+            //romData[0xbf4a] = 0xfb;
+            //romData[0xbf4b] = 0x60;
+
+            romData[0x3fdac] = 0xea;
+            romData[0x3fdad] = 0xea;
+            romData[0x3fdae] = 0xea;
+
+            romData[0x3c20e] = 0xea;
+            romData[0x3c20f] = 0xea;
+        }
+
         private void speedUpBattles()
         {
             // ALL ROM Hacks will have greatly increased battle speeds.
@@ -4692,6 +4735,7 @@ namespace DW2Randomizer
             romData[0x11038] = 2; // instead of 11
             romData[0x10ae9] = 1; // instead of 4, greatly reducing enemy flashing on them taking damage, reducing about 12 frames each time.
             romData[0x3c526] = 1; // instead of 10, greatly reducing flashes done for spell casting, removing 20 frames every time a spell is cast.
+            romData[0x3fc49] = 1; // instead of 8, reducing transition from one character's move to another by 7 frames / transition.
         }
 
         private void skipPrologue()
@@ -5446,6 +5490,8 @@ namespace DW2Randomizer
             chkHeroStats.Checked = (txtFlags.Text.Contains("H"));
             chkHeroStores.Checked = (txtFlags.Text.Contains("C"));
             chkTreasures.Checked = (txtFlags.Text.Contains("T"));
+            chkSpeedHacks.Checked = (txtFlags.Text.Contains("A"));
+            chkExperimental.Checked = (txtFlags.Text.Contains("a"));
 
             if (txtFlags.Text.Contains("r1")) radSlightIntensity.Checked = true;
             if (txtFlags.Text.Contains("r2")) radModerateIntensity.Checked = true;
@@ -5493,6 +5539,10 @@ namespace DW2Randomizer
                 flags += "C";
             if (chkTreasures.Checked)
                 flags += "T";
+            if (chkSpeedHacks.Checked)
+                flags += "A";
+            if (chkExperimental.Checked)
+                flags += "a";
 
             flags += (radSlightIntensity.Checked ? "r1" : radModerateIntensity.Checked ? "r2" : radHeavyIntensity.Checked ? "r3" : "r4");
             flags += ((string)cboGPReq.SelectedItem == "75%" ? "g1" : (string)cboGPReq.SelectedItem == "50%" ? "g2" : (string)cboGPReq.SelectedItem == "33%" ? "g3" : "");
@@ -5531,6 +5581,9 @@ namespace DW2Randomizer
             radInsaneIntensity.Checked = false;
 
             chkChangeStatsToRemix.Checked = true;
+            cboEncounterRate.SelectedIndex = 6;
+            cboGPReq.SelectedIndex = 3;
+            cboXPReq.SelectedIndex = 3;
         }
     }
 }
