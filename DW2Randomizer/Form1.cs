@@ -302,6 +302,9 @@ namespace DW2Randomizer
                     midenOK = true;
             }
 
+            // Establish "zone 0" area...
+
+
             bool treeLegal = false;
             while (!treeLegal)
             {
@@ -380,7 +383,7 @@ namespace DW2Randomizer
             }
 
             // We'll place all of the castles now.
-            // Midenhall can go anywhere.  But Cannock has to be 48 squares or less away from there.
+            // Midenhall can go anywhere.  But Cannock has to be 15-30 squares or less away from there.
             // Don't place Hargon's Castle for now.  OK, place it for now.  But I may change my mind later.
             for (int lnI = 0; lnI < 7; lnI++)
             {
@@ -444,7 +447,7 @@ namespace DW2Randomizer
             }
 
             // Now we'll place all of the towns now.
-            // Leftwyne must be 15 squares or less away from Midenhall.  Hamlin has to be 30 squares or less away from Midenhall.
+            // Leftwyne must be 15/30 squares or less away from Midenhall.  Hamlin has to be 30/60 squares or less away from Midenhall.
             for (int lnI = 0; lnI < 7; lnI++)
             {
                 int x = 300;
@@ -516,6 +519,7 @@ namespace DW2Randomizer
             for (int lnI = 0; lnI < 13; lnI++)
             {
                 if ((lnI == 0 || lnI == 6) && chkSmallMap.Checked) continue; // Remove the Midenhall Island shrine which is of no importance and the Rhone Shrine due to buggy character acquisition.
+                // lnI == 1 is probably the Cannock shrine... want to put that in Zone 1...
 
                 int x = r1.Next() % (chkSmallMap.Checked ? 125 : 253);
                 int y = r1.Next() % (chkSmallMap.Checked ? 125 : 253);
@@ -543,7 +547,7 @@ namespace DW2Randomizer
             }
 
             // Then the caves.
-            // Make sure the lake and spring cave is no more than 48 squares outside of Midenhall
+            // Make sure the lake and spring cave is no more than 16/32 squares outside of Midenhall
             for (int lnI = 0; lnI < 9; lnI++)
             {
                 int x = 300;
@@ -575,7 +579,7 @@ namespace DW2Randomizer
             }
 
             // Finally the towers
-            // Need to make sure the wind tower is no more than 64 squares outside of Midenhall
+            // Need to make sure the wind tower is no more than 14/28 squares outside of Midenhall
             for (int lnI = 0; lnI < 5; lnI++)
             {
                 if ((lnI == 3 || lnI == 4) && chkSmallMap.Checked) continue; // Remove the Dragon's Horns from the small map
@@ -623,11 +627,11 @@ namespace DW2Randomizer
                     int mzY = lnJ;
                     int mzX = lnI;
 
-                    if (Math.Abs(midenMZX - mzX) <= 1 && Math.Abs(midenMZY - mzY) <= 1)
+                    if (Math.Abs(midenMZX - mzX) <= 2 && Math.Abs(midenMZY - mzY) <= 2)
                         monsterZones[mzY, mzX] = r1.Next() % 9;
-                    else if (Math.Abs(midenMZX - mzX) <= 2 && Math.Abs(midenMZY - mzY) <= 2)
-                        monsterZones[mzY, mzX] = r1.Next() % 18;
                     else if (Math.Abs(midenMZX - mzX) <= 3 && Math.Abs(midenMZY - mzY) <= 3)
+                        monsterZones[mzY, mzX] = r1.Next() % 18;
+                    else if (Math.Abs(midenMZX - mzX) <= 4 && Math.Abs(midenMZY - mzY) <= 4)
                         monsterZones[mzY, mzX] = r1.Next() % 5 + 0x0d;
                     else
                     {
