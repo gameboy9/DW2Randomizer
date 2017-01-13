@@ -50,6 +50,8 @@
             this.btnNewSeed = new System.Windows.Forms.Button();
             this.tabAll = new System.Windows.Forms.TabControl();
             this.adjustments = new System.Windows.Forms.TabPage();
+            this.chkExperimental = new System.Windows.Forms.CheckBox();
+            this.chkSpeedHacks = new System.Windows.Forms.CheckBox();
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.txtPrincessName = new System.Windows.Forms.TextBox();
@@ -85,8 +87,6 @@
             this.txtFlags = new System.Windows.Forms.TextBox();
             this.ttUltra = new System.Windows.Forms.ToolTip(this.components);
             this.ttLudicrous = new System.Windows.Forms.ToolTip(this.components);
-            this.chkSpeedHacks = new System.Windows.Forms.CheckBox();
-            this.chkExperimental = new System.Windows.Forms.CheckBox();
             this.tabAll.SuspendLayout();
             this.adjustments.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -309,6 +309,28 @@
             this.adjustments.TabIndex = 0;
             this.adjustments.Text = "Adjustments";
             this.adjustments.UseVisualStyleBackColor = true;
+            // 
+            // chkExperimental
+            // 
+            this.chkExperimental.AutoSize = true;
+            this.chkExperimental.Location = new System.Drawing.Point(269, 143);
+            this.chkExperimental.Name = "chkExperimental";
+            this.chkExperimental.Size = new System.Drawing.Size(165, 17);
+            this.chkExperimental.TabIndex = 24;
+            this.chkExperimental.Text = "Experimental speed hacks (a)";
+            this.chkExperimental.UseVisualStyleBackColor = true;
+            this.chkExperimental.CheckedChanged += new System.EventHandler(this.determineFlags);
+            // 
+            // chkSpeedHacks
+            // 
+            this.chkSpeedHacks.AutoSize = true;
+            this.chkSpeedHacks.Location = new System.Drawing.Point(269, 117);
+            this.chkSpeedHacks.Name = "chkSpeedHacks";
+            this.chkSpeedHacks.Size = new System.Drawing.Size(122, 17);
+            this.chkSpeedHacks.TabIndex = 23;
+            this.chkSpeedHacks.Text = "Speed up battles (A)";
+            this.chkSpeedHacks.UseVisualStyleBackColor = true;
+            this.chkSpeedHacks.CheckedChanged += new System.EventHandler(this.determineFlags);
             // 
             // label12
             // 
@@ -581,6 +603,7 @@
             this.chkEquipment.TabIndex = 2;
             this.chkEquipment.Text = "Randomize Equipment (Q)";
             this.chkEquipment.UseVisualStyleBackColor = true;
+            this.chkEquipment.CheckedChanged += new System.EventHandler(this.determineFlags);
             // 
             // chkWhoCanEquip
             // 
@@ -667,28 +690,6 @@
             this.txtFlags.Size = new System.Drawing.Size(192, 20);
             this.txtFlags.TabIndex = 30;
             this.txtFlags.TextChanged += new System.EventHandler(this.txtFlags_TextChanged);
-            // 
-            // chkSpeedHacks
-            // 
-            this.chkSpeedHacks.AutoSize = true;
-            this.chkSpeedHacks.Location = new System.Drawing.Point(269, 117);
-            this.chkSpeedHacks.Name = "chkSpeedHacks";
-            this.chkSpeedHacks.Size = new System.Drawing.Size(122, 17);
-            this.chkSpeedHacks.TabIndex = 23;
-            this.chkSpeedHacks.Text = "Speed up battles (A)";
-            this.chkSpeedHacks.UseVisualStyleBackColor = true;
-            this.chkSpeedHacks.CheckedChanged += new System.EventHandler(this.determineFlags);
-            // 
-            // chkExperimental
-            // 
-            this.chkExperimental.AutoSize = true;
-            this.chkExperimental.Location = new System.Drawing.Point(269, 143);
-            this.chkExperimental.Name = "chkExperimental";
-            this.chkExperimental.Size = new System.Drawing.Size(165, 17);
-            this.chkExperimental.TabIndex = 24;
-            this.chkExperimental.Text = "Experimental speed hacks (a)";
-            this.chkExperimental.UseVisualStyleBackColor = true;
-            this.chkExperimental.CheckedChanged += new System.EventHandler(this.determineFlags);
             // 
             // Form1
             // 
