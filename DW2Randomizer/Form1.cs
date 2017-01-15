@@ -352,9 +352,9 @@ namespace DW2Randomizer
                     {
                         // Replace Tantegel music with the zone surrounding Tantegel.
                         romData[0x3e356] = (byte)((x / 8) * 8);
-                        romData[0x3e35a] = (byte)(((x + 1) / 8) * 8);
+                        romData[0x3e35a] = (byte)(((x / 8) + 1) * 8);
                         romData[0x3e360] = (byte)((y / 8) * 8);
-                        romData[0x3e364] = (byte)(((y + 1) / 8) * 8);
+                        romData[0x3e364] = (byte)(((y / 8) + 1) * 8);
                     }
                     //if (lnI == 6)
                     //{
@@ -2908,7 +2908,7 @@ namespace DW2Randomizer
                     int second = r1.Next() % weaponOrder.Length;
                     int hold = weaponOrder[first];
                     weaponOrder[first] = weaponOrder[second];
-                    weaponOrder[second] = weaponOrder[first];
+                    weaponOrder[second] = hold;
                 }
 
                 for (int lnI = 0; lnI < armorOrder.Length * 100; lnI++)
@@ -2917,7 +2917,7 @@ namespace DW2Randomizer
                     int second = r1.Next() % armorOrder.Length;
                     int hold = armorOrder[first];
                     armorOrder[first] = armorOrder[second];
-                    armorOrder[second] = armorOrder[first];
+                    armorOrder[second] = hold;
                 }
 
                 for (int lnI = 0; lnI < shieldOrder.Length * 100; lnI++)
@@ -2926,7 +2926,7 @@ namespace DW2Randomizer
                     int second = r1.Next() % shieldOrder.Length;
                     int hold = shieldOrder[first];
                     shieldOrder[first] = shieldOrder[second];
-                    shieldOrder[second] = shieldOrder[first];
+                    shieldOrder[second] = hold;
                 }
 
                 for (int lnI = 0; lnI < helmetOrder.Length * 100; lnI++)
@@ -2935,7 +2935,7 @@ namespace DW2Randomizer
                     int second = r1.Next() % helmetOrder.Length;
                     int hold = helmetOrder[first];
                     helmetOrder[first] = helmetOrder[second];
-                    helmetOrder[second] = helmetOrder[first];
+                    helmetOrder[second] = hold;
                 }
             }
 
