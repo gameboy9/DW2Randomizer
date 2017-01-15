@@ -348,6 +348,14 @@ namespace DW2Randomizer
                         romData[byteToUse + 0x7e] = (byte)(x);
                         romData[byteToUse + 1 + 0x7e] = (byte)(y + 1);
                     }
+                    if (lnI == 3)
+                    {
+                        // Replace Tantegel music with the zone surrounding Tantegel.
+                        romData[0x3e356] = (byte)((x / 8) * 8);
+                        romData[0x3e35a] = (byte)(((x + 1) / 8) * 8);
+                        romData[0x3e360] = (byte)((y / 8) * 8);
+                        romData[0x3e364] = (byte)(((y + 1) / 8) * 8);
+                    }
                     //if (lnI == 6)
                     //{
                     //    romData[0xa301] = (byte)(x);
@@ -3958,6 +3966,7 @@ namespace DW2Randomizer
             romData[0x10ae9] = 1; // instead of 4, greatly reducing enemy flashing on them taking damage, reducing about 12 frames each time.
             romData[0x3c526] = 1; // instead of 10, greatly reducing flashes done for spell casting, removing 20 frames every time a spell is cast.
             romData[0x3fc49] = 1; // instead of 8, reducing transition from one character's move to another by 7 frames / transition.
+            romData[0x110cc] = 1; // instead of 8, reducing flashing of super monsters (Atlas, Bazuzu, etc.)
         }
 
         private void skipPrologue()
