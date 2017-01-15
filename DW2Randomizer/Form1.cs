@@ -527,7 +527,6 @@ namespace DW2Randomizer
                     lnI--;
             }
 
-            // Need to change this where 5 zones out are safe, the rest are not.
             int[,] monsterZones = new int[16, 16];
             for (int lnI = 0; lnI < 16; lnI++)
                 for (int lnJ = 0; lnJ < 16; lnJ++)
@@ -2821,7 +2820,7 @@ namespace DW2Randomizer
                     }
                     else if (lnI == 42 || lnI == 43 || lnI == 44 || lnI == 54 || lnI == 55) // Sea cave.  No special bout here.
                     {
-                        romData[byteToUse + lnJ] = (byte)((r1.Next() % 37) + 41);
+                        romData[byteToUse + lnJ] = (byte)((r1.Next() % 37) + 42);
                     }
                     else if (lnI == 45 || lnI == 46 || lnI == 47 || lnI == 48 || lnI == 49 || lnI == 56) // Rhone cave.  Introduce Atlas chance.
                     {
@@ -2837,89 +2836,12 @@ namespace DW2Randomizer
                     }
                     else // Finally, a 80% chance.  Also introduce a 50% chance of the 19 "special bouts".
                     {
-                        romData[byteToUse + lnJ] = (byte)((r1.Next() % 77) + 1);
+                        romData[byteToUse + lnJ] = (byte)((r1.Next() % 78) + 1);
                     }
-
-                    //// First 11 zones have a 50% chance of a monster in each byte.  All 6 bytes will be at least 128... we don't want any "special fights" in these zones.
-                    //if (lnI < 11)
-                    //{
-                    //    if (r1.Next() % 2 == 0)
-                    //    {
-                    //        zone = true;
-                    //        romData[byteToUse + lnJ] = (byte)((r1.Next() % (lnI + 6)) + 1);
-                    //    }
-                    //    else
-                    //        romData[byteToUse + lnJ] = 127;
-                    //}
-                    //else if (lnI < 21) // For the next 10 zones, it's a 67% chance.  Still no special fights.
-                    //{
-                    //    if (r1.Next() % 3 < 2)
-                    //    {
-                    //        zone = true;
-                    //        romData[byteToUse + lnJ] = (byte)((r1.Next() % (lnI + 12)) + 1);
-                    //    }
-                    //    else
-                    //        romData[byteToUse + lnJ] = 127;
-                    //}
-                    //else if (lnI == 42 || lnI == 43 || lnI == 44 || lnI == 54 || lnI == 55) // Sea cave.  No special bout here.
-                    //{
-                    //    if (r1.Next() % 5 < 4)
-                    //    {
-                    //        zone = true;
-                    //        romData[byteToUse + lnJ] = (byte)((r1.Next() % 37) + 41);
-                    //    }
-                    //    else
-                    //        romData[byteToUse + lnJ] = 127;
-                    //}
-                    //else if (lnI == 45 || lnI == 46 || lnI == 47 || lnI == 48 || lnI == 49 || lnI == 56) // Rhone cave.  Introduce Atlas chance.
-                    //{
-                    //    if (r1.Next() % 5 < 4)
-                    //    {
-                    //        zone = true;
-                    //        romData[byteToUse + lnJ] = (byte)((r1.Next() % 28) + 51);
-                    //    }
-                    //    else
-                    //        romData[byteToUse + lnJ] = 127;
-                    //}
-                    //else if (lnI == 50 || lnI == 51) // Rhone area.  Introduce Bazuzu chance.
-                    //{
-                    //    if (r1.Next() % 10 < 9)
-                    //    {
-                    //        zone = true;
-                    //        romData[byteToUse + lnJ] = (byte)((r1.Next() % 18) + 62);
-                    //    }
-                    //    else
-                    //        romData[byteToUse + lnJ] = 127;
-                    //}
-                    //else if (lnI == 52 || lnI == 53) // Hargon's Castle.  Introduce Zarlox chance.
-                    //{
-                    //    if (r1.Next() % 10 < 9)
-                    //    {
-                    //        zone = true;
-                    //        romData[byteToUse + lnJ] = (byte)((r1.Next() % 13) + 68);
-                    //    }
-                    //    else
-                    //        romData[byteToUse + lnJ] = 127;
-                    //}
-                    //else // Finally, a 80% chance.  Also introduce a 50% chance of the 19 "special bouts".
-                    //{
-                    //    if (r1.Next() % 5 < 4)
-                    //    {
-                    //        zone = true;
-                    //        romData[byteToUse + lnJ] = (byte)((r1.Next() % 77) + 1);
-                    //    }
-                    //    else
-                    //        romData[byteToUse + lnJ] = 127;
-                    //}
                 }
-                //if (!zone)
-                //    romData[byteToUse + 5] = (byte)((r1.Next() % (lnI < 11 ? lnI + 6 : lnI < 21 ? lnI + 10 : 78)) + 1);
-
-                if (lnI == 0x17)
-                    lnI = 0x17;
 
                 byte specialBout = (byte)(r1.Next() % 20);
-                if (((lnI >= 21 && lnI < 42) || lnI > 55))
+                if (((lnI >= 21 && lnI < 42) || lnI > 56))
                 {
                     romData[byteToUse + 0] += 0;
                     romData[byteToUse + 1] += (byte)(specialBout >= 16 ? 128 : 0);
@@ -2929,12 +2851,8 @@ namespace DW2Randomizer
                     romData[byteToUse + 5] += (byte)(specialBout % 2 >= 1 ? 128 : 0);
                 }
                 else
-                {
                     for (int lnJ = 0; lnJ < 6; lnJ++)
-                    {
                         romData[byteToUse + lnJ] += 128;
-                    }
-                }
             }
 
             // Randomize the 19 special battles (106b1-106fc)
