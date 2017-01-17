@@ -4460,10 +4460,10 @@ namespace DW2Randomizer
                     goodMap = (chkSmallMap.Checked ? randomizeMapv5(r1) : randomizeMapv2(r1));
             }
 
-            if (chkEquipment.Checked)
-                randomizeEquipment(r1);
             if (chkWhoCanEquip.Checked)
                 randomizeWhoEquip(r1);
+            if (chkEquipment.Checked)
+                randomizeEquipment(r1);
             if (chkEquipEffects.Checked)
                 randomizeEffects(r1);
             if (chkMonsterStats.Checked)
