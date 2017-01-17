@@ -3980,6 +3980,22 @@ namespace DW2Randomizer
             File.WriteAllBytes(finalFile, romData);
             lblIntensityDesc.Text = "ROM hacking complete!  (" + finalFile + ")";
             txtCompare.Text = finalFile;
+
+            try
+            {
+                using (var md5 = SHA1.Create())
+                {
+                    using (var stream = File.OpenRead(finalFile))
+                    {
+                        lblNewChecksum.Text = BitConverter.ToString(md5.ComputeHash(stream)).ToLower().Replace("-", "");
+                    }
+                }
+            }
+            catch
+            {
+                lblSHAChecksum.Text = "????????????????????????????????????????";
+            }
+
         }
 
         private void changeStatsToRemix()
@@ -4538,6 +4554,7 @@ namespace DW2Randomizer
                 romData[byteToUse + 4] = valToUpdate;
                 romData[byteToUse + 5] = valToUpdate;
             }
+
             saveRom();
         }
 
@@ -4779,6 +4796,11 @@ namespace DW2Randomizer
             cboEncounterRate.SelectedIndex = 6;
             cboGPReq.SelectedIndex = 3;
             cboXPReq.SelectedIndex = 3;
+        }
+
+        private void btnCopyChecksum_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(lblNewChecksum.Text);
         }
     }
 }

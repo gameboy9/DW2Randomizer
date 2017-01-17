@@ -87,6 +87,9 @@
             this.txtFlags = new System.Windows.Forms.TextBox();
             this.ttUltra = new System.Windows.Forms.ToolTip(this.components);
             this.ttLudicrous = new System.Windows.Forms.ToolTip(this.components);
+            this.lblNewChecksum = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.btnCopyChecksum = new System.Windows.Forms.Button();
             this.tabAll.SuspendLayout();
             this.adjustments.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -159,7 +162,7 @@
             // radSlightIntensity
             // 
             this.radSlightIntensity.AutoSize = true;
-            this.radSlightIntensity.Location = new System.Drawing.Point(149, 190);
+            this.radSlightIntensity.Location = new System.Drawing.Point(149, 222);
             this.radSlightIntensity.Name = "radSlightIntensity";
             this.radSlightIntensity.Size = new System.Drawing.Size(48, 17);
             this.radSlightIntensity.TabIndex = 11;
@@ -170,7 +173,7 @@
             // radModerateIntensity
             // 
             this.radModerateIntensity.AutoSize = true;
-            this.radModerateIntensity.Location = new System.Drawing.Point(204, 190);
+            this.radModerateIntensity.Location = new System.Drawing.Point(204, 222);
             this.radModerateIntensity.Name = "radModerateIntensity";
             this.radModerateIntensity.Size = new System.Drawing.Size(43, 17);
             this.radModerateIntensity.TabIndex = 12;
@@ -181,7 +184,7 @@
             // radHeavyIntensity
             // 
             this.radHeavyIntensity.AutoSize = true;
-            this.radHeavyIntensity.Location = new System.Drawing.Point(254, 190);
+            this.radHeavyIntensity.Location = new System.Drawing.Point(254, 222);
             this.radHeavyIntensity.Name = "radHeavyIntensity";
             this.radHeavyIntensity.Size = new System.Drawing.Size(74, 17);
             this.radHeavyIntensity.TabIndex = 13;
@@ -193,7 +196,7 @@
             // 
             this.radInsaneIntensity.AutoSize = true;
             this.radInsaneIntensity.Checked = true;
-            this.radInsaneIntensity.Location = new System.Drawing.Point(335, 190);
+            this.radInsaneIntensity.Location = new System.Drawing.Point(335, 222);
             this.radInsaneIntensity.Name = "radInsaneIntensity";
             this.radInsaneIntensity.Size = new System.Drawing.Size(91, 17);
             this.radInsaneIntensity.TabIndex = 14;
@@ -204,7 +207,7 @@
             // 
             // btnRandomize
             // 
-            this.btnRandomize.Location = new System.Drawing.Point(448, 136);
+            this.btnRandomize.Location = new System.Drawing.Point(444, 221);
             this.btnRandomize.Name = "btnRandomize";
             this.btnRandomize.Size = new System.Drawing.Size(75, 23);
             this.btnRandomize.TabIndex = 15;
@@ -224,7 +227,7 @@
             // 
             // txtSeed
             // 
-            this.txtSeed.Location = new System.Drawing.Point(70, 126);
+            this.txtSeed.Location = new System.Drawing.Point(70, 158);
             this.txtSeed.Name = "txtSeed";
             this.txtSeed.Size = new System.Drawing.Size(100, 20);
             this.txtSeed.TabIndex = 8;
@@ -232,7 +235,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(13, 128);
+            this.label3.Location = new System.Drawing.Point(13, 160);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(32, 13);
             this.label3.TabIndex = 20;
@@ -266,7 +269,7 @@
             // 
             // btnNewSeed
             // 
-            this.btnNewSeed.Location = new System.Drawing.Point(187, 124);
+            this.btnNewSeed.Location = new System.Drawing.Point(187, 156);
             this.btnNewSeed.Name = "btnNewSeed";
             this.btnNewSeed.Size = new System.Drawing.Size(75, 23);
             this.btnNewSeed.TabIndex = 9;
@@ -279,7 +282,7 @@
             this.tabAll.Controls.Add(this.adjustments);
             this.tabAll.Controls.Add(this.tabPage2);
             this.tabAll.Controls.Add(this.tabPage1);
-            this.tabAll.Location = new System.Drawing.Point(12, 213);
+            this.tabAll.Location = new System.Drawing.Point(12, 245);
             this.tabAll.Name = "tabAll";
             this.tabAll.SelectedIndex = 0;
             this.tabAll.Size = new System.Drawing.Size(507, 197);
@@ -660,7 +663,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(13, 194);
+            this.label6.Location = new System.Drawing.Point(13, 226);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(120, 13);
             this.label6.TabIndex = 27;
@@ -669,7 +672,7 @@
             // lblIntensityDesc
             // 
             this.lblIntensityDesc.AutoSize = true;
-            this.lblIntensityDesc.Location = new System.Drawing.Point(15, 433);
+            this.lblIntensityDesc.Location = new System.Drawing.Point(15, 465);
             this.lblIntensityDesc.Name = "lblIntensityDesc";
             this.lblIntensityDesc.Size = new System.Drawing.Size(0, 13);
             this.lblIntensityDesc.TabIndex = 28;
@@ -677,7 +680,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(13, 159);
+            this.label7.Location = new System.Drawing.Point(13, 191);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(32, 13);
             this.label7.TabIndex = 29;
@@ -685,17 +688,48 @@
             // 
             // txtFlags
             // 
-            this.txtFlags.Location = new System.Drawing.Point(70, 156);
+            this.txtFlags.Location = new System.Drawing.Point(70, 188);
             this.txtFlags.Name = "txtFlags";
             this.txtFlags.Size = new System.Drawing.Size(192, 20);
             this.txtFlags.TabIndex = 30;
             this.txtFlags.TextChanged += new System.EventHandler(this.txtFlags_TextChanged);
             // 
+            // lblNewChecksum
+            // 
+            this.lblNewChecksum.AutoSize = true;
+            this.lblNewChecksum.Location = new System.Drawing.Point(119, 127);
+            this.lblNewChecksum.Name = "lblNewChecksum";
+            this.lblNewChecksum.Size = new System.Drawing.Size(247, 13);
+            this.lblNewChecksum.TabIndex = 32;
+            this.lblNewChecksum.Text = "????????????????????????????????????????";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(13, 127);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(82, 13);
+            this.label14.TabIndex = 31;
+            this.label14.Text = "New Checksum";
+            // 
+            // btnCopyChecksum
+            // 
+            this.btnCopyChecksum.Location = new System.Drawing.Point(402, 122);
+            this.btnCopyChecksum.Name = "btnCopyChecksum";
+            this.btnCopyChecksum.Size = new System.Drawing.Size(121, 23);
+            this.btnCopyChecksum.TabIndex = 33;
+            this.btnCopyChecksum.Text = "Copy New Checksum";
+            this.btnCopyChecksum.UseVisualStyleBackColor = true;
+            this.btnCopyChecksum.Click += new System.EventHandler(this.btnCopyChecksum_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(546, 459);
+            this.ClientSize = new System.Drawing.Size(546, 498);
+            this.Controls.Add(this.btnCopyChecksum);
+            this.Controls.Add(this.lblNewChecksum);
+            this.Controls.Add(this.label14);
             this.Controls.Add(this.txtFlags);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.lblIntensityDesc);
@@ -795,6 +829,9 @@
         private System.Windows.Forms.ToolTip ttLudicrous;
         private System.Windows.Forms.CheckBox chkExperimental;
         private System.Windows.Forms.CheckBox chkSpeedHacks;
+        private System.Windows.Forms.Label lblNewChecksum;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Button btnCopyChecksum;
     }
 }
 
