@@ -133,8 +133,94 @@ namespace DW2Randomizer
 
         private void turnIntoDogs()
         {
-            // Start at A6E1 (Cannock), turn them into 0x09, and take it from there... NPCs are defined every five bytes.  
+            // Start at 0xA6E1 (Cannock), turn them into 0x09, and take it from there... NPCs are defined every five bytes.  
             // Figure out where that's being read so you can update each NPC appropriately for each location.
+            // ROM execute to E594 bank 0F.
+            // Cannock - 0xA6E1-0xA72C
+            //for (int i = 0xa62e; i <= 0xa638; i += 5)
+            //    romData[i] = 0x09;
+
+            romData[0xa62e] = 0x09;
+            romData[0xa633] = 0x09;
+            romData[0xa638] = 0x09;
+            romData[0xa63e] = 0x09;
+
+            for (int i = 0xa643; i <= 0xa684; i += 5)
+                romData[i] = 0x09;
+
+            for (int i = 0xa69a; i <= 0xa6db; i += 5)
+                romData[i] = 0x09;
+
+            for (int i = 0xa6e1; i <= 0xa72c; i += 5)
+                romData[i] = 0x09;
+
+            for (int i = 0xa732; i <= 0xa778; i += 5)
+                romData[i] = 0x09;
+
+            for (int i = 0xa77e; i <= 0xa783; i += 5)
+                romData[i] = 0x09;
+
+            for (int i = 0xa789; i <= 0xa793; i += 5)
+                romData[i] = 0x09;
+
+            for (int i = 0xa799; i <= 0xa799; i += 5)
+                romData[i] = 0x09;
+
+            for (int i = 0xa79f; i <= 0xa7ef; i += 5)
+                romData[i] = 0x09;
+
+            for (int i = 0xa7f5; i <= 0xa838; i += 5)
+                romData[i] = 0x09;
+
+            romData[0xa83c] = 0x09;
+            romData[0xa842] = 0x09;
+
+            for (int i = 0xa848; i <= 0xa88e; i += 5)
+                romData[i] = 0x09;
+
+            for (int i = 0xa894; i <= 0xa8df; i += 5)
+                romData[i] = 0x09;
+
+            for (int i = 0xa8e5; i <= 0xa926; i += 5)
+                romData[i] = 0x09;
+
+            for (int i = 0xa92c; i <= 0xa936; i += 5)
+                romData[i] = 0x09;
+
+            for (int i = 0xa93c; i <= 0xa987; i += 5)
+                romData[i] = 0x09;
+
+            for (int i = 0xa98d; i <= 0xa9e2; i += 5)
+                romData[i] = 0x09;
+
+            for (int i = 0xa9e8; i <= 0xaa06; i += 5)
+                romData[i] = 0x09;
+
+            for (int i = 0xaa0c; i <= 0xaa16; i += 5)
+                romData[i] = 0x09;
+
+            romData[0xaa1c] = 0x09;
+            romData[0xaa22] = 0x09;
+            romData[0xaa28] = 0x09;
+            romData[0xaa2d] = 0x09;
+            romData[0xaa32] = 0x09;
+            romData[0xaa38] = 0x09;
+            romData[0xaa3e] = 0x09;
+            romData[0xaa44] = 0x09;
+            romData[0xaa4a] = 0x09;
+            romData[0xaa50] = 0x09;
+            romData[0xaa55] = 0x09;
+            romData[0xaa5b] = 0x09;
+            romData[0xaa61] = 0x09;
+            romData[0xaa66] = 0x09;
+            romData[0xaa6c] = 0x09;
+            romData[0xaa71] = 0x09;
+            romData[0xaa77] = 0x09;
+            romData[0xaa7c] = 0x09;
+            romData[0xaa82] = 0x09;
+            romData[0xaa88] = 0x09;
+            romData[0xaa8e] = 0x09;
+            romData[0xaa93] = 0x09;
         }
 
         private bool randomizeMapv5(Random r1)
@@ -678,7 +764,7 @@ namespace DW2Randomizer
                 lnMarker++;
                 lnMarker = (lnMarker >= terrainTypes.Length ? 0 : lnMarker);
                 int sizeToUse = (r1.Next() % 400) + 150;
-                if (terrainTypes[lnMarker] == 5) sizeToUse /= 2;
+                //if (terrainTypes[lnMarker] == 5) sizeToUse /= 2;
 
                 List<int> points = new List<int> { (r1.Next() % 125) + 2, (r1.Next() % 125) + 2 };
                 if (validPoint(points[0], points[1], zoneToUse, mountains))
@@ -2120,6 +2206,42 @@ namespace DW2Randomizer
             }
             romData[byteToUse] = (byte)(finalX);
             romData[byteToUse + 1] = (byte)(finalY);
+            if (minDirection == 0)
+            {
+                lnJ = (finalY == 255 ? 0 : finalY + 1);
+                while (map[lnJ, finalX] == 0x05)
+                {
+                    map[lnJ, finalX] = 0x07;
+                    lnJ = (lnJ == 255 ? 0 : lnJ + 1);
+                }
+            }
+            else if (minDirection == 1)
+            {
+                lnJ = (finalY == 0 ? 255 : finalY - 1);
+                while (map[lnJ, finalX] == 0x05)
+                {
+                    map[lnJ, finalX] = 0x07;
+                    lnJ = (lnJ == 0 ? 255 : lnJ - 1);
+                }
+            }
+            else if (minDirection == 2)
+            {
+                lnK = (finalX == 0 ? 255 : finalX - 1);
+                while (map[finalY, lnK] == 0x05)
+                {
+                    map[finalY, lnK] = 0x07;
+                    lnK = (lnK == 0 ? 255 : lnK - 1);
+                }
+            }
+            else
+            {
+                lnK = (finalX == 255 ? 0 : finalX + 1);
+                while (map[finalY, lnK] == 0x05)
+                {
+                    map[finalY, lnK] = 0x07;
+                    lnK = (lnK == 255 ? 0 : lnK + 1);
+                }
+            }
         }
 
         private void btnBrowse_Click(object sender, EventArgs e)
@@ -2171,6 +2293,7 @@ namespace DW2Randomizer
                     txtFlags.Text = reader.ReadLine();
                     txtPrinceName.Text = reader.ReadLine();
                     txtPrincessName.Text = reader.ReadLine();
+                    chkAllDogs.Checked = (reader.ReadLine() == "Y");
                     // flagLoad(); <---- This gets called via the previous line.
                 }
             }
@@ -2229,7 +2352,13 @@ namespace DW2Randomizer
                 experimentalSpeedHacks();
             skipPrologue();
             reviveAllCharsOnCOD();
-            saveRom();
+            saveRom(true);
+            if (chkAllDogs.Checked)
+            {
+                turnIntoDogs();
+                saveRom(false);
+            }
+            
         }
 
         private void renamePrincePrincess()
@@ -3970,7 +4099,7 @@ namespace DW2Randomizer
             return true;
         }
 
-        private void saveRom()
+        private void saveRom(bool calcChecksum)
         {
             //string options = (chkChangeStatsToRemix.Checked ? "r" : "");
             //options += (chkHalfExpGoldReq.Checked ? "h" : "");
@@ -3981,19 +4110,22 @@ namespace DW2Randomizer
             lblIntensityDesc.Text = "ROM hacking complete!  (" + finalFile + ")";
             txtCompare.Text = finalFile;
 
-            try
+            if (calcChecksum)
             {
-                using (var md5 = SHA1.Create())
+                try
                 {
-                    using (var stream = File.OpenRead(finalFile))
+                    using (var md5 = SHA1.Create())
                     {
-                        lblNewChecksum.Text = BitConverter.ToString(md5.ComputeHash(stream)).ToLower().Replace("-", "");
+                        using (var stream = File.OpenRead(finalFile))
+                        {
+                            lblNewChecksum.Text = BitConverter.ToString(md5.ComputeHash(stream)).ToLower().Replace("-", "");
+                        }
                     }
                 }
-            }
-            catch
-            {
-                lblSHAChecksum.Text = "????????????????????????????????????????";
+                catch
+                {
+                    lblSHAChecksum.Text = "????????????????????????????????????????";
+                }
             }
 
         }
@@ -4555,7 +4687,7 @@ namespace DW2Randomizer
                 romData[byteToUse + 5] = valToUpdate;
             }
 
-            saveRom();
+            saveRom(true);
         }
 
         private void btnCompare_Click(object sender, EventArgs e)
@@ -4656,6 +4788,7 @@ namespace DW2Randomizer
                     writer.WriteLine(txtFlags.Text);
                     writer.WriteLine(txtPrinceName.Text);
                     writer.WriteLine(txtPrincessName.Text);
+                    writer.WriteLine(chkAllDogs.Checked ? "Y" : "N");
                 }
         }
 

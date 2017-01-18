@@ -90,6 +90,7 @@
             this.lblNewChecksum = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.btnCopyChecksum = new System.Windows.Forms.Button();
+            this.chkAllDogs = new System.Windows.Forms.CheckBox();
             this.tabAll.SuspendLayout();
             this.adjustments.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -290,6 +291,7 @@
             // 
             // adjustments
             // 
+            this.adjustments.Controls.Add(this.chkAllDogs);
             this.adjustments.Controls.Add(this.chkExperimental);
             this.adjustments.Controls.Add(this.chkSpeedHacks);
             this.adjustments.Controls.Add(this.label12);
@@ -722,6 +724,16 @@
             this.btnCopyChecksum.UseVisualStyleBackColor = true;
             this.btnCopyChecksum.Click += new System.EventHandler(this.btnCopyChecksum_Click);
             // 
+            // chkAllDogs
+            // 
+            this.chkAllDogs.AutoSize = true;
+            this.chkAllDogs.Location = new System.Drawing.Point(269, 88);
+            this.chkAllDogs.Name = "chkAllDogs";
+            this.chkAllDogs.Size = new System.Drawing.Size(129, 17);
+            this.chkAllDogs.TabIndex = 25;
+            this.chkAllDogs.Text = "Turn all NPCs to dogs";
+            this.chkAllDogs.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -832,6 +844,7 @@
         private System.Windows.Forms.Label lblNewChecksum;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Button btnCopyChecksum;
+        private System.Windows.Forms.CheckBox chkAllDogs;
     }
 }
 
