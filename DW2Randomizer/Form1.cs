@@ -2367,22 +2367,79 @@ namespace DW2Randomizer
             for (int lnI = 0; lnI < 16; lnI++)
             {
                 string name = (lnI < 8 ? txtPrinceName.Text : txtPrincessName.Text);
+                int marker = 0;
                 for (int lnJ = 0; lnJ < 8; lnJ++)
                 {
                     romData[0x1ad49 + (8 * lnI) + lnJ] = 0x5f;
                     try
                     {
-                        char character = Convert.ToChar(name.Substring(lnJ, 1));
-                        if (character >= 0x30 && character <= 0x39)
+                        char character = Convert.ToChar(name.Substring(marker, 1));
+                        if (character == 0x7e) // tilde... special character
+                        {
+                            char specChar1 = Convert.ToChar(name.Substring(marker + 1, 1));
+                            char specChar2 = Convert.ToChar(name.Substring(marker + 2, 1));
+
+                            int specChar = 0;
+
+                            if ((specChar1 >= 0x30 && specChar1 <= 0x39) || (specChar1 >= 0x41 && specChar1 <= 0x46) || (specChar1 >= 0x61 && specChar1 <= 0x66))
+                            {
+                                specChar += 16 * ((specChar1 >= 0x30 && specChar1 <= 0x39) ? specChar1 - 47 : (specChar1 >= 0x41 && specChar1 <= 0x46) ? specChar1 - 55 : specChar1 - 87);
+                            } else
+                            {
+                                marker += 3;
+                                continue;
+                            }
+
+                            if ((specChar2 >= 0x30 && specChar2 <= 0x39) || (specChar2 >= 0x41 && specChar2 <= 0x46) || (specChar2 >= 0x61 && specChar2 <= 0x66))
+                            {
+                                specChar += ((specChar2 >= 0x30 && specChar2 <= 0x39) ? specChar2 - 47 : (specChar2 >= 0x41 && specChar2 <= 0x46) ? specChar2 - 55 : specChar2 - 87);
+                            }
+                            else
+                            {
+                                marker += 3;
+                                continue;
+                            }
+
+                            romData[0x1ad49 + (8 * lnI) + lnJ] = (byte)(specChar);
+
+                            marker += 3;
+                            continue;
+                        }
+
+                        if (character >= 0x30 && character <= 0x39) // 0 to 9... 1-9
                             romData[0x1ad49 + (8 * lnI) + lnJ] = (byte)(character - 47);
-                        if (character >= 0x41 && character <= 0x5a)
+                        else if (character >= 0x41 && character <= 0x5a) // A-Z... 36-61
                             romData[0x1ad49 + (8 * lnI) + lnJ] = (byte)(character - 29);
-                        if (character >= 0x61 && character <= 0x7a)
+                        else if (character >= 0x61 && character <= 0x7a) // a-z... 10-35
                             romData[0x1ad49 + (8 * lnI) + lnJ] = (byte)(character - 87);
+                        else if (character == 0x60)
+                            romData[0x1ad49 + (8 * lnI) + lnJ] = 0x61;
+                        else if (character == 0x22)
+                            romData[0x1ad49 + (8 * lnI) + lnJ] = 0x64;
+                        else if (character == 0x27)
+                            romData[0x1ad49 + (8 * lnI) + lnJ] = 0x68;
+                        else if (character == 0x2c)
+                            romData[0x1ad49 + (8 * lnI) + lnJ] = 0x69;
+                        else if (character == 0x2d)
+                            romData[0x1ad49 + (8 * lnI) + lnJ] = 0x6a;
+                        else if (character == 0x2e)
+                            romData[0x1ad49 + (8 * lnI) + lnJ] = 0x6b;
+                        else if (character == 0x26)
+                            romData[0x1ad49 + (8 * lnI) + lnJ] = 0x6c;
+                        else if (character == 0x3f)
+                            romData[0x1ad49 + (8 * lnI) + lnJ] = 0x6e;
+                        else if (character == 0x21)
+                            romData[0x1ad49 + (8 * lnI) + lnJ] = 0x6f;
+                        else if (character == 0x3b)
+                            romData[0x1ad49 + (8 * lnI) + lnJ] = 0x70;
+                        else if (character == 0x3a)
+                            romData[0x1ad49 + (8 * lnI) + lnJ] = 0x74;
+                        marker++;
                     }
                     catch
                     {
                         romData[0x1ad49 + (8 * lnI) + lnJ] = 0x5f; // no more characters to process - make the rest of the characters blank
+                        marker++;
                     }
                 }
             }
