@@ -110,6 +110,7 @@ using System.Windows.Forms;
 using System.Security.Cryptography;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DW2Randomizer
 {
@@ -260,6 +261,9 @@ namespace DW2Randomizer
             generateZoneMap(1000, false, islandSize * 25 / 256, r1);
             generateZoneMap(2000, false, islandSize * 32 / 256, r1);
             generateZoneMap(0, false, islandSize * 175 / 256, r1);
+            createBridges(r1);
+            resetIslands();
+
 
             // We should mark islands and inaccessible land...
             int lakeNumber = 256;
@@ -892,7 +896,7 @@ namespace DW2Randomizer
             for (int lnI = 0; lnI < 256; lnI++)
                 for (int lnJ = 0; lnJ < 256; lnJ++)
                 {
-                    if (island[lnI, lnJ] == zoneToUse)
+                    if (island[lnI, lnJ] == zoneToUse && map[lnI, lnJ] != 0x05)
                     {
                         int plots = landPlot(landNumber, lnI, lnJ, zoneToUse);
                         if (plots > maxLandPlots)
@@ -909,6 +913,133 @@ namespace DW2Randomizer
                 }
 
             maxIsland[zoneToUse / 1000] = maxLand;
+        }
+
+        private void resetIslands()
+        {
+            for (int y = 0; y < 256; y++)
+                for (int x = 0; x < 256; x++)
+                {
+                    if (island[y, x] != 200 && island[y, x] != -1)
+                    {
+                        island[y, x] /= 1000;
+                        island[y, x] *= 1000;
+                    }   
+                }
+
+            islands.Clear();
+
+            markIslands(3000);
+            markIslands(1000);
+            markIslands(2000);
+            markIslands(0);
+        }
+
+        private void createBridges (Random r1)
+        {
+            List<BridgeList> bridgePossible = new List<BridgeList>();
+            List<islandLinks> islandPossible = new List<islandLinks>();
+            // Create bridges for points two spaces or less from two distinctly numbered islands.  Extend islands if there is interference.
+            for (int y = 1; y < 252; y++)
+                for (int x = 1; x < 252; x++)
+                {
+                    if (y == 78 && x == 3) map[y, x] = map[y, x];
+                    if (map[y, x] == 0x05 || map[y, x] == 0x04) continue;
+
+                    for (int lnI = 2; lnI <= 4; lnI++)
+                    {
+                        if (island[y, x] != island[y + lnI, x] && island[y, x] / 1000 == island[y + lnI, x] / 1000 && map[y + lnI, x] != 0x04 && map[y + lnI, x] != 0x05)
+                        {
+                            bool fail = false;
+                            for (int lnJ = 1; lnJ < lnI; lnJ++)
+                            {
+                                if (map[y + lnJ, x] == 0x04)
+                                {
+                                    map[y + lnJ, x - 1] = 0x04; map[y + lnJ, x + 1] = 0x04;
+                                    island[y + lnJ, x - 1] = 0x04; island[y + lnJ, x + 1] = 0x04;
+                                } else
+                                {
+                                    fail = true;
+                                }
+                                //if (map[y + lnJ, x] != 0x04 || map[y + lnJ, x + 1] != 0x04 || map[y + lnJ, x - 1] != 0x04) fail = true;
+                            }
+                            if (!fail)
+                            {
+                                bridgePossible.Add(new BridgeList(x, y, true, lnI, island[y, x], island[y + lnI, x]));
+                                if (islandPossible.Where(c => c.island1 == island[y, x] && c.island2 == island[y + lnI, x]).Count() == 0)
+                                    islandPossible.Add(new islandLinks(island[y, x], island[y + lnI, x]));
+                            }
+                        }
+
+                        if (island[y, x] != island[y, x + lnI] && island[y, x] / 1000 == island[y, x + lnI] / 1000 && map[y, x + lnI] != 0x04 && map[y, x + lnI] != 0x05)
+                        {
+                            bool fail = false;
+                            for (int lnJ = 1; lnJ < lnI; lnJ++)
+                            {
+                                if (map[y, x + lnJ] == 0x04)
+                                {
+                                    map[y - 1, x + lnJ] = 0x04; map[y + 1, x + lnJ] = 0x04;
+                                    island[y - 1, x + lnJ] = 200; island[y + 1, x + lnJ] = 200;
+                                } else
+                                {
+                                    fail = true;
+                                }
+
+                                //if (map[y, x + lnJ] != 0x04 || map[y + 1, x + lnJ] != 0x04 || map[y - 1, x + lnJ] != 0x04) fail = true;
+                            }
+                            if (!fail)
+                            {
+                                bridgePossible.Add(new BridgeList(x, y, false, lnI, island[y, x], island[y, x + lnI]));
+                                if (islandPossible.Where(c => c.island1 == island[y, x] && c.island2 == island[y, x + lnI]).Count() == 0)
+                                    islandPossible.Add(new islandLinks(island[y, x], island[y, x + lnI]));
+                            }
+                        }
+                    }
+                }
+
+            foreach (islandLinks islandLink in islandPossible)
+            {
+                List<BridgeList> test = bridgePossible.Where(c => c.island1 == islandLink.island1 && c.island2 == islandLink.island2).ToList();
+                // Choose one bridge out of the possibilities
+                BridgeList bridgeToBuild = test[r1.Next() % test.Count];
+                for (int lnI = 1; lnI <= bridgeToBuild.distance - 1; lnI++)
+                {
+                    if (bridgeToBuild.south)
+                    {
+                        map[bridgeToBuild.y + lnI, bridgeToBuild.x] = 0x0d;
+                        island[bridgeToBuild.y + lnI, bridgeToBuild.x] = bridgeToBuild.island1;
+                    } else
+                    {
+                        map[bridgeToBuild.y, bridgeToBuild.x + lnI] = 0x09;
+                        island[bridgeToBuild.y, bridgeToBuild.x + lnI] = bridgeToBuild.island1;
+                    }
+                }
+            }
+        }
+
+        private class islandLinks
+        {
+            public int island1;
+            public int island2;
+
+            public islandLinks(int pI1, int pI2)
+            {
+                island1 = pI1; island2 = pI2;
+            }
+        }
+
+        private class BridgeList {
+            public int x;
+            public int y;
+            public bool south;
+            public int distance;
+            public int island1;
+            public int island2;
+
+            public BridgeList(int pX, int pY, bool pS, int pDist, int pI1, int pI2)
+            {
+                x = pX; y = pY; south = pS; distance = pDist; island1 = pI1; island2 = pI2;
+            }
         }
 
         private bool createZone(int zoneNumber, int size, bool rectangle, Random r1)
