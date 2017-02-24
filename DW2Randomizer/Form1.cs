@@ -541,7 +541,7 @@ namespace DW2Randomizer
                 }
 
                 if (validPlot(y, x, 1, 1, (lnI == 1 || lnI == 12 ? new int[] { maxIsland[1] } : lnI == 6 ? new int[] { maxIsland[3] } : lnI == 7 ? new int[] { maxIsland[0] } : lnI == 8 ? new int[] { maxIsland[2] } : islands.ToArray())) 
-                    && reachable(y, x, (lnI != 1 && lnI != 12 && lnI != 7 && lnI != 6), lnI == 6 ? midenX[3] : lnI == 7 ? midenX[0] : lnI == 8 ? midenX[2] : midenX[1],
+                    && reachable(y, x, (lnI != 1 && lnI != 12 && lnI != 8 && lnI != 7 && lnI != 6), lnI == 6 ? midenX[3] : lnI == 7 ? midenX[0] : lnI == 8 ? midenX[2] : midenX[1],
                     lnI == 6 ? midenY[3] : lnI == 7 ? midenY[0] : lnI == 8 ? midenY[2] : midenY[1], maxLake))
                 {
                     map[y, x] = 0x0b;
@@ -1006,10 +1006,16 @@ namespace DW2Randomizer
                 {
                     if (bridgeToBuild.south)
                     {
+                        //map[bridgeToBuild.y + lnI, bridgeToBuild.x - 1] = 0x04; map[bridgeToBuild.y + lnI, bridgeToBuild.x + 1] = 0x04;
+                        //island[bridgeToBuild.y + lnI, bridgeToBuild.x - 1] = 0x04; island[bridgeToBuild.y + lnI, bridgeToBuild.x + 1] = 0x04;
+
                         map[bridgeToBuild.y + lnI, bridgeToBuild.x] = 0x0d;
                         island[bridgeToBuild.y + lnI, bridgeToBuild.x] = bridgeToBuild.island1;
                     } else
                     {
+                        //map[bridgeToBuild.y - 1, bridgeToBuild.x + lnI] = 0x04; map[bridgeToBuild.y + 1, bridgeToBuild.x + lnI] = 0x04;
+                        //island[bridgeToBuild.y - 1, bridgeToBuild.x + lnI] = 200; island[bridgeToBuild.y + 1, bridgeToBuild.x + lnI] = 200;
+
                         map[bridgeToBuild.y, bridgeToBuild.x + lnI] = 0x09;
                         island[bridgeToBuild.y, bridgeToBuild.x + lnI] = bridgeToBuild.island1;
                     }
