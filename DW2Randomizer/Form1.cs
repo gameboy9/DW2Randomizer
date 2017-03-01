@@ -939,7 +939,7 @@ namespace DW2Randomizer
         {
             List<BridgeList> bridgePossible = new List<BridgeList>();
             List<islandLinks> islandPossible = new List<islandLinks>();
-            // Create bridges for points two spaces or less from two distinctly numbered islands.  Extend islands if there is interference.
+            // Create bridges for points three spaces or less from two distinctly numbered islands.  Extend islands if there is interference.
             for (int y = 1; y < 252; y++)
                 for (int x = 1; x < 252; x++)
                 {
@@ -953,14 +953,15 @@ namespace DW2Randomizer
                             bool fail = false;
                             for (int lnJ = 1; lnJ < lnI; lnJ++)
                             {
-                                if (map[y + lnJ, x] == 0x04)
-                                {
-                                    map[y + lnJ, x - 1] = 0x04; map[y + lnJ, x + 1] = 0x04;
-                                    island[y + lnJ, x - 1] = 0x04; island[y + lnJ, x + 1] = 0x04;
-                                } else
+                                if (map[y + lnJ, x] != 0x04)
                                 {
                                     fail = true;
-                                }
+                                    //map[y + lnJ, x - 1] = 0x04; map[y + lnJ, x + 1] = 0x04;
+                                    //island[y + lnJ, x - 1] = 0x04; island[y + lnJ, x + 1] = 0x04;
+                                } // else
+                                //{
+                                //    fail = true;
+                                //}
                                 //if (map[y + lnJ, x] != 0x04 || map[y + lnJ, x + 1] != 0x04 || map[y + lnJ, x - 1] != 0x04) fail = true;
                             }
                             if (!fail)
@@ -976,13 +977,14 @@ namespace DW2Randomizer
                             bool fail = false;
                             for (int lnJ = 1; lnJ < lnI; lnJ++)
                             {
-                                if (map[y, x + lnJ] == 0x04)
-                                {
-                                    map[y - 1, x + lnJ] = 0x04; map[y + 1, x + lnJ] = 0x04;
-                                    island[y - 1, x + lnJ] = 200; island[y + 1, x + lnJ] = 200;
-                                } else
+                                if (map[y, x + lnJ] != 0x04)
                                 {
                                     fail = true;
+                                //    map[y - 1, x + lnJ] = 0x04; map[y + 1, x + lnJ] = 0x04;
+                                //    island[y - 1, x + lnJ] = 200; island[y + 1, x + lnJ] = 200;
+                                //} else
+                                //{
+                                //    fail = true;
                                 }
 
                                 //if (map[y, x + lnJ] != 0x04 || map[y + 1, x + lnJ] != 0x04 || map[y - 1, x + lnJ] != 0x04) fail = true;
@@ -1000,25 +1002,49 @@ namespace DW2Randomizer
             foreach (islandLinks islandLink in islandPossible)
             {
                 List<BridgeList> test = bridgePossible.Where(c => c.island1 == islandLink.island1 && c.island2 == islandLink.island2).ToList();
-                // Choose one bridge out of the possibilities
-                BridgeList bridgeToBuild = test[r1.Next() % test.Count];
-                for (int lnI = 1; lnI <= bridgeToBuild.distance - 1; lnI++)
+
+                int tries = 50;
+                bool pass = false;
+                while (!pass && tries > 0)
                 {
-                    if (bridgeToBuild.south)
-                    {
-                        //map[bridgeToBuild.y + lnI, bridgeToBuild.x - 1] = 0x04; map[bridgeToBuild.y + lnI, bridgeToBuild.x + 1] = 0x04;
-                        //island[bridgeToBuild.y + lnI, bridgeToBuild.x - 1] = 0x04; island[bridgeToBuild.y + lnI, bridgeToBuild.x + 1] = 0x04;
+                    tries--;
 
-                        map[bridgeToBuild.y + lnI, bridgeToBuild.x] = 0x0d;
-                        island[bridgeToBuild.y + lnI, bridgeToBuild.x] = bridgeToBuild.island1;
-                    } else
-                    {
-                        //map[bridgeToBuild.y - 1, bridgeToBuild.x + lnI] = 0x04; map[bridgeToBuild.y + 1, bridgeToBuild.x + lnI] = 0x04;
-                        //island[bridgeToBuild.y - 1, bridgeToBuild.x + lnI] = 200; island[bridgeToBuild.y + 1, bridgeToBuild.x + lnI] = 200;
+                    // Choose one bridge out of the possibilities
+                    BridgeList bridgeToBuild = test[r1.Next() % test.Count];
+                    // Then confirm that the bridge is still possible...
+                    int bridgeTest = map[bridgeToBuild.y, bridgeToBuild.x];
+                    int bridgeTest2 = (bridgeToBuild.south ? map[bridgeToBuild.y + bridgeToBuild.distance, bridgeToBuild.x] : map[bridgeToBuild.y, bridgeToBuild.x + bridgeToBuild.distance]);
 
-                        map[bridgeToBuild.y, bridgeToBuild.x + lnI] = 0x09;
-                        island[bridgeToBuild.y, bridgeToBuild.x + lnI] = bridgeToBuild.island1;
+                    if (bridgeTest == 0x04 || bridgeTest == 0x0d || bridgeTest == 0x09 || bridgeTest2 == 0x04 || bridgeTest2 == 0x0d || bridgeTest2 == 0x09)
+                        continue;
+
+                    for (int lnI = 1; lnI <= bridgeToBuild.distance - 1; lnI++)
+                    {
+                        int bridgeTest3 = (bridgeToBuild.south ? map[bridgeToBuild.y + lnI, bridgeToBuild.x] : map[bridgeToBuild.y, bridgeToBuild.x + lnI]);
+                        if (bridgeTest3 != 0x04)
+                            continue;
                     }
+
+                    for (int lnI = 1; lnI <= bridgeToBuild.distance - 1; lnI++)
+                    {
+                        if (bridgeToBuild.south)
+                        {
+                            map[bridgeToBuild.y + lnI, bridgeToBuild.x - 1] = 0x04; map[bridgeToBuild.y + lnI, bridgeToBuild.x + 1] = 0x04;
+                            island[bridgeToBuild.y + lnI, bridgeToBuild.x - 1] = 0x04; island[bridgeToBuild.y + lnI, bridgeToBuild.x + 1] = 0x04;
+
+                            map[bridgeToBuild.y + lnI, bridgeToBuild.x] = 0x0d;
+                            island[bridgeToBuild.y + lnI, bridgeToBuild.x] = bridgeToBuild.island1;
+                        }
+                        else
+                        {
+                            map[bridgeToBuild.y - 1, bridgeToBuild.x + lnI] = 0x04; map[bridgeToBuild.y + 1, bridgeToBuild.x + lnI] = 0x04;
+                            island[bridgeToBuild.y - 1, bridgeToBuild.x + lnI] = 200; island[bridgeToBuild.y + 1, bridgeToBuild.x + lnI] = 200;
+
+                            map[bridgeToBuild.y, bridgeToBuild.x + lnI] = 0x09;
+                            island[bridgeToBuild.y, bridgeToBuild.x + lnI] = bridgeToBuild.island1;
+                        }
+                    }
+                    pass = true;
                 }
             }
         }
