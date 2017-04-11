@@ -3778,8 +3778,7 @@ namespace DW2Randomizer
                 {
                     byte treasure = (byte)((r1.Next() % legalTreasures.Length)); // the last two items we can't get...
                     treasure = legalTreasures[treasure];
-                    if (!(treasureList.Contains(treasure) && ((treasure >= 0x24 && treasure <= 0x2e) || treasure == 0x32 || treasure == 0x37 || treasure == 0x38 || treasure == 0x39
-                        || treasure == 0x40 || treasure == 0x42 || treasure == 0x44)))
+                    if (!(treasureList.Contains(treasure) && ((treasure >= 0x24 && treasure <= 0x2e) || treasure == 0x32 || treasure == 0x38)))
                     {
                         legal = true;
                         treasureList.Add(treasure);
@@ -3788,12 +3787,33 @@ namespace DW2Randomizer
                 }
             }
 
+            // We need to make sure the echoing flute plays if there are multiple crests.
+            romData[0x1998c] = 0x04;
+
+            romData[0x1997c] = 0xba;
+            romData[0x1997d] = 0xbf;
+            romData[0x19981] = 0xbb;
+            romData[0x19982] = 0xbf;
+            romData[0x19986] = 0xbc;
+            romData[0x19987] = 0xbf;
+            romData[0x19995] = 0x0f;
+
+            romData[0x1bfca] = 0x0f;
+            romData[0x1bfcb] = 0x10;
+            romData[0x1bfcc] = 0x04;
+            romData[0x1bfcd] = 0x50;
+            romData[0x1bfce] = 0x58;
+            romData[0x1bfcf] = 0x02;
+
             // Verify that key items are available in either a store or a treasure chest in the right zone.
             // Mirror Of Ra, Cloak Of Wind, Golden Key, Jailor's Key, Moon Fragment, Eye Of Malroth, Three crests
             byte[] keyItems = { 0x2b, 0x2e, 0x37, 0x39, 0x26, 0x28, 0x40, 0x43, 0x44 };
             byte[] keyTreasure = { 16, 16, 25, 42, 48, 56, 64, 64, 64 };
             byte[] keyWStore = { 12, 12, 36, 48, 48, 48, 48, 48, 48 };
             byte[] keyIStore = { 24, 24, 54, 66, 66, 66, 66, 66, 66 };
+
+            int crestMarker = 0x1bfd0;
+
             for (int lnI = 0; lnI < keyItems.Length; lnI++)
             {
                 // Cloak of wind and Moon fragment are not required in the small map.
@@ -3815,6 +3835,7 @@ namespace DW2Randomizer
                         legal = true;
                 }
 
+
                 // If legal = false, then the item was not found, so we'll have to place it in a treasure somewhere...
                 while (!legal)
                 {
@@ -3834,7 +3855,9 @@ namespace DW2Randomizer
                             // Set echoing flute locations if there's a crest involved.  0x40 = Sun(0x199A3-4), 0x43 = Water(0x1999D-E), 0x44 = Life(0x199A9-A)
                             if (keyItems[lnI] == 0x40 || keyItems[lnI] == 0x43 || keyItems[lnI] == 0x44)
                             {
-                                int crestByte = (keyItems[lnI] == 0x40 ? 0x199a3 : keyItems[lnI] == 0x43 ? 0x1999d : 0x199a9);
+                                int crestByte = crestMarker; // (keyItems[lnI] == 0x40 ? 0x199a3 : keyItems[lnI] == 0x43 ? 0x1999d : 0x199a9);
+                                romData[crestByte + 2] = (byte)(keyItems[lnI] == 0x40 ? 0x01 : keyItems[lnI] == 0x43 ? 0x08 : 0x10);
+
                                 if (new List<int> { 0x19eb9, 0x19ebd, 0x19ec1, 0x19ec5, 0x19ec9, 0x19ecd, 0x19ed1, 0x19ed5 }.Contains(allTreasure[tRand]))
                                 {
                                     romData[crestByte] = 0x37;
@@ -3889,6 +3912,12 @@ namespace DW2Randomizer
                                 {
                                     romData[crestByte] = 0x34;
                                     romData[crestByte + 1] = 0x36 + 1;
+                                    crestByte += 3;
+                                    romData[crestByte] = 0x18;
+                                    romData[crestByte + 1] = 0x18 + 1;
+                                    romData[crestByte + 2] = (byte)(keyItems[lnI] == 0x40 ? 0x01 : keyItems[lnI] == 0x43 ? 0x08 : 0x10);
+
+                                    romData[0x19995] += 3;
                                 }
                                 else if (new List<int> { 0x19e5d, 0x19e61 }.Contains(allTreasure[tRand]))
                                 {
@@ -3910,6 +3939,7 @@ namespace DW2Randomizer
                                     romData[crestByte] = 0x2e;
                                     romData[crestByte + 1] = 0x33 + 1;
                                 }
+                                crestByte += 3;
                             }
                         }
                     }

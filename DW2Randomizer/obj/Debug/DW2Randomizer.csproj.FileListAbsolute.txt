@@ -1,0 +1,8 @@
+C:\Users\Pete10th\Source\Repos\DW2Randomizer\DW2Randomizer\bin\Debug\DW2Randomizer.exe.config
+C:\Users\Pete10th\Source\Repos\DW2Randomizer\DW2Randomizer\bin\Debug\DW2Randomizer.exe
+C:\Users\Pete10th\Source\Repos\DW2Randomizer\DW2Randomizer\bin\Debug\DW2Randomizer.pdb
+C:\Users\Pete10th\Source\Repos\DW2Randomizer\DW2Randomizer\obj\Debug\DW2Randomizer.Form1.resources
+C:\Users\Pete10th\Source\Repos\DW2Randomizer\DW2Randomizer\obj\Debug\DW2Randomizer.Properties.Resources.resources
+C:\Users\Pete10th\Source\Repos\DW2Randomizer\DW2Randomizer\obj\Debug\DW2Randomizer.csproj.GenerateResource.Cache
+C:\Users\Pete10th\Source\Repos\DW2Randomizer\DW2Randomizer\obj\Debug\DW2Randomizer.exe
+C:\Users\Pete10th\Source\Repos\DW2Randomizer\DW2Randomizer\obj\Debug\DW2Randomizer.pdb
