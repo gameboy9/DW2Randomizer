@@ -2511,6 +2511,8 @@ namespace DW2Randomizer
             renamePrincePrincess();
             if (chkSpeedHacks.Checked)
                 speedUpBattles();
+            if (chkSpeedWaitMusic.Checked)
+                speedUpWaitMusic();
             if (chkExperimental.Checked)
                 experimentalSpeedHacks();
             skipPrologue();
@@ -4244,12 +4246,48 @@ namespace DW2Randomizer
 
         private void experimentalSpeedHacks()
         {
-            romData[0x3fdac] = 0xea;
-            romData[0x3fdad] = 0xea;
-            romData[0x3fdae] = 0xea;
+            //romData[0x3fdac] = 0xea;
+            //romData[0x3fdad] = 0xea;
+            //romData[0x3fdae] = 0xea;
 
-            romData[0x3c20e] = 0xea;
-            romData[0x3c20f] = 0xea;
+            //romData[0x3c20e] = 0xea;
+            //romData[0x3c20f] = 0xea;
+            romData[0xb6ad] = 0x20;
+            romData[0xb6ae] = 0xD1;
+            romData[0xb6af] = 0xBF;
+
+            romData[0xbfe1] = 0x20;
+            romData[0xbfe2] = 0xDC;
+            romData[0xbfe3] = 0xC1;
+            romData[0xbfe4] = 0xA6;
+            romData[0xbfe5] = 0x7D;
+            romData[0xbfe6] = 0xE8;
+            romData[0xbfe7] = 0x60;
+
+            romData[0x3fdac] = 0x4C;
+            romData[0x3fdad] = 0x9F;
+            romData[0x3fdae] = 0xFD;
+        }
+
+        private void speedUpWaitMusic()
+        {
+            // Speed up fade in/out
+            romData[0x3c338] = 0x01;
+
+            // revive music
+            romData[0xd9b7] = romData[0xd9ca] = romData[0xd9d3] = romData[0xd9bb] = romData[0xd9cc] = romData[0xd9d8] = 0x01;
+            romData[0xd9be] = romData[0xd9c1] = romData[0xd9c4] = romData[0xd9ce] = 0x81;
+
+            // inn music
+            romData[0xd99e] = 0x01;
+            romData[0xd9a6] = 0x81;
+
+            // win music
+            romData[0xdb5b] = romData[0xdb5d] = romData[0xdb6e] = 0x01;
+
+            // level up music
+            romData[0xdb3c] = 0x01;
+            romData[0xdb40] = romData[0xdb45] = 0x81;
         }
 
         private void speedUpBattles()
@@ -4264,6 +4302,9 @@ namespace DW2Randomizer
             romData[0x3c526] = 1; // instead of 10, greatly reducing flashes done for spell casting, removing 20 frames every time a spell is cast.
             romData[0x3fc49] = 1; // instead of 8, reducing transition from one character's move to another by 7 frames / transition.
             romData[0x110cc] = 1; // instead of 8, reducing flashing of super monsters (Atlas, Bazuzu, etc.)
+
+            romData[0x3c5b4] = 1; // Instead of 60, speeding up running away by a ton.
+            romData[0x18a66] = 1; // Instead of 80, speeding up failure to equip something by a ton.
         }
 
         private void skipPrologue()
@@ -5087,6 +5128,7 @@ namespace DW2Randomizer
             chkTreasures.Checked = (txtFlags.Text.Contains("T"));
             chkSpeedHacks.Checked = (txtFlags.Text.Contains("A"));
             chkExperimental.Checked = (txtFlags.Text.Contains("a"));
+            chkSpeedWaitMusic.Checked = (txtFlags.Text.Contains("m"));
 
             if (txtFlags.Text.Contains("r1")) radSlightIntensity.Checked = true;
             if (txtFlags.Text.Contains("r2")) radModerateIntensity.Checked = true;
@@ -5138,6 +5180,8 @@ namespace DW2Randomizer
                 flags += "A";
             if (chkExperimental.Checked)
                 flags += "a";
+            if (chkSpeedWaitMusic.Checked)
+                flags += "m";
 
             flags += (radSlightIntensity.Checked ? "r1" : radModerateIntensity.Checked ? "r2" : radHeavyIntensity.Checked ? "r3" : "r4");
             flags += ((string)cboGPReq.SelectedItem == "75%" ? "g1" : (string)cboGPReq.SelectedItem == "50%" ? "g2" : (string)cboGPReq.SelectedItem == "33%" ? "g3" : "");

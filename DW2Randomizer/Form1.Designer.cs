@@ -50,6 +50,7 @@
             this.btnNewSeed = new System.Windows.Forms.Button();
             this.tabAll = new System.Windows.Forms.TabControl();
             this.adjustments = new System.Windows.Forms.TabPage();
+            this.chkAllDogs = new System.Windows.Forms.CheckBox();
             this.chkExperimental = new System.Windows.Forms.CheckBox();
             this.chkSpeedHacks = new System.Windows.Forms.CheckBox();
             this.label12 = new System.Windows.Forms.Label();
@@ -90,7 +91,7 @@
             this.lblNewChecksum = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.btnCopyChecksum = new System.Windows.Forms.Button();
-            this.chkAllDogs = new System.Windows.Forms.CheckBox();
+            this.chkSpeedWaitMusic = new System.Windows.Forms.CheckBox();
             this.tabAll.SuspendLayout();
             this.adjustments.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -99,26 +100,29 @@
             // 
             // txtFileName
             // 
-            this.txtFileName.Location = new System.Drawing.Point(122, 23);
+            this.txtFileName.Location = new System.Drawing.Point(183, 35);
+            this.txtFileName.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtFileName.Name = "txtFileName";
-            this.txtFileName.Size = new System.Drawing.Size(320, 20);
+            this.txtFileName.Size = new System.Drawing.Size(478, 26);
             this.txtFileName.TabIndex = 0;
             this.txtFileName.Leave += new System.EventHandler(this.txtFileName_Leave);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 23);
+            this.label1.Location = new System.Drawing.Point(20, 35);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(92, 13);
+            this.label1.Size = new System.Drawing.Size(135, 20);
             this.label1.TabIndex = 1;
             this.label1.Text = "DW2 ROM Image";
             // 
             // btnBrowse
             // 
-            this.btnBrowse.Location = new System.Drawing.Point(448, 21);
+            this.btnBrowse.Location = new System.Drawing.Point(672, 32);
+            this.btnBrowse.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnBrowse.Name = "btnBrowse";
-            this.btnBrowse.Size = new System.Drawing.Size(75, 23);
+            this.btnBrowse.Size = new System.Drawing.Size(112, 35);
             this.btnBrowse.TabIndex = 1;
             this.btnBrowse.Text = "Browse";
             this.btnBrowse.UseVisualStyleBackColor = true;
@@ -127,45 +131,50 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(13, 78);
+            this.label2.Location = new System.Drawing.Point(20, 120);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(88, 13);
+            this.label2.Size = new System.Drawing.Size(131, 20);
             this.label2.TabIndex = 3;
             this.label2.Text = "SHA1 Checksum";
             // 
             // lblSHAChecksum
             // 
             this.lblSHAChecksum.AutoSize = true;
-            this.lblSHAChecksum.Location = new System.Drawing.Point(119, 78);
+            this.lblSHAChecksum.Location = new System.Drawing.Point(178, 120);
+            this.lblSHAChecksum.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblSHAChecksum.Name = "lblSHAChecksum";
-            this.lblSHAChecksum.Size = new System.Drawing.Size(247, 13);
+            this.lblSHAChecksum.Size = new System.Drawing.Size(369, 20);
             this.lblSHAChecksum.TabIndex = 4;
             this.lblSHAChecksum.Text = "????????????????????????????????????????";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(13, 102);
+            this.label4.Location = new System.Drawing.Point(20, 157);
+            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(50, 13);
+            this.label4.Size = new System.Drawing.Size(74, 20);
             this.label4.TabIndex = 5;
             this.label4.Text = "Required";
             // 
             // lblReqChecksum
             // 
             this.lblReqChecksum.AutoSize = true;
-            this.lblReqChecksum.Location = new System.Drawing.Point(119, 102);
+            this.lblReqChecksum.Location = new System.Drawing.Point(178, 157);
+            this.lblReqChecksum.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblReqChecksum.Name = "lblReqChecksum";
-            this.lblReqChecksum.Size = new System.Drawing.Size(238, 13);
+            this.lblReqChecksum.Size = new System.Drawing.Size(355, 20);
             this.lblReqChecksum.TabIndex = 6;
             this.lblReqChecksum.Text = "f464c7045a489a248686e92164fde2903cfd013e";
             // 
             // radSlightIntensity
             // 
             this.radSlightIntensity.AutoSize = true;
-            this.radSlightIntensity.Location = new System.Drawing.Point(149, 222);
+            this.radSlightIntensity.Location = new System.Drawing.Point(224, 342);
+            this.radSlightIntensity.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.radSlightIntensity.Name = "radSlightIntensity";
-            this.radSlightIntensity.Size = new System.Drawing.Size(48, 17);
+            this.radSlightIntensity.Size = new System.Drawing.Size(69, 24);
             this.radSlightIntensity.TabIndex = 11;
             this.radSlightIntensity.Text = "Light";
             this.radSlightIntensity.UseVisualStyleBackColor = true;
@@ -174,9 +183,10 @@
             // radModerateIntensity
             // 
             this.radModerateIntensity.AutoSize = true;
-            this.radModerateIntensity.Location = new System.Drawing.Point(204, 222);
+            this.radModerateIntensity.Location = new System.Drawing.Point(306, 342);
+            this.radModerateIntensity.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.radModerateIntensity.Name = "radModerateIntensity";
-            this.radModerateIntensity.Size = new System.Drawing.Size(43, 17);
+            this.radModerateIntensity.Size = new System.Drawing.Size(61, 24);
             this.radModerateIntensity.TabIndex = 12;
             this.radModerateIntensity.Text = "Silly";
             this.radModerateIntensity.UseVisualStyleBackColor = true;
@@ -185,9 +195,10 @@
             // radHeavyIntensity
             // 
             this.radHeavyIntensity.AutoSize = true;
-            this.radHeavyIntensity.Location = new System.Drawing.Point(254, 222);
+            this.radHeavyIntensity.Location = new System.Drawing.Point(381, 342);
+            this.radHeavyIntensity.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.radHeavyIntensity.Name = "radHeavyIntensity";
-            this.radHeavyIntensity.Size = new System.Drawing.Size(74, 17);
+            this.radHeavyIntensity.Size = new System.Drawing.Size(107, 24);
             this.radHeavyIntensity.TabIndex = 13;
             this.radHeavyIntensity.Text = "Ridiculous";
             this.radHeavyIntensity.UseVisualStyleBackColor = true;
@@ -197,9 +208,10 @@
             // 
             this.radInsaneIntensity.AutoSize = true;
             this.radInsaneIntensity.Checked = true;
-            this.radInsaneIntensity.Location = new System.Drawing.Point(335, 222);
+            this.radInsaneIntensity.Location = new System.Drawing.Point(502, 342);
+            this.radInsaneIntensity.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.radInsaneIntensity.Name = "radInsaneIntensity";
-            this.radInsaneIntensity.Size = new System.Drawing.Size(91, 17);
+            this.radInsaneIntensity.Size = new System.Drawing.Size(134, 24);
             this.radInsaneIntensity.TabIndex = 14;
             this.radInsaneIntensity.TabStop = true;
             this.radInsaneIntensity.Text = "LUDICROUS!";
@@ -208,9 +220,10 @@
             // 
             // btnRandomize
             // 
-            this.btnRandomize.Location = new System.Drawing.Point(444, 221);
+            this.btnRandomize.Location = new System.Drawing.Point(666, 340);
+            this.btnRandomize.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnRandomize.Name = "btnRandomize";
-            this.btnRandomize.Size = new System.Drawing.Size(75, 23);
+            this.btnRandomize.Size = new System.Drawing.Size(112, 35);
             this.btnRandomize.TabIndex = 15;
             this.btnRandomize.Text = "Randomize!";
             this.btnRandomize.UseVisualStyleBackColor = true;
@@ -218,9 +231,10 @@
             // 
             // btnCompare
             // 
-            this.btnCompare.Location = new System.Drawing.Point(448, 76);
+            this.btnCompare.Location = new System.Drawing.Point(672, 117);
+            this.btnCompare.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnCompare.Name = "btnCompare";
-            this.btnCompare.Size = new System.Drawing.Size(75, 23);
+            this.btnCompare.Size = new System.Drawing.Size(112, 35);
             this.btnCompare.TabIndex = 4;
             this.btnCompare.Text = "Compare";
             this.btnCompare.UseVisualStyleBackColor = true;
@@ -228,25 +242,28 @@
             // 
             // txtSeed
             // 
-            this.txtSeed.Location = new System.Drawing.Point(70, 158);
+            this.txtSeed.Location = new System.Drawing.Point(105, 243);
+            this.txtSeed.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtSeed.Name = "txtSeed";
-            this.txtSeed.Size = new System.Drawing.Size(100, 20);
+            this.txtSeed.Size = new System.Drawing.Size(148, 26);
             this.txtSeed.TabIndex = 8;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(13, 160);
+            this.label3.Location = new System.Drawing.Point(20, 246);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(32, 13);
+            this.label3.Size = new System.Drawing.Size(47, 20);
             this.label3.TabIndex = 20;
             this.label3.Text = "Seed";
             // 
             // btnCompareBrowse
             // 
-            this.btnCompareBrowse.Location = new System.Drawing.Point(448, 47);
+            this.btnCompareBrowse.Location = new System.Drawing.Point(672, 72);
+            this.btnCompareBrowse.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnCompareBrowse.Name = "btnCompareBrowse";
-            this.btnCompareBrowse.Size = new System.Drawing.Size(75, 23);
+            this.btnCompareBrowse.Size = new System.Drawing.Size(112, 35);
             this.btnCompareBrowse.TabIndex = 3;
             this.btnCompareBrowse.Text = "Browse";
             this.btnCompareBrowse.UseVisualStyleBackColor = true;
@@ -255,24 +272,27 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(13, 49);
+            this.label5.Location = new System.Drawing.Point(20, 75);
+            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(94, 13);
+            this.label5.Size = new System.Drawing.Size(143, 20);
             this.label5.TabIndex = 24;
             this.label5.Text = "Comparison Image";
             // 
             // txtCompare
             // 
-            this.txtCompare.Location = new System.Drawing.Point(122, 49);
+            this.txtCompare.Location = new System.Drawing.Point(183, 75);
+            this.txtCompare.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtCompare.Name = "txtCompare";
-            this.txtCompare.Size = new System.Drawing.Size(320, 20);
+            this.txtCompare.Size = new System.Drawing.Size(478, 26);
             this.txtCompare.TabIndex = 2;
             // 
             // btnNewSeed
             // 
-            this.btnNewSeed.Location = new System.Drawing.Point(187, 156);
+            this.btnNewSeed.Location = new System.Drawing.Point(280, 240);
+            this.btnNewSeed.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnNewSeed.Name = "btnNewSeed";
-            this.btnNewSeed.Size = new System.Drawing.Size(75, 23);
+            this.btnNewSeed.Size = new System.Drawing.Size(112, 35);
             this.btnNewSeed.TabIndex = 9;
             this.btnNewSeed.Text = "New Seed";
             this.btnNewSeed.UseVisualStyleBackColor = true;
@@ -283,14 +303,16 @@
             this.tabAll.Controls.Add(this.adjustments);
             this.tabAll.Controls.Add(this.tabPage2);
             this.tabAll.Controls.Add(this.tabPage1);
-            this.tabAll.Location = new System.Drawing.Point(12, 245);
+            this.tabAll.Location = new System.Drawing.Point(18, 377);
+            this.tabAll.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabAll.Name = "tabAll";
             this.tabAll.SelectedIndex = 0;
-            this.tabAll.Size = new System.Drawing.Size(507, 197);
+            this.tabAll.Size = new System.Drawing.Size(760, 303);
             this.tabAll.TabIndex = 26;
             // 
             // adjustments
             // 
+            this.adjustments.Controls.Add(this.chkSpeedWaitMusic);
             this.adjustments.Controls.Add(this.chkAllDogs);
             this.adjustments.Controls.Add(this.chkExperimental);
             this.adjustments.Controls.Add(this.chkSpeedHacks);
@@ -307,31 +329,45 @@
             this.adjustments.Controls.Add(this.cboXPReq);
             this.adjustments.Controls.Add(this.label8);
             this.adjustments.Controls.Add(this.chkChangeStatsToRemix);
-            this.adjustments.Location = new System.Drawing.Point(4, 22);
+            this.adjustments.Location = new System.Drawing.Point(4, 29);
+            this.adjustments.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.adjustments.Name = "adjustments";
-            this.adjustments.Padding = new System.Windows.Forms.Padding(3);
-            this.adjustments.Size = new System.Drawing.Size(499, 171);
+            this.adjustments.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.adjustments.Size = new System.Drawing.Size(752, 270);
             this.adjustments.TabIndex = 0;
             this.adjustments.Text = "Adjustments";
             this.adjustments.UseVisualStyleBackColor = true;
             // 
+            // chkAllDogs
+            // 
+            this.chkAllDogs.AutoSize = true;
+            this.chkAllDogs.Location = new System.Drawing.Point(370, 132);
+            this.chkAllDogs.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.chkAllDogs.Name = "chkAllDogs";
+            this.chkAllDogs.Size = new System.Drawing.Size(187, 24);
+            this.chkAllDogs.TabIndex = 25;
+            this.chkAllDogs.Text = "Turn all NPCs to dogs";
+            this.chkAllDogs.UseVisualStyleBackColor = true;
+            // 
             // chkExperimental
             // 
             this.chkExperimental.AutoSize = true;
-            this.chkExperimental.Location = new System.Drawing.Point(269, 143);
+            this.chkExperimental.Location = new System.Drawing.Point(370, 217);
+            this.chkExperimental.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkExperimental.Name = "chkExperimental";
-            this.chkExperimental.Size = new System.Drawing.Size(165, 17);
+            this.chkExperimental.Size = new System.Drawing.Size(174, 24);
             this.chkExperimental.TabIndex = 24;
-            this.chkExperimental.Text = "Experimental speed hacks (a)";
+            this.chkExperimental.Text = "Text speed hack (a)";
             this.chkExperimental.UseVisualStyleBackColor = true;
             this.chkExperimental.CheckedChanged += new System.EventHandler(this.determineFlags);
             // 
             // chkSpeedHacks
             // 
             this.chkSpeedHacks.AutoSize = true;
-            this.chkSpeedHacks.Location = new System.Drawing.Point(269, 117);
+            this.chkSpeedHacks.Location = new System.Drawing.Point(370, 177);
+            this.chkSpeedHacks.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkSpeedHacks.Name = "chkSpeedHacks";
-            this.chkSpeedHacks.Size = new System.Drawing.Size(122, 17);
+            this.chkSpeedHacks.Size = new System.Drawing.Size(181, 24);
             this.chkSpeedHacks.TabIndex = 23;
             this.chkSpeedHacks.Text = "Speed up battles (A)";
             this.chkSpeedHacks.UseVisualStyleBackColor = true;
@@ -340,33 +376,37 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(6, 144);
+            this.label12.Location = new System.Drawing.Point(9, 222);
+            this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(78, 13);
+            this.label12.Size = new System.Drawing.Size(115, 20);
             this.label12.TabIndex = 22;
             this.label12.Text = "Princess Name";
             // 
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 117);
+            this.label11.Location = new System.Drawing.Point(9, 180);
+            this.label11.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(68, 13);
+            this.label11.Size = new System.Drawing.Size(99, 20);
             this.label11.TabIndex = 21;
             this.label11.Text = "Prince Name";
             // 
             // txtPrincessName
             // 
-            this.txtPrincessName.Location = new System.Drawing.Point(115, 141);
+            this.txtPrincessName.Location = new System.Drawing.Point(172, 217);
+            this.txtPrincessName.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtPrincessName.Name = "txtPrincessName";
-            this.txtPrincessName.Size = new System.Drawing.Size(100, 20);
+            this.txtPrincessName.Size = new System.Drawing.Size(148, 26);
             this.txtPrincessName.TabIndex = 20;
             // 
             // txtPrinceName
             // 
-            this.txtPrinceName.Location = new System.Drawing.Point(115, 115);
+            this.txtPrinceName.Location = new System.Drawing.Point(172, 177);
+            this.txtPrinceName.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtPrinceName.Name = "txtPrinceName";
-            this.txtPrinceName.Size = new System.Drawing.Size(100, 20);
+            this.txtPrinceName.Size = new System.Drawing.Size(148, 26);
             this.txtPrinceName.TabIndex = 19;
             // 
             // cboEncounterRate
@@ -382,27 +422,30 @@
             "50%",
             "33%",
             "25%"});
-            this.cboEncounterRate.Location = new System.Drawing.Point(115, 88);
+            this.cboEncounterRate.Location = new System.Drawing.Point(172, 135);
+            this.cboEncounterRate.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.cboEncounterRate.Name = "cboEncounterRate";
-            this.cboEncounterRate.Size = new System.Drawing.Size(121, 21);
+            this.cboEncounterRate.Size = new System.Drawing.Size(180, 28);
             this.cboEncounterRate.TabIndex = 18;
             this.cboEncounterRate.SelectedIndexChanged += new System.EventHandler(this.determineFlags);
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(6, 91);
+            this.label10.Location = new System.Drawing.Point(9, 140);
+            this.label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(82, 13);
+            this.label10.Size = new System.Drawing.Size(122, 20);
             this.label10.TabIndex = 17;
             this.label10.Text = "Encounter Rate";
             // 
             // chkGPRandomize
             // 
             this.chkGPRandomize.AutoSize = true;
-            this.chkGPRandomize.Location = new System.Drawing.Point(269, 61);
+            this.chkGPRandomize.Location = new System.Drawing.Point(370, 91);
+            this.chkGPRandomize.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkGPRandomize.Name = "chkGPRandomize";
-            this.chkGPRandomize.Size = new System.Drawing.Size(155, 17);
+            this.chkGPRandomize.Size = new System.Drawing.Size(232, 24);
             this.chkGPRandomize.TabIndex = 16;
             this.chkGPRandomize.Text = "Randomize Monster GP (G)";
             this.chkGPRandomize.UseVisualStyleBackColor = true;
@@ -411,9 +454,10 @@
             // chkXPRandomize
             // 
             this.chkXPRandomize.AutoSize = true;
-            this.chkXPRandomize.Location = new System.Drawing.Point(269, 36);
+            this.chkXPRandomize.Location = new System.Drawing.Point(370, 52);
+            this.chkXPRandomize.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkXPRandomize.Name = "chkXPRandomize";
-            this.chkXPRandomize.Size = new System.Drawing.Size(153, 17);
+            this.chkXPRandomize.Size = new System.Drawing.Size(228, 24);
             this.chkXPRandomize.TabIndex = 15;
             this.chkXPRandomize.Text = "Randomize Monster XP (X)";
             this.chkXPRandomize.UseVisualStyleBackColor = true;
@@ -422,9 +466,10 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(6, 64);
+            this.label9.Location = new System.Drawing.Point(9, 98);
+            this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(97, 13);
+            this.label9.Size = new System.Drawing.Size(147, 20);
             this.label9.TabIndex = 14;
             this.label9.Text = "Gold Requirements";
             // 
@@ -437,9 +482,10 @@
             "75%",
             "50%",
             "33%"});
-            this.cboGPReq.Location = new System.Drawing.Point(115, 61);
+            this.cboGPReq.Location = new System.Drawing.Point(172, 94);
+            this.cboGPReq.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.cboGPReq.Name = "cboGPReq";
-            this.cboGPReq.Size = new System.Drawing.Size(121, 21);
+            this.cboGPReq.Size = new System.Drawing.Size(180, 28);
             this.cboGPReq.TabIndex = 13;
             this.cboGPReq.SelectedIndexChanged += new System.EventHandler(this.determineFlags);
             // 
@@ -452,27 +498,30 @@
             "75%",
             "50%",
             "33%"});
-            this.cboXPReq.Location = new System.Drawing.Point(115, 34);
+            this.cboXPReq.Location = new System.Drawing.Point(172, 52);
+            this.cboXPReq.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.cboXPReq.Name = "cboXPReq";
-            this.cboXPReq.Size = new System.Drawing.Size(121, 21);
+            this.cboXPReq.Size = new System.Drawing.Size(180, 28);
             this.cboXPReq.TabIndex = 12;
             this.cboXPReq.SelectedIndexChanged += new System.EventHandler(this.determineFlags);
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 37);
+            this.label8.Location = new System.Drawing.Point(9, 57);
+            this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(89, 13);
+            this.label8.Size = new System.Drawing.Size(134, 20);
             this.label8.TabIndex = 11;
             this.label8.Text = "XP Requirements";
             // 
             // chkChangeStatsToRemix
             // 
             this.chkChangeStatsToRemix.AutoSize = true;
-            this.chkChangeStatsToRemix.Location = new System.Drawing.Point(8, 6);
+            this.chkChangeStatsToRemix.Location = new System.Drawing.Point(12, 9);
+            this.chkChangeStatsToRemix.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkChangeStatsToRemix.Name = "chkChangeStatsToRemix";
-            this.chkChangeStatsToRemix.Size = new System.Drawing.Size(327, 17);
+            this.chkChangeStatsToRemix.Size = new System.Drawing.Size(485, 24);
             this.chkChangeStatsToRemix.TabIndex = 8;
             this.chkChangeStatsToRemix.Text = "Change all monster stats and weapon values to remix values (R)";
             this.chkChangeStatsToRemix.UseVisualStyleBackColor = true;
@@ -492,10 +541,11 @@
             this.tabPage2.Controls.Add(this.chkEquipment);
             this.tabPage2.Controls.Add(this.chkWhoCanEquip);
             this.tabPage2.Controls.Add(this.chkMap);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Location = new System.Drawing.Point(4, 29);
+            this.tabPage2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(499, 171);
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tabPage2.Size = new System.Drawing.Size(752, 270);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Randomization";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -503,9 +553,10 @@
             // chkSmallMap
             // 
             this.chkSmallMap.AutoSize = true;
-            this.chkSmallMap.Location = new System.Drawing.Point(6, 28);
+            this.chkSmallMap.Location = new System.Drawing.Point(9, 43);
+            this.chkSmallMap.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkSmallMap.Name = "chkSmallMap";
-            this.chkSmallMap.Size = new System.Drawing.Size(106, 17);
+            this.chkSmallMap.Size = new System.Drawing.Size(154, 24);
             this.chkSmallMap.TabIndex = 11;
             this.chkSmallMap.Text = "128x128 Map (u)";
             this.chkSmallMap.UseVisualStyleBackColor = true;
@@ -514,9 +565,10 @@
             // chkTreasures
             // 
             this.chkTreasures.AutoSize = true;
-            this.chkTreasures.Location = new System.Drawing.Point(236, 96);
+            this.chkTreasures.Location = new System.Drawing.Point(354, 148);
+            this.chkTreasures.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkTreasures.Name = "chkTreasures";
-            this.chkTreasures.Size = new System.Drawing.Size(145, 17);
+            this.chkTreasures.Size = new System.Drawing.Size(214, 24);
             this.chkTreasures.TabIndex = 10;
             this.chkTreasures.Text = "Randomize Treasures (T)";
             this.chkTreasures.UseVisualStyleBackColor = true;
@@ -525,9 +577,10 @@
             // chkSpellStrengths
             // 
             this.chkSpellStrengths.AutoSize = true;
-            this.chkSpellStrengths.Location = new System.Drawing.Point(236, 30);
+            this.chkSpellStrengths.Location = new System.Drawing.Point(354, 46);
+            this.chkSpellStrengths.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkSpellStrengths.Name = "chkSpellStrengths";
-            this.chkSpellStrengths.Size = new System.Drawing.Size(169, 17);
+            this.chkSpellStrengths.Size = new System.Drawing.Size(254, 24);
             this.chkSpellStrengths.TabIndex = 9;
             this.chkSpellStrengths.Text = "Randomize Spell Strengths (S)";
             this.chkSpellStrengths.UseVisualStyleBackColor = true;
@@ -536,9 +589,10 @@
             // chkHeroStats
             // 
             this.chkHeroStats.AutoSize = true;
-            this.chkHeroStats.Location = new System.Drawing.Point(236, 52);
+            this.chkHeroStats.Location = new System.Drawing.Point(354, 80);
+            this.chkHeroStats.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkHeroStats.Name = "chkHeroStats";
-            this.chkHeroStats.Size = new System.Drawing.Size(149, 17);
+            this.chkHeroStats.Size = new System.Drawing.Size(223, 24);
             this.chkHeroStats.TabIndex = 8;
             this.chkHeroStats.Text = "Randomize Hero Stats (H)";
             this.chkHeroStats.UseVisualStyleBackColor = true;
@@ -547,9 +601,10 @@
             // chkHeroStores
             // 
             this.chkHeroStores.AutoSize = true;
-            this.chkHeroStores.Location = new System.Drawing.Point(236, 74);
+            this.chkHeroStores.Location = new System.Drawing.Point(354, 114);
+            this.chkHeroStores.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkHeroStores.Name = "chkHeroStores";
-            this.chkHeroStores.Size = new System.Drawing.Size(128, 17);
+            this.chkHeroStores.Size = new System.Drawing.Size(192, 24);
             this.chkHeroStores.TabIndex = 7;
             this.chkHeroStores.Text = "Randomize Stores (C)";
             this.chkHeroStores.UseVisualStyleBackColor = true;
@@ -558,9 +613,10 @@
             // chkSpellLearning
             // 
             this.chkSpellLearning.AutoSize = true;
-            this.chkSpellLearning.Location = new System.Drawing.Point(236, 7);
+            this.chkSpellLearning.Location = new System.Drawing.Point(354, 11);
+            this.chkSpellLearning.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkSpellLearning.Name = "chkSpellLearning";
-            this.chkSpellLearning.Size = new System.Drawing.Size(164, 17);
+            this.chkSpellLearning.Size = new System.Drawing.Size(244, 24);
             this.chkSpellLearning.TabIndex = 6;
             this.chkSpellLearning.Text = "Randomize Spell Learning (L)";
             this.chkSpellLearning.UseVisualStyleBackColor = true;
@@ -569,9 +625,10 @@
             // chkMonsterStats
             // 
             this.chkMonsterStats.AutoSize = true;
-            this.chkMonsterStats.Location = new System.Drawing.Point(6, 116);
+            this.chkMonsterStats.Location = new System.Drawing.Point(9, 178);
+            this.chkMonsterStats.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkMonsterStats.Name = "chkMonsterStats";
-            this.chkMonsterStats.Size = new System.Drawing.Size(165, 17);
+            this.chkMonsterStats.Size = new System.Drawing.Size(247, 24);
             this.chkMonsterStats.TabIndex = 5;
             this.chkMonsterStats.Text = "Randomize Monster Stats (M)";
             this.chkMonsterStats.UseVisualStyleBackColor = true;
@@ -580,9 +637,10 @@
             // chkMonsterZones
             // 
             this.chkMonsterZones.AutoSize = true;
-            this.chkMonsterZones.Location = new System.Drawing.Point(6, 138);
+            this.chkMonsterZones.Location = new System.Drawing.Point(9, 212);
+            this.chkMonsterZones.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkMonsterZones.Name = "chkMonsterZones";
-            this.chkMonsterZones.Size = new System.Drawing.Size(169, 17);
+            this.chkMonsterZones.Size = new System.Drawing.Size(251, 24);
             this.chkMonsterZones.TabIndex = 4;
             this.chkMonsterZones.Text = "Randomize Monster Zones (Z)";
             this.chkMonsterZones.UseVisualStyleBackColor = true;
@@ -591,9 +649,10 @@
             // chkEquipEffects
             // 
             this.chkEquipEffects.AutoSize = true;
-            this.chkEquipEffects.Location = new System.Drawing.Point(6, 94);
+            this.chkEquipEffects.Location = new System.Drawing.Point(9, 145);
+            this.chkEquipEffects.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkEquipEffects.Name = "chkEquipEffects";
-            this.chkEquipEffects.Size = new System.Drawing.Size(184, 17);
+            this.chkEquipEffects.Size = new System.Drawing.Size(277, 24);
             this.chkEquipEffects.TabIndex = 3;
             this.chkEquipEffects.Text = "Randomize Equipment Effects (E)";
             this.chkEquipEffects.UseVisualStyleBackColor = true;
@@ -602,9 +661,10 @@
             // chkEquipment
             // 
             this.chkEquipment.AutoSize = true;
-            this.chkEquipment.Location = new System.Drawing.Point(6, 50);
+            this.chkEquipment.Location = new System.Drawing.Point(9, 77);
+            this.chkEquipment.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkEquipment.Name = "chkEquipment";
-            this.chkEquipment.Size = new System.Drawing.Size(149, 17);
+            this.chkEquipment.Size = new System.Drawing.Size(223, 24);
             this.chkEquipment.TabIndex = 2;
             this.chkEquipment.Text = "Randomize Equipment (Q)";
             this.chkEquipment.UseVisualStyleBackColor = true;
@@ -613,9 +673,10 @@
             // chkWhoCanEquip
             // 
             this.chkWhoCanEquip.AutoSize = true;
-            this.chkWhoCanEquip.Location = new System.Drawing.Point(6, 72);
+            this.chkWhoCanEquip.Location = new System.Drawing.Point(9, 111);
+            this.chkWhoCanEquip.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkWhoCanEquip.Name = "chkWhoCanEquip";
-            this.chkWhoCanEquip.Size = new System.Drawing.Size(177, 17);
+            this.chkWhoCanEquip.Size = new System.Drawing.Size(260, 24);
             this.chkWhoCanEquip.TabIndex = 1;
             this.chkWhoCanEquip.Text = "Randomize Who Can Equip (W)";
             this.chkWhoCanEquip.UseVisualStyleBackColor = true;
@@ -624,9 +685,10 @@
             // chkMap
             // 
             this.chkMap.AutoSize = true;
-            this.chkMap.Location = new System.Drawing.Point(6, 6);
+            this.chkMap.Location = new System.Drawing.Point(9, 9);
+            this.chkMap.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chkMap.Name = "chkMap";
-            this.chkMap.Size = new System.Drawing.Size(120, 17);
+            this.chkMap.Size = new System.Drawing.Size(177, 24);
             this.chkMap.TabIndex = 0;
             this.chkMap.Text = "Randomize Map (U)";
             this.chkMap.UseVisualStyleBackColor = true;
@@ -636,27 +698,30 @@
             // 
             this.tabPage1.Controls.Add(this.btnLudicrousRando);
             this.tabPage1.Controls.Add(this.btnUltraRando);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Location = new System.Drawing.Point(4, 29);
+            this.tabPage1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Size = new System.Drawing.Size(499, 171);
+            this.tabPage1.Size = new System.Drawing.Size(752, 270);
             this.tabPage1.TabIndex = 2;
             this.tabPage1.Text = "Shortcuts";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // btnLudicrousRando
             // 
-            this.btnLudicrousRando.Location = new System.Drawing.Point(13, 42);
+            this.btnLudicrousRando.Location = new System.Drawing.Point(20, 65);
+            this.btnLudicrousRando.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnLudicrousRando.Name = "btnLudicrousRando";
-            this.btnLudicrousRando.Size = new System.Drawing.Size(167, 23);
+            this.btnLudicrousRando.Size = new System.Drawing.Size(250, 35);
             this.btnLudicrousRando.TabIndex = 1;
             this.btnLudicrousRando.Text = "Ludicrous Randomization";
             this.btnLudicrousRando.UseVisualStyleBackColor = true;
             // 
             // btnUltraRando
             // 
-            this.btnUltraRando.Location = new System.Drawing.Point(13, 13);
+            this.btnUltraRando.Location = new System.Drawing.Point(20, 20);
+            this.btnUltraRando.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnUltraRando.Name = "btnUltraRando";
-            this.btnUltraRando.Size = new System.Drawing.Size(167, 23);
+            this.btnUltraRando.Size = new System.Drawing.Size(250, 35);
             this.btnUltraRando.TabIndex = 0;
             this.btnUltraRando.Text = "Ultra Randomization";
             this.btnUltraRando.UseVisualStyleBackColor = true;
@@ -665,80 +730,89 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(13, 226);
+            this.label6.Location = new System.Drawing.Point(20, 348);
+            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(120, 13);
+            this.label6.Size = new System.Drawing.Size(182, 20);
             this.label6.TabIndex = 27;
             this.label6.Text = "Amount of Randomness";
             // 
             // lblIntensityDesc
             // 
             this.lblIntensityDesc.AutoSize = true;
-            this.lblIntensityDesc.Location = new System.Drawing.Point(15, 465);
+            this.lblIntensityDesc.Location = new System.Drawing.Point(22, 715);
+            this.lblIntensityDesc.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblIntensityDesc.Name = "lblIntensityDesc";
-            this.lblIntensityDesc.Size = new System.Drawing.Size(0, 13);
+            this.lblIntensityDesc.Size = new System.Drawing.Size(0, 20);
             this.lblIntensityDesc.TabIndex = 28;
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(13, 191);
+            this.label7.Location = new System.Drawing.Point(20, 294);
+            this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(32, 13);
+            this.label7.Size = new System.Drawing.Size(48, 20);
             this.label7.TabIndex = 29;
             this.label7.Text = "Flags";
             // 
             // txtFlags
             // 
-            this.txtFlags.Location = new System.Drawing.Point(70, 188);
+            this.txtFlags.Location = new System.Drawing.Point(105, 289);
+            this.txtFlags.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtFlags.Name = "txtFlags";
-            this.txtFlags.Size = new System.Drawing.Size(192, 20);
+            this.txtFlags.Size = new System.Drawing.Size(286, 26);
             this.txtFlags.TabIndex = 30;
             this.txtFlags.TextChanged += new System.EventHandler(this.txtFlags_TextChanged);
             // 
             // lblNewChecksum
             // 
             this.lblNewChecksum.AutoSize = true;
-            this.lblNewChecksum.Location = new System.Drawing.Point(119, 127);
+            this.lblNewChecksum.Location = new System.Drawing.Point(178, 195);
+            this.lblNewChecksum.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblNewChecksum.Name = "lblNewChecksum";
-            this.lblNewChecksum.Size = new System.Drawing.Size(247, 13);
+            this.lblNewChecksum.Size = new System.Drawing.Size(369, 20);
             this.lblNewChecksum.TabIndex = 32;
             this.lblNewChecksum.Text = "????????????????????????????????????????";
             // 
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(13, 127);
+            this.label14.Location = new System.Drawing.Point(20, 195);
+            this.label14.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(82, 13);
+            this.label14.Size = new System.Drawing.Size(119, 20);
             this.label14.TabIndex = 31;
             this.label14.Text = "New Checksum";
             // 
             // btnCopyChecksum
             // 
-            this.btnCopyChecksum.Location = new System.Drawing.Point(402, 122);
+            this.btnCopyChecksum.Location = new System.Drawing.Point(603, 188);
+            this.btnCopyChecksum.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnCopyChecksum.Name = "btnCopyChecksum";
-            this.btnCopyChecksum.Size = new System.Drawing.Size(121, 23);
+            this.btnCopyChecksum.Size = new System.Drawing.Size(182, 35);
             this.btnCopyChecksum.TabIndex = 33;
             this.btnCopyChecksum.Text = "Copy New Checksum";
             this.btnCopyChecksum.UseVisualStyleBackColor = true;
             this.btnCopyChecksum.Click += new System.EventHandler(this.btnCopyChecksum_Click);
             // 
-            // chkAllDogs
+            // chkSpeedWaitMusic
             // 
-            this.chkAllDogs.AutoSize = true;
-            this.chkAllDogs.Location = new System.Drawing.Point(269, 88);
-            this.chkAllDogs.Name = "chkAllDogs";
-            this.chkAllDogs.Size = new System.Drawing.Size(129, 17);
-            this.chkAllDogs.TabIndex = 25;
-            this.chkAllDogs.Text = "Turn all NPCs to dogs";
-            this.chkAllDogs.UseVisualStyleBackColor = true;
+            this.chkSpeedWaitMusic.AutoSize = true;
+            this.chkSpeedWaitMusic.Location = new System.Drawing.Point(544, 218);
+            this.chkSpeedWaitMusic.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.chkSpeedWaitMusic.Name = "chkSpeedWaitMusic";
+            this.chkSpeedWaitMusic.Size = new System.Drawing.Size(197, 24);
+            this.chkSpeedWaitMusic.TabIndex = 26;
+            this.chkSpeedWaitMusic.Text = "Speedy Wait Music (m)";
+            this.chkSpeedWaitMusic.UseVisualStyleBackColor = true;
+            this.chkSpeedWaitMusic.CheckedChanged += new System.EventHandler(this.determineFlags);
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(546, 498);
+            this.ClientSize = new System.Drawing.Size(819, 766);
             this.Controls.Add(this.btnCopyChecksum);
             this.Controls.Add(this.lblNewChecksum);
             this.Controls.Add(this.label14);
@@ -766,6 +840,7 @@
             this.Controls.Add(this.btnBrowse);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtFileName);
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "Form1";
             this.Text = "Dragon Warrior 2 Randomizer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
@@ -845,6 +920,7 @@
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Button btnCopyChecksum;
         private System.Windows.Forms.CheckBox chkAllDogs;
+        private System.Windows.Forms.CheckBox chkSpeedWaitMusic;
     }
 }
 
