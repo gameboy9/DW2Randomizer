@@ -27,5 +27,6 @@
 ## Special Thanks
 - Mcgrew, for his Dragon Warrior 1 Randomizer(https://github.com/mcgrew/dwrandomizer), giving me the inspiration to create this randomizer.  Twitch:  http://www.twitch.tv/mcgrew
 - joe73ffdq, for his help in finding ROM addresses to make this possible.
+- Vaxherd for providing echoing flute fixes and speed text hacks.
 - Highspirits, for being the first to give this a try... and the free advertising.  :)  Twitch:  http://www.twitch.tv/highspirits
 - Evilash25, for also testing out the randomizer and finding some bugs that I needed to squash.  Twitch:  http://www.twitch.tv/evilash25
