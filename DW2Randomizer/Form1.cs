@@ -607,7 +607,7 @@ namespace DW2Randomizer
                 if (validPlot(y, x, 3, 3, (lnI == 0 ? new int[] { maxIsland[2] } : islands.ToArray())) 
                     && reachable(y, x, (lnI != 0), lnI == 0 ? midenX[2] : midenX[1], lnI == 0 ? midenY[2] : midenY[1], maxLake))
                 {
-                    map[y + 3, x + 3] = 0x0a;
+                    map[y + 1, x + 1] = 0x0a;
 
                     int byteToUse2 = (lnI == 0 ? 0xa2e6 : lnI == 1 ? 0xa2ec : lnI == 2 ? 0xa2f2 : lnI == 3 ? 0xa2f5 : 0xa2f8);
                     romData[byteToUse2] = (byte)(x + 3);
@@ -1090,6 +1090,8 @@ namespace DW2Randomizer
                     {
                         continue;
                     }
+                    if (firstZone && zone[x, y] != 0)
+                        continue;
                     if (firstZone)
                     {
                         firstZone = false;
@@ -4182,7 +4184,7 @@ namespace DW2Randomizer
                     //if (lnI == 3) maxGains = 0; // No MP for Midenhall
 
                     int arraySize = lnI < 4 ? 50 : lnI < 8 ? 45 : 35;
-                    int[] values = inverted_power_curve(romData[0x13dd1 + lnI], maxGains, arraySize, 1.3, r1);
+                    int[] values = inverted_power_curve(romData[0x13dd1 + lnI], maxGains, arraySize, 1.1, r1);
                     
                     //for (int lnJ = 0; lnJ < arraySize; lnJ++)
                     //    values[lnJ] = romData[0x13dd1 + lnI] + (r1.Next() % maxGains);
