@@ -126,6 +126,8 @@ namespace DW2Randomizer
         int[,] zone = new int[16, 16];
         int[] maxIsland = new int[4];
         List<int> islands = new List<int>();
+        int[] midenX = new int[4];
+        int[] midenY = new int[4];
 
         public Form1()
         {
@@ -287,13 +289,11 @@ namespace DW2Randomizer
 
             // Establish Midenhall location
             bool midenOK = false;
-            int[] midenX = new int[4];
-            int[] midenY = new int[4];
             while (!midenOK)
             {
                 midenX[1] = r1.Next() % (chkSmallMap.Checked ? 122 : 250);
                 midenY[1] = r1.Next() % (chkSmallMap.Checked ? 122 : 250);
-                if (validPlot(midenY[1], midenX[1], 2, 2, new int[] { maxIsland[1] }))
+                if (validPlot(midenY[1], midenX[1], 2, 2, new int[] { maxIsland[1] }, true))
                     midenOK = true;
             }
 
@@ -303,7 +303,7 @@ namespace DW2Randomizer
             {
                 midenX[2] = r1.Next() % (chkSmallMap.Checked ? 122 : 250);
                 midenY[2] = r1.Next() % (chkSmallMap.Checked ? 122 : 250);
-                if (validPlot(midenY[2], midenX[2], 1, 1, new int[] { maxIsland[2] }))
+                if (validPlot(midenY[2], midenX[2], 1, 1, new int[] { maxIsland[2] }, true))
                     midenOK = true;
             }
 
@@ -313,7 +313,7 @@ namespace DW2Randomizer
             {
                 midenX[3] = r1.Next() % (chkSmallMap.Checked ? 122 : 250);
                 midenY[3] = r1.Next() % (chkSmallMap.Checked ? 122 : 250);
-                if (validPlot(midenY[3], midenX[3], 1, 1, new int[] { maxIsland[3] }))
+                if (validPlot(midenY[3], midenX[3], 1, 1, new int[] { maxIsland[3] }, true))
                     midenOK = true;
             }
 
@@ -323,7 +323,7 @@ namespace DW2Randomizer
             {
                 midenX[0] = r1.Next() % (chkSmallMap.Checked ? 122 : 250);
                 midenY[0] = r1.Next() % (chkSmallMap.Checked ? 122 : 250);
-                if (validPlot(midenY[0], midenX[0], 1, 1, new int[] { maxIsland[0] }))
+                if (validPlot(midenY[0], midenX[0], 1, 1, new int[] { maxIsland[0] }, true))
                     midenOK = true;
             }
 
@@ -417,7 +417,7 @@ namespace DW2Randomizer
                     y = r1.Next() % (chkSmallMap.Checked ? 125 : 253);
                 }
 
-                if (validPlot(y, x, 2, 2, (lnI == 0 || lnI == 1 ? new int[] { maxIsland[1] } : lnI == 6 ? new int[] { maxIsland[3] } : islands.ToArray())) && reachable(y, x, (lnI != 0 && lnI != 1), 
+                if (validPlot(y, x, 2, 2, (lnI == 0 || lnI == 1 ? new int[] { maxIsland[1] } : lnI == 6 ? new int[] { maxIsland[3] } : islands.ToArray()), (lnI == 0)) && reachable(y, x, (lnI != 0 && lnI != 1), 
                     lnI == 6 ? midenX[3] : midenX[1], lnI == 6 ? midenY[3] : midenY[1], maxLake))
                 {
                     map[y + 0, x + 0] = 0x00;
@@ -540,7 +540,7 @@ namespace DW2Randomizer
                     y = midenY[0];
                 }
 
-                if (validPlot(y, x, 1, 1, (lnI == 1 || lnI == 12 ? new int[] { maxIsland[1] } : lnI == 6 ? new int[] { maxIsland[3] } : lnI == 7 ? new int[] { maxIsland[0] } : lnI == 8 ? new int[] { maxIsland[2] } : islands.ToArray())) 
+                if (validPlot(y, x, 1, 1, (lnI == 1 || lnI == 12 ? new int[] { maxIsland[1] } : lnI == 6 ? new int[] { maxIsland[3] } : lnI == 7 ? new int[] { maxIsland[0] } : lnI == 8 ? new int[] { maxIsland[2] } : islands.ToArray()), (lnI == 6 || lnI == 7)) 
                     && reachable(y, x, (lnI != 1 && lnI != 12 && lnI != 8 && lnI != 7 && lnI != 6), lnI == 6 ? midenX[3] : lnI == 7 ? midenX[0] : lnI == 8 ? midenX[2] : midenX[1],
                     lnI == 6 ? midenY[3] : lnI == 7 ? midenY[0] : lnI == 8 ? midenY[2] : midenY[1], maxLake))
                 {
@@ -581,7 +581,7 @@ namespace DW2Randomizer
                     y = r1.Next() % (chkSmallMap.Checked ? 125 : 253);
                 }
 
-                if (validPlot(y, x, 1, 1, (lnI == 0 || lnI == 6 ? new int[] { maxIsland[2] } : lnI == 1 || lnI == 5 ? new int[] { maxIsland[1] } : lnI == 7 ? new int[] { maxIsland[3] } : islands.ToArray())) 
+                if (validPlot(y, x, 1, 1, (lnI == 0 || lnI == 6 ? new int[] { maxIsland[2] } : lnI == 1 || lnI == 5 ? new int[] { maxIsland[1] } : lnI == 7 ? new int[] { maxIsland[3] } : islands.ToArray()), (lnI == 6)) 
                     && reachable(y, x, (lnI != 0 && lnI != 1 && lnI != 5 && lnI != 6 && lnI != 7), 
                     lnI == 0 || lnI == 6 ? midenX[2] : lnI == 7 ? midenX[3] : midenX[1], lnI == 0 || lnI == 6 ? midenY[2] : lnI == 7 ? midenY[3] : midenY[1], maxLake))
                 {
@@ -610,8 +610,8 @@ namespace DW2Randomizer
                     map[y + 1, x + 1] = 0x0a;
 
                     int byteToUse2 = (lnI == 0 ? 0xa2e6 : lnI == 1 ? 0xa2ec : lnI == 2 ? 0xa2f2 : lnI == 3 ? 0xa2f5 : 0xa2f8);
-                    romData[byteToUse2] = (byte)(x + 3);
-                    romData[byteToUse2 + 1] = (byte)(y + 3);
+                    romData[byteToUse2] = (byte)(x + 1);
+                    romData[byteToUse2 + 1] = (byte)(y + 1);
                 }
                 else
                     lnI--;
@@ -2140,7 +2140,7 @@ namespace DW2Randomizer
             return false;
         }
 
-        private bool validPlot(int y, int x, int height, int width, int[] legalIsland)
+        private bool validPlot(int y, int x, int height, int width, int[] legalIsland, bool skipMidenTest = false)
         {
             //y++;
             //x++;
@@ -2157,6 +2157,19 @@ namespace DW2Randomizer
                         if (island[legalY, legalX] == legalIsland[lnK])
                             ok = true;
                     if (!ok) return false;
+                    if (!skipMidenTest)
+                    {
+                        for (int midenTest = 0; midenTest < 4; midenTest++)
+                            try
+                            {
+                                if (legalY == midenY[midenTest] && legalX == midenX[midenTest])
+                                    return false;
+                            }
+                            catch
+                            {
+                                // Possibly not defined.  Skip error.
+                            }
+                    }
                     // map[legalY, legalX] == 0x04 || 
                     if (map[legalY, legalX] == 0x00 || map[legalY, legalX] == 0x05 || map[legalY, legalX] == 0x0a || map[legalY, legalX] == 0x0b || map[legalY, legalX] == 0x0c ||
                         map[legalY, legalX] == 0x0e || map[legalY, legalX] == 0x0f || map[legalY, legalX] == 0x10 || map[legalY, legalX] == 0x11 || map[legalY, legalX] == 0x12 || map[legalY, legalX] == 0x13)
