@@ -2673,17 +2673,39 @@ namespace DW2Randomizer
 
                 int byteValStart = 0x13805 + (15 * lnI);
 
-                // evade rate... randomize from 0-8 / 64
-                if (randomLevel == 4)
-                    enemyStats[1] = (byte)((r1.Next() % 9) * 16);
-                else
+                if (chkMonsterStats.Checked)
                 {
-                    enemyStats[1] = (byte)(adjustEnemyStat(r1, enemyStats[1] / 16, 1) * 16);
-                    //int evade = enemyStats[1] / 16;
-                    //evade += (r1.Next() % (randomLevel == 3 ? 9 : randomLevel == 2 ? 7 : 5)) - (randomLevel == 3 ? 4 : randomLevel == 2 ? 3 : 2);
-                    //evade = (evade < 0 ? 0 : evade > 15 ? 15 : evade);
-                    //enemyStats[1] = (byte)(evade * 16);
+                    // evade rate... randomize from 0-8 / 64
+                    if (randomLevel == 4)
+                        enemyStats[1] = (byte)((r1.Next() % 9) * 16);
+                    else
+                        enemyStats[1] = (byte)(adjustEnemyStat(r1, enemyStats[1] / 16, 1) * 16);
+
+                    // Agility
+                    if (randomLevel == 4)
+                        enemyStats[4] = (byte)(r1.Next() % 256);
+                    else
+                    {
+                        int agility = enemyStats[4];
+                        agility = ScaleValue(agility, 2.0, 1.0, r1);
+                        agility = (agility > 255 ? 255 : agility);
+                        enemyStats[4] = (byte)agility;
+                    }
+
+                    int totalAtk = enemyStats[5];
+                    totalAtk = ScaleValue(totalAtk, 2.0, 1.0, r1); // adjustEnemyStat(r1, totalAtk, 1);
+                    totalAtk = (totalAtk > 255 ? 255 : totalAtk);
+                    enemyStats[5] = (byte)totalAtk;
+
+                    int totalHP = enemyStats[0];
+                    totalHP = ScaleValue(totalHP, 2.0, 1.0, r1); // adjustEnemyStat(r1, totalAtk, 1);
+                    totalHP = (totalHP > 255 ? 255 : totalHP);
+                    enemyStats[0] = (byte)totalHP;
                 }
+
+                int xp = romData[byteValStart + 3] + ((romData[byteValStart + 8] / 64) * 256) + ((romData[byteValStart + 9] / 64) * 1024);
+                if (chkXPRandomize.Checked)
+                    xp = adjustEnemyStat(r1, xp, 1, 4095);
                 if (chkGPRandomize.Checked)
                 {
                     int gp = enemyStats[2]; // + (r1.Next() % (lnI + 1));
@@ -2691,442 +2713,215 @@ namespace DW2Randomizer
                     enemyStats[2] = (byte)gp; // (lnI == 0x33 || gp > 255 ? 255 : gp); // Gold Orc gold = 255
                 }
 
-                int xp = romData[byteValStart + 3] + ((romData[byteValStart + 8] / 64) * 256) + ((romData[byteValStart + 9] / 64) * 1024);
-                if (chkXPRandomize.Checked)
-                    xp = adjustEnemyStat(r1, xp, 1, 4095);
-
-                // Agility
-                if (randomLevel == 4)
-                    enemyStats[4] = (byte)(r1.Next() % 256);
-                else
+                if (chkMonsterResists.Checked)
                 {
-                    enemyStats[4] = (byte)adjustEnemyStat(r1, enemyStats[4], 1);
-                    //int agility = enemyStats[4];
-                    //agility += (r1.Next() % (randomLevel == 3 ? (agility) : randomLevel == 2 ? (agility / 2) : (agility / 4))) - 
-                    //    (randomLevel == 3 ? (agility / 2) : randomLevel == 2 ? (agility / 4) : (agility / 8));
-                    //agility = (agility < 0 ? 0 : agility > 255 ? 255 : agility);
-                    //enemyStats[4] = (byte)agility;
-                }
-                int totalAtk = enemyStats[5];
-                totalAtk = adjustEnemyStat(r1, totalAtk, 1);
-                //totalAtk += (r1.Next() % (randomLevel == 4 ? (totalAtk) : randomLevel == 3 ? (totalAtk * 3 / 4) : randomLevel == 2 ? (totalAtk / 2) : (totalAtk / 4))) -
-                //        (randomLevel == 4 ? (totalAtk / 2) : randomLevel == 3 ? (totalAtk * 3 / 8) : randomLevel == 2 ? (totalAtk / 4) : (totalAtk / 8));
-                //totalAtk = (totalAtk > 254 ? 254 : totalAtk);
-                //int atkRandom = (r1.Next() % 3);
-                //int atkDiv2 = (enemyStats[5] / 2) + 1;
-                //if (atkRandom == 1)
-                //{
-                //    totalAtk += (r1.Next() % atkDiv2);
-                //}
-                //else if (atkRandom == 2)
-                //{
-                //    totalAtk -= (r1.Next() % atkDiv2);
-                //}
-                //totalAtk = (totalAtk > 254 ? 254 : totalAtk);
-                enemyStats[5] = (byte)totalAtk;
+                    int res1 = (enemyStats[7] * 8) % 8;
+                    int res2 = enemyStats[7] % 8;
+                    int res3 = (enemyStats[8] * 8) % 8;
+                    int res4 = enemyStats[8] % 8;
+                    int res5 = (enemyStats[9] * 8) % 8;
+                    int res6 = enemyStats[9] % 8;
 
-                int res1 = (enemyStats[7] * 8) % 8;
-                int res2 = enemyStats[7] % 8;
-                int res3 = (enemyStats[8] * 8) % 8;
-                int res4 = enemyStats[8] % 8;
-                int res5 = (enemyStats[9] * 8) % 8;
-                int res6 = enemyStats[9] % 8;
-
-                if (randomLevel == 4)
-                {
-                    res1 = (r1.Next() % 8);
-                    res2 = (r1.Next() % 8);
-                    res3 = (r1.Next() % 8);
-                    res4 = (r1.Next() % 8);
-                    res5 = (r1.Next() % 8);
-                    res6 = (r1.Next() % 8);
-                } else
-                {
-                    res3 = (r1.Next() % (int)(Math.Round((decimal)(8 * lnI / 80)) + 1));
-                    //res1 = adjustEnemyStat(r1, res1, 2);
-                    //res2 = adjustEnemyStat(r1, res2, 2);
-                    //res3 = adjustEnemyStat(r1, res3, 2);
-                    //res4 = adjustEnemyStat(r1, res4, 2);
-                    //res5 = adjustEnemyStat(r1, res5, 2);
-                    //res6 = adjustEnemyStat(r1, res6, 2);
-                }
-                
-                enemyStats[7] = (byte)(((r1.Next() % 4) * 64) + (res1 * 8) + res2);
-                enemyStats[8] = (byte)((res3 * 8) + res4);
-                enemyStats[9] = (byte)((res5 * 8) + res6);
-
-                //byte[] res1 = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7 };
-                //byte[] res2 = { 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 4, 5, 6, 7 };
-                //byte[] res3 = { 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5, 6, 7 };
-                //byte[] res4 = { 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7 };
-                //byte[] res5 = { 0, 1, 2, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7 };
-                //byte[] res6 = { 0, 1, 2, 3, 4, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7 };
-                //byte[] res7 = { 0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7 };
-                //if (lnI < 12)
-                //{
-                //    enemyStats[7] = (byte)(((r1.Next() % 4) * 64) + (res1[r1.Next() % 16] * 8) + (res1[r1.Next() % 16]));
-                //    enemyStats[8] = (byte)((res1[r1.Next() % 16] * 8) + (res1[r1.Next() % 16]));
-                //    enemyStats[9] = (byte)((res1[r1.Next() % 16] * 8) + (res1[r1.Next() % 16]));
-                //}
-                //else if (lnI < 24)
-                //{
-                //    enemyStats[7] = (byte)(((r1.Next() % 7) * 64) + (res2[r1.Next() % 16] * 8) + (res2[r1.Next() % 16]));
-                //    enemyStats[8] = (byte)((res2[r1.Next() % 16] * 8) + (res2[r1.Next() % 16]));
-                //    enemyStats[9] = (byte)((res2[r1.Next() % 16] * 8) + (res2[r1.Next() % 16]));
-                //}
-                //else if (lnI < 36)
-                //{
-                //    enemyStats[7] = (byte)(((r1.Next() % 7) * 64) + (res3[r1.Next() % 16] * 8) + (res3[r1.Next() % 16]));
-                //    enemyStats[8] = (byte)((res3[r1.Next() % 16] * 8) + (res3[r1.Next() % 16]));
-                //    enemyStats[9] = (byte)((res3[r1.Next() % 16] * 8) + (res3[r1.Next() % 16]));
-                //}
-                //else if (lnI < 47)
-                //{
-                //    enemyStats[7] = (byte)(((r1.Next() % 7) * 64) + (res4[r1.Next() % 16] * 8) + (res4[r1.Next() % 16]));
-                //    enemyStats[8] = (byte)((res4[r1.Next() % 16] * 8) + (res4[r1.Next() % 16]));
-                //    enemyStats[9] = (byte)((res4[r1.Next() % 16] * 8) + (res4[r1.Next() % 16]));
-                //}
-                //else if (lnI < 58)
-                //{
-                //    enemyStats[7] = (byte)(((r1.Next() % 7) * 64) + (res5[r1.Next() % 16] * 8) + (res5[r1.Next() % 16]));
-                //    enemyStats[8] = (byte)((res5[r1.Next() % 16] * 8) + (res5[r1.Next() % 16]));
-                //    enemyStats[9] = (byte)((res5[r1.Next() % 16] * 8) + (res5[r1.Next() % 16]));
-                //}
-                //else if (lnI < 69)
-                //{
-                //    enemyStats[7] = (byte)(((r1.Next() % 7) * 64) + (res6[r1.Next() % 16] * 8) + (res6[r1.Next() % 16]));
-                //    enemyStats[8] = (byte)((res6[r1.Next() % 16] * 8) + (res6[r1.Next() % 16]));
-                //    enemyStats[9] = (byte)((res6[r1.Next() % 16] * 8) + (res6[r1.Next() % 16]));
-                //}
-                //else
-                //{
-                //    enemyStats[7] = (byte)(((r1.Next() % 7) * 64) + (res7[r1.Next() % 16] * 8) + (res7[r1.Next() % 16]));
-                //    enemyStats[8] = (byte)((res7[r1.Next() % 16] * 8) + (res7[r1.Next() % 16]));
-                //    enemyStats[9] = (byte)((res7[r1.Next() % 16] * 8) + (res7[r1.Next() % 16]));
-                //}
-
-                byte[] level1Pattern = { 0, 2, 4, 5, 6, 9, 12, 16, 19, 20, 23, 28, 30 };
-                byte[] level2Pattern = { 0, 1, 2, 3, 4, 6, 7, 9, 10, 13, 16, 17, 18, 22, 23, 24, 26, 27, 28, 29, 30, 31 };
-                byte[] level3Pattern = { 0, 1, 3, 7, 10, 13, 15, 21, 22, 24, 27, 28, 29, 30, 31 };
-                byte[] level4Pattern = { 1, 3, 8, 11, 14, 15, 18, 21, 22, 25, 27, 29, 30 };
-
-                byte[] enemyPatterns = { 0, 0, 0, 0, 0, 0, 0, 0 };
-                bool[] enemyPage2 = { false, false, false, false, false, false, false, false };
-                bool concentration = false;
-
-                //byte[] pattern1 = { 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3 };
-                //byte[] pattern2 = { 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3 };
-                //byte[] pattern3 = { 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 4 };
-                //byte[] pattern4 = { 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4, 4, 4 };
-                //byte[] pattern5 = { 0, 0, 1, 1, 2, 2, 2, 2, 2, 3, 3, 4, 4, 4, 4, 4 };
-                //byte[] pattern6 = { 1, 1, 2, 2, 2, 2, 2, 2, 3, 4, 4, 4, 4, 4, 4, 4 };
-                //byte[] pattern7 = { 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 };
-
-                //int enemyPattern = 0;
-
-                //if (lnI < 12)
-                //    enemyPattern = pattern1[r1.Next() % 16];
-                //else if (lnI < 24)
-                //    enemyPattern = pattern2[r1.Next() % 16];
-                //else if (lnI < 36)
-                //    enemyPattern = pattern3[r1.Next() % 16];
-                //else if (lnI < 47)
-                //    enemyPattern = pattern4[r1.Next() % 16];
-                //else if (lnI < 58)
-                //    enemyPattern = pattern5[r1.Next() % 16];
-                //else if (lnI < 69)
-                //    enemyPattern = pattern6[r1.Next() % 16];
-                //else
-                //    enemyPattern = pattern7[r1.Next() % 16];
-
-                int randomPattern = 0;
-
-                if (randomLevel == 4)
-                {
-                    randomPattern = 4;
-                } else if (randomLevel == 3) // Basically make it equivalent to mcgrew's DW1 Randomizer
-                {
-                    int rp = (r1.Next() % 100);
-                    if (rp >= 40) randomPattern = 4;
-                    else if (rp >= 30) randomPattern = 2; else randomPattern = 1;
-                } else if (randomLevel == 2)
-                {
-                    randomPattern = (r1.Next() % 5);
-                } else
-                {
-                    randomPattern = (r1.Next() % 4);
-                }
-
-                if (randomPattern == 4)
-                {
-                    for (int lnJ = 0; lnJ < 8; lnJ++)
+                    if (randomLevel == 4)
                     {
-                        // 75% chance of setting a different attack.
-                        byte random = (byte)(r1.Next() % 48);
-                        if (random >= 1 && random <= 31) // 0 would be fine, but it's already set.
+                        res1 = (r1.Next() % 8);
+                        res2 = (r1.Next() % 8);
+                        res3 = (r1.Next() % 8);
+                        res4 = (r1.Next() % 8);
+                        res5 = (r1.Next() % 8);
+                        res6 = (r1.Next() % 8);
+                    }
+                    else
+                    {
+                        res3 = (r1.Next() % (int)(Math.Round((decimal)(8 * lnI / 80)) + 1));
+                    }
+
+                    enemyStats[7] = (byte)(((r1.Next() % 4) * 64) + (res1 * 8) + res2);
+                    enemyStats[8] = (byte)((res3 * 8) + res4);
+                    enemyStats[9] = (byte)((res5 * 8) + res6);
+                }
+
+                if (chkMonsterPatterns.Checked)
+                {
+                    enemyStats[7] = (byte)(((r1.Next() % 4) * 64) + (enemyStats[7] % 64));
+
+                    byte[] level1Pattern = { 0, 2, 4, 5, 6, 9, 12, 16, 19, 20, 23, 28, 30 };
+                    byte[] level2Pattern = { 0, 1, 2, 3, 4, 6, 7, 9, 10, 13, 16, 17, 18, 22, 23, 24, 26, 27, 28, 29, 30, 31 };
+                    byte[] level3Pattern = { 0, 1, 3, 7, 10, 13, 15, 21, 22, 24, 27, 28, 29, 30, 31 };
+                    byte[] level4Pattern = { 1, 3, 8, 11, 14, 15, 18, 21, 22, 25, 27, 29, 30 };
+
+                    byte[] enemyPatterns = { 0, 0, 0, 0, 0, 0, 0, 0 };
+                    bool[] enemyPage2 = { false, false, false, false, false, false, false, false };
+                    bool concentration = false;
+
+                    int randomPattern = 0;
+
+                    if (randomLevel == 4)
+                    {
+                        randomPattern = 4;
+                    }
+                    else if (randomLevel == 3) // Basically make it equivalent to mcgrew's DW1 Randomizer
+                    {
+                        int rp = (r1.Next() % 100);
+                        if (rp >= 40) randomPattern = 4;
+                        else if (rp >= 30) randomPattern = 2; else randomPattern = 1;
+                    }
+                    else if (randomLevel == 2)
+                    {
+                        randomPattern = (r1.Next() % 5);
+                    }
+                    else
+                    {
+                        randomPattern = (r1.Next() % 4);
+                    }
+
+                    if (randomPattern == 4)
+                    {
+                        for (int lnJ = 0; lnJ < 8; lnJ++)
                         {
+                            // 75% chance of setting a different attack.
+                            byte random = (byte)(r1.Next() % 48);
+                            if (random >= 1 && random <= 31) // 0 would be fine, but it's already set.
+                            {
+                                if (random == 30 && concentration)
+                                    continue; // do NOT set the concentration bit again.  Maintain regular attack.
+                                              //else if ((random == 7 || random == 8 || random == 21 || random == 22 || random == 24 || random == 25) && lnI <= 32 && randomLevel == 4)
+                                              //{
+                                              //    lnJ--;
+                                              //    continue;
+                                              //}
+                                              //else if ((random == 4 || random == 5 || random == 6 || random == 9 || random == 12 || random == 19 || random == 20 || random == 23 || random == 26) && lnI >= 51 && randomLevel == 4)
+                                              //{
+                                              //    lnJ--;
+                                              //    continue;
+                                              //}
+                                else if (random >= 16)
+                                    enemyPage2[lnJ] = true;
+                                else if (random == 30)
+                                    concentration = true;
+
+                                enemyPatterns[lnJ] = (byte)(random % 16);
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                    }
+                    else if (randomPattern == 3)
+                    {
+                        for (int lnJ = 0; lnJ < 8; lnJ++)
+                        {
+                            byte random = 0;
+                            if (lnI < 20)
+                                random = level1Pattern[r1.Next() % level1Pattern.Length];
+                            else if (lnI < 40)
+                                random = level2Pattern[r1.Next() % level2Pattern.Length];
+                            else if (lnI < 60)
+                                random = level3Pattern[r1.Next() % level3Pattern.Length];
+                            else if (lnI < 80)
+                                random = level4Pattern[r1.Next() % level4Pattern.Length];
                             if (random == 30 && concentration)
                                 continue; // do NOT set the concentration bit again.  Maintain regular attack.
-                            //else if ((random == 7 || random == 8 || random == 21 || random == 22 || random == 24 || random == 25) && lnI <= 32 && randomLevel == 4)
-                            //{
-                            //    lnJ--;
-                            //    continue;
-                            //}
-                            //else if ((random == 4 || random == 5 || random == 6 || random == 9 || random == 12 || random == 19 || random == 20 || random == 23 || random == 26) && lnI >= 51 && randomLevel == 4)
-                            //{
-                            //    lnJ--;
-                            //    continue;
-                            //}
                             else if (random >= 16)
                                 enemyPage2[lnJ] = true;
                             else if (random == 30)
                                 concentration = true;
-
-                            enemyPatterns[lnJ] = (byte)(random % 16);
-                        } else
-                        {
-
+                            enemyPatterns[lnJ] = random;
                         }
                     }
-                } else if (randomPattern == 3)
-                {
-                    for (int lnJ = 0; lnJ < 8; lnJ++)
+                    else if (randomPattern == 2) // goofy attack monster
                     {
-                        byte random = 0;
-                        if (lnI < 20)
-                            random = level1Pattern[r1.Next() % level1Pattern.Length];
-                        else if (lnI < 40)
-                            random = level2Pattern[r1.Next() % level2Pattern.Length];
-                        else if (lnI < 60)
-                            random = level3Pattern[r1.Next() % level3Pattern.Length];
-                        else if (lnI < 80)
-                            random = level4Pattern[r1.Next() % level4Pattern.Length];
-                        if (random == 30 && concentration)
-                            continue; // do NOT set the concentration bit again.  Maintain regular attack.
-                        else if (random >= 16)
-                            enemyPage2[lnJ] = true;
-                        else if (random == 30)
-                            concentration = true;
-                        enemyPatterns[lnJ] = random;
-                    }
-                }
-                else if (randomPattern == 2) // goofy attack monster
-                {
-                    for (int lnJ = 0; lnJ < 8; lnJ++)
-                    {
-                        // The higher the monster is, the more chances of double attack, from 5% to 80%.
-                        if (r1.Next() % 100 <= lnI)
+                        for (int lnJ = 0; lnJ < 8; lnJ++)
                         {
-                            enemyPatterns[lnJ] = 13;
-                            enemyPage2[lnJ] = true;
-                        }
-                        else
-                        {
-                            // 50% chance of setting a different attack.
-                            byte random = (byte)(r1.Next() % 10);
-                            switch (random)
+                            // The higher the monster is, the more chances of double attack, from 5% to 80%.
+                            if (r1.Next() % 100 <= lnI)
                             {
-                                case 1:
-                                    enemyPatterns[lnJ] = 1;
-                                    break;
-                                case 2:
-                                    enemyPatterns[lnJ] = 2;
-                                    break;
-                                case 3:
-                                    enemyPatterns[lnJ] = 3;
-                                    break;
-                                case 4:
-                                    enemyPatterns[lnJ] = 4;
-                                    break;
-                                case 5:
-                                    enemyPatterns[lnJ] = 13;
-                                    enemyPage2[lnJ] = true;
-                                    break;
-                                case 6:
-                                    if (!concentration)
-                                    {
-                                        enemyPatterns[lnJ] = 14;
+                                enemyPatterns[lnJ] = 13;
+                                enemyPage2[lnJ] = true;
+                            }
+                            else
+                            {
+                                // 50% chance of setting a different attack.
+                                byte random = (byte)(r1.Next() % 10);
+                                switch (random)
+                                {
+                                    case 1:
+                                        enemyPatterns[lnJ] = 1;
+                                        break;
+                                    case 2:
+                                        enemyPatterns[lnJ] = 2;
+                                        break;
+                                    case 3:
+                                        enemyPatterns[lnJ] = 3;
+                                        break;
+                                    case 4:
+                                        enemyPatterns[lnJ] = 4;
+                                        break;
+                                    case 5:
+                                        enemyPatterns[lnJ] = 13;
                                         enemyPage2[lnJ] = true;
-                                        concentration = true;
-                                    }
-                                    break;
+                                        break;
+                                    case 6:
+                                        if (!concentration)
+                                        {
+                                            enemyPatterns[lnJ] = 14;
+                                            enemyPage2[lnJ] = true;
+                                            concentration = true;
+                                        }
+                                        break;
+                                }
                             }
                         }
                     }
-                } else if (randomPattern == 1)
-                {
-                    for (int lnJ = 0; lnJ < 8; lnJ++)
+                    else if (randomPattern == 1)
                     {
-                        // The higher the monster is, the more chances of double attack, from 5% to 80%.
-                        if (r1.Next() % 100 <= lnI)
+                        for (int lnJ = 0; lnJ < 8; lnJ++)
                         {
-                            enemyPatterns[lnJ] = 13;
-                            enemyPage2[lnJ] = true;
-                        }
-                        else
-                        {
-                            enemyPatterns[lnJ] = 0;
+                            // The higher the monster is, the more chances of double attack, from 5% to 80%.
+                            if (r1.Next() % 100 <= lnI)
+                            {
+                                enemyPatterns[lnJ] = 13;
+                                enemyPage2[lnJ] = true;
+                            }
+                            else
+                            {
+                                enemyPatterns[lnJ] = 0;
+                            }
                         }
                     }
-                } else
-                {
-                    // keep pattern the way it is.
-                }
-
-                //switch (enemyPattern)
-                //{
-                //    case 0: // leave everything alone; it's a basic attack monster.
-                //        break;
-                //    case 1: // Give the monster a little goofyness to their attack...
-                //        for (int lnJ = 0; lnJ < 8; lnJ++)
-                //        {
-                //            // 50% chance of setting a different attack.
-                //            byte random = (byte)(r1.Next() % 10);
-                //            switch (random)
-                //            {
-                //                case 1:
-                //                    enemyPatterns[lnJ] = 1;
-                //                    break;
-                //                case 2:
-                //                    enemyPatterns[lnJ] = 2;
-                //                    break;
-                //                case 3:
-                //                    enemyPatterns[lnJ] = 3;
-                //                    break;
-                //                case 4:
-                //                    enemyPatterns[lnJ] = 4;
-                //                    break;
-                //                case 5:
-                //                    enemyPatterns[lnJ] = 13;
-                //                    enemyPage2[lnJ] = true;
-                //                    break;
-                //                case 6:
-                //                    if (!concentration)
-                //                    {
-                //                        enemyPatterns[lnJ] = 14;
-                //                        enemyPage2[lnJ] = true;
-                //                        concentration = true;
-                //                    }
-                //                    break;
-                //            }
-                //        }
-                //        break;
-                //    case 2:
-                //        for (int lnJ = 0; lnJ < 8; lnJ++)
-                //        {
-                //            // 75% chance of setting a different attack.
-                //            byte random = (byte)(r1.Next() % 48);
-                //            if (random >= 1 && random <= 31) // 0 would be fine, but it's already set.
-                //            {
-                //                if (random == 30 && concentration)
-                //                    continue; // do NOT set the concentration bit again.  Maintain regular attack.
-                //                else if (random >= 16)
-                //                    enemyPage2[lnJ] = true;
-                //                else if (random == 30)
-                //                    concentration = true;
-                //                enemyPatterns[lnJ] = (byte)(random % 16);
-                //            }
-                //        }
-                //        break;
-                //    case 3:
-                //        for (int lnJ = 0; lnJ < 8; lnJ++)
-                //        {
-                //            // Normal, heroic, poison, faint, heal, healmore (both self and others), sleep, stopspell, sacrifice, weak flames, 
-                //            // poison and sweet breaths, call for help, double attacks, and strange jigs.
-                //            byte[] attackPattern = { 0, 0, 0, 0, 0, 1, 2, 3, 9, 10, 12, 13, 18, 19, 22, 23, 26, 27, 28, 29, 31 };
-                //            byte random = (attackPattern[r1.Next() % attackPattern.Length]);
-                //            if (random >= 1 && random <= 31) // 0 would be fine, but it's already set.
-                //            {
-                //                if (random == 30 && concentration)
-                //                    continue; // do NOT set the concentration bit again.  Maintain regular attack.
-                //                else if (random >= 16)
-                //                    enemyPage2[lnJ] = true;
-                //                else if (random == 30)
-                //                    concentration = true;
-                //                enemyPatterns[lnJ] = (byte)(random % 16);
-                //            }
-                //        }
-                //        break;
-                //    case 4:
-                //        for (int lnJ = 0; lnJ < 8; lnJ++)
-                //        {
-                //            // Double attacks, heroic attacks, firebane, explodet, heal all (both self and party), revive, defeat, 
-                //            // sacrifice, strong and deadly flames, and sweet breath.
-                //            byte[] attackPattern = { 29, 29, 29, 29, 1, 1, 7, 8, 11, 14, 15, 21, 22, 24, 25, 27 };
-                //            byte random = (attackPattern[r1.Next() % attackPattern.Length]);
-                //            if (random >= 1 && random <= 31) // 0 would be fine, but it's already set.
-                //            {
-                //                if (random == 30 && concentration)
-                //                    continue; // do NOT set the concentration bit again.  Maintain regular attack.
-                //                else if (random >= 16)
-                //                    enemyPage2[lnJ] = true;
-                //                else if (random == 30)
-                //                    concentration = true;
-                //                enemyPatterns[lnJ] = (byte)(random % 16);
-                //            }
-                //        }
-                //        break;
-                //}
-
-                if (lnI == 0x2f || lnI == 0x41) // Metal slime, Metal Babble
-                {
-                    enemyPatterns[0] = 5; // run away
-                    enemyPage2[0] = false;
-                    enemyPatterns[1] = 5; // run away
-                    enemyPage2[1] = false;
-                    enemyPatterns[2] = 5; // run away
-                    enemyPage2[2] = false;
-                    enemyPatterns[3] = 5; // run away
-                    enemyPage2[3] = false;
-                    if (lnI == 0x41)
+                    else
                     {
-                        enemyPatterns[4] = 5; // run away
-                        enemyPage2[4] = false;
-                        enemyPatterns[5] = 5; // run away
-                        enemyPage2[5] = false;
+                        // keep pattern the way it is.
                     }
-                    enemyStats[4] = 255; // Agility = max
-                    enemyStats[5] = 1; // Strength = minimum
-                }
-                //if (lnI == 0x05)
-                //{ // Healer
-                //    enemyPatterns[0] = (byte)((r1.Next() % 3) + 12); // heal, healmore, healall
-                //    enemyPatterns[1] = (byte)((r1.Next() % 3) + 12); // heal, healmore, healall
-                //}
-                //if (lnI == 0x1F)
-                //{ // Poison Lily
-                //    enemyPatterns[0] = 2;
-                //    enemyPage2[0] = false;
-                //    enemyPatterns[1] = 10;
-                //    enemyPage2[1] = true;
-                //}
-                //if (lnI == 0x0a || lnI == 0x0e || lnI == 0x1a || lnI == 0x1c || lnI == 0x2f || lnI == 0x40) // Magician, Magidrakee, Magic Baboon, Sorcerer, Magic Vampirus
-                //{
-                //    enemyPatterns[0] = (byte)((r1.Next() % 15) + 6); // any magic spell
-                //    enemyPage2[0] = (enemyPatterns[0] >= 16);
-                //    enemyPatterns[1] = (byte)((r1.Next() % 15) + 6); // any magic spell
-                //    enemyPage2[1] = (enemyPatterns[1] >= 16);
-                //}
-                //if (lnI == 0x23 || lnI == 0x46 || lnI == 0x48) // Dragon Fly, Green Dragon, Flame
-                //{
-                //    enemyPatterns[0] = (byte)((r1.Next() % 3) + 7); // breathe flames
-                //    enemyPage2[0] = true;
-                //    enemyPatterns[1] = (byte)((r1.Next() % 3) + 7); // breathe flames
-                //    enemyPage2[1] = true;
-                //}
 
-                if (randomPattern > 0)
-                {
-                    enemyStats[10] = (byte)((enemyPatterns[0] * 16) + enemyPatterns[1]);
-                    enemyStats[11] = (byte)((enemyPatterns[2] * 16) + enemyPatterns[3]);
-                    enemyStats[12] = (byte)((enemyPatterns[4] * 16) + enemyPatterns[5]);
-                    enemyStats[13] = (byte)((enemyPatterns[6] * 16) + enemyPatterns[7]);
-                    enemyStats[14] = (byte)((enemyPage2[0] ? 1 : 0) + (enemyPage2[1] ? 2 : 0) + (enemyPage2[2] ? 4 : 0) + (enemyPage2[3] ? 8 : 0) +
-                        (enemyPage2[4] ? 16 : 0) + (enemyPage2[5] ? 32 : 0) + (enemyPage2[6] ? 64 : 0) + (enemyPage2[7] ? 128 : 0));
-                }
+                    if (lnI == 0x2f || lnI == 0x41) // Metal slime, Metal Babble
+                    {
+                        enemyPatterns[0] = 5; // run away
+                        enemyPage2[0] = false;
+                        enemyPatterns[1] = 5; // run away
+                        enemyPage2[1] = false;
+                        enemyPatterns[2] = 5; // run away
+                        enemyPage2[2] = false;
+                        if (lnI == 0x41)
+                        {
+                            enemyPatterns[3] = 5; // run away
+                            enemyPage2[3] = false;
+                        }
+                        enemyStats[4] = 255; // Agility = max
+                        enemyStats[5] = 1; // Strength = minimum
+                    }
 
-                //if (lnI == 0x49)
-                //    lnI = 0x49;
+                    if (randomPattern > 0)
+                    {
+                        enemyStats[10] = (byte)((enemyPatterns[0] * 16) + enemyPatterns[1]);
+                        enemyStats[11] = (byte)((enemyPatterns[2] * 16) + enemyPatterns[3]);
+                        enemyStats[12] = (byte)((enemyPatterns[4] * 16) + enemyPatterns[5]);
+                        enemyStats[13] = (byte)((enemyPatterns[6] * 16) + enemyPatterns[7]);
+                        enemyStats[14] = (byte)((enemyPage2[0] ? 1 : 0) + (enemyPage2[1] ? 2 : 0) + (enemyPage2[2] ? 4 : 0) + (enemyPage2[3] ? 8 : 0) +
+                            (enemyPage2[4] ? 16 : 0) + (enemyPage2[5] ? 32 : 0) + (enemyPage2[6] ? 64 : 0) + (enemyPage2[7] ? 128 : 0));
+                    }
+                }
 
                 xp = (xp < 0 ? 1 : xp); // (float)Math.Round(xp, 0);
                 byte xp1 = (byte)(xp > 4095 ? 255 : (xp % 256));
@@ -4191,14 +3986,20 @@ namespace DW2Randomizer
                     {
                         if (lnI % 4 == 0) maxGains = (r1.Next() % (maxGains - 70)) + 70;
                         if (lnI % 4 == 1) maxGains = (r1.Next() % (maxGains - 120)) + 120;
-                        if (lnI % 4 == 2) maxGains = (r1.Next() % (maxGains - 140)) + 140;
+                        if (lnI % 4 == 2) maxGains = (r1.Next() % (maxGains - 160)) + 160;
                         if (lnI % 4 == 3) maxGains = (r1.Next() % (maxGains - 140)) + 140;
                     }
                     //if (lnI == 3) maxGains = 0; // No MP for Midenhall
 
                     int arraySize = lnI < 4 ? 50 : lnI < 8 ? 45 : 35;
-                    int[] values = inverted_power_curve(romData[0x13dd1 + lnI], maxGains, arraySize, 1.1, r1);
-                    
+                    int[] values;
+                    if (lnI == 0 || lnI == 2 || lnI == 9 || lnI == 11)
+                        values = inverted_power_curve(romData[0x13dd1 + lnI], maxGains, arraySize, 1.3, r1);
+                    else if (lnI == 1 || lnI == 3 || lnI == 8 || lnI == 10)
+                        values = inverted_power_curve(romData[0x13dd1 + lnI], maxGains, arraySize, 1.2, r1);
+                    else
+                        values = inverted_power_curve(romData[0x13dd1 + lnI], maxGains, arraySize, 1.25, r1);
+
                     //for (int lnJ = 0; lnJ < arraySize; lnJ++)
                     //    values[lnJ] = romData[0x13dd1 + lnI] + (r1.Next() % maxGains);
 
@@ -4920,7 +4721,7 @@ namespace DW2Randomizer
                 randomizeEquipment(r1);
             if (chkEquipEffects.Checked)
                 randomizeEffects(r1);
-            if (chkMonsterStats.Checked)
+            if (chkMonsterStats.Checked || chkMonsterPatterns.Checked || chkMonsterResists.Checked || chkGPRandomize.Checked || chkXPRandomize.Checked)
                 randomizeMonsterStats(r1);
             if (chkMonsterZones.Checked)
                 randomizeMonsterZones(r1);
@@ -4934,6 +4735,14 @@ namespace DW2Randomizer
                 randomizeStores(r1); // Must do before treasures.
             if (chkTreasures.Checked)
                 randomizeTreasures(r1);
+        }
+
+        private int ScaleValue(int value, double scale, double adjustment, Random r1)
+        {
+            var exponent = (double)r1.Next() / int.MaxValue * 2.0 - 1.0;
+            var adjustedScale = 1.0 + adjustment * (scale - 1.0);
+
+            return (int)Math.Round(Math.Pow(adjustedScale, exponent) * value, MidpointRounding.AwayFromZero);
         }
 
         private List<int> addTreasure(List<int> currentList, int[] treasureData)
@@ -5144,6 +4953,8 @@ namespace DW2Randomizer
             chkSpeedHacks.Checked = (txtFlags.Text.Contains("A"));
             chkExperimental.Checked = (txtFlags.Text.Contains("a"));
             chkSpeedWaitMusic.Checked = (txtFlags.Text.Contains("m"));
+            chkMonsterResists.Checked = (txtFlags.Text.Contains("V"));
+            chkMonsterPatterns.Checked = (txtFlags.Text.Contains("Y"));
 
             if (txtFlags.Text.Contains("r1")) radSlightIntensity.Checked = true;
             if (txtFlags.Text.Contains("r2")) radModerateIntensity.Checked = true;
@@ -5197,6 +5008,10 @@ namespace DW2Randomizer
                 flags += "a";
             if (chkSpeedWaitMusic.Checked)
                 flags += "m";
+            if (chkMonsterResists.Checked)
+                flags += "V";
+            if (chkMonsterPatterns.Checked)
+                flags += "Y";
 
             flags += (radSlightIntensity.Checked ? "r1" : radModerateIntensity.Checked ? "r2" : radHeavyIntensity.Checked ? "r3" : "r4");
             flags += ((string)cboGPReq.SelectedItem == "75%" ? "g1" : (string)cboGPReq.SelectedItem == "50%" ? "g2" : (string)cboGPReq.SelectedItem == "33%" ? "g3" : "");
@@ -5219,8 +5034,8 @@ namespace DW2Randomizer
             chkEquipment.Checked = true;
             chkEquipEffects.Checked = false;
             chkWhoCanEquip.Checked = true;
-            chkMonsterStats.Checked = true;
             chkMonsterZones.Checked = true;
+            chkMonsterPatterns.Checked = true;
             chkSpellLearning.Checked = true;
             chkSpellStrengths.Checked = true;
             chkHeroStats.Checked = true;

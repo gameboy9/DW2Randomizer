@@ -1,7 +1,7 @@
 C:\bizhawk\dw2 test\Dragon Warrior II (U) [!].nes
-C:\bizhawk\dw2 test\DW2Random_449971894_RXGUuQWEMZLSHCTAamr4x2e4.nes
-449971894
-RXGUuQWEMZLSHCTAamr4x2e4
+C:\bizhawk\dw2 test\DW2Random_657307591_RXGUuQWEMZLSHCTAamVYr4x2e4.nes
+657307591
+RXGUuQWEMZLSHCTAamVYr4x2e4
 Bran
 Peta
 N
