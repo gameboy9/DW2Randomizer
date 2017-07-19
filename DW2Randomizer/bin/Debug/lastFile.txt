@@ -1,7 +1,7 @@
 C:\bizhawk\dw2 test\Dragon Warrior II (U) [!].nes
-C:\bizhawk\dw2 test\DW2Random_657307591_RXGUuQWEMZLSHCTAamVYr4x2e4.nes
-657307591
-RXGUuQWEMZLSHCTAamVYr4x2e4
-Bran
-Peta
-N
+C:\bizhawk\dw2 test\DW2Random_1558339865_RUuQWEMZLSHCTAamVYr4x2e4.nes
+1558339865
+RUuQWEMZLSHCTAamVYr4x2e4
+Erdrick
+Loto
+Y

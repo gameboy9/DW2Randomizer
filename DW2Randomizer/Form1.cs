@@ -266,7 +266,6 @@ namespace DW2Randomizer
             createBridges(r1);
             resetIslands();
 
-
             // We should mark islands and inaccessible land...
             int lakeNumber = 256;
 
@@ -785,7 +784,7 @@ namespace DW2Randomizer
 
                             int direction = (r1.Next() % 16);
                             map[lnY, lnX] = terrainTypes[lnMarker];
-                            island[lnY, lnX] = zoneToUse;
+                            island[lnY, lnX] = (terrainTypes[lnMarker] == 5 ? 0 - zoneToUse : zoneToUse);
                             // 1 = North, 2 = east, 4 = south, 8 = west
                             if (direction % 8 >= 4 && lnY <= 125)
                             {
@@ -794,7 +793,7 @@ namespace DW2Randomizer
                                     if (map[lnY + 1, lnX] == 4)
                                         totalLand++;
                                     map[lnY + 1, lnX] = terrainTypes[lnMarker];
-                                    island[lnY + 1, lnX] = zoneToUse;
+                                    island[lnY + 1, lnX] = (terrainTypes[lnMarker] == 5 ? 0 - zoneToUse : zoneToUse);
                                     newPoints.Add(lnX);
                                     newPoints.Add(lnY + 1);
                                 }
@@ -806,7 +805,7 @@ namespace DW2Randomizer
                                     if (map[lnY - 1, lnX] == 4)
                                         totalLand++;
                                     map[lnY - 1, lnX] = terrainTypes[lnMarker];
-                                    island[lnY - 1, lnX] = zoneToUse;
+                                    island[lnY - 1, lnX] = (terrainTypes[lnMarker] == 5 ? 0 - zoneToUse : zoneToUse);
                                     newPoints.Add(lnX);
                                     newPoints.Add(lnY - 1);
                                 }
@@ -818,7 +817,7 @@ namespace DW2Randomizer
                                     if (map[lnY, lnX + 1] == 4)
                                         totalLand++;
                                     map[lnY, lnX + 1] = terrainTypes[lnMarker];
-                                    island[lnY, lnX + 1] = zoneToUse;
+                                    island[lnY, lnX + 1] = (terrainTypes[lnMarker] == 5 ? 0 - zoneToUse : zoneToUse);
                                     newPoints.Add(lnX + 1);
                                     newPoints.Add(lnY);
                                 }
@@ -830,7 +829,7 @@ namespace DW2Randomizer
                                     if (map[lnY, lnX - 1] == 4)
                                         totalLand++;
                                     map[lnY, lnX - 1] = terrainTypes[lnMarker];
-                                    island[lnY, lnX - 1] = zoneToUse;
+                                    island[lnY, lnX - 1] = (terrainTypes[lnMarker] == 5 ? 0 - zoneToUse : zoneToUse);
                                     newPoints.Add(lnX - 1);
                                     newPoints.Add(lnY);
                                 }
