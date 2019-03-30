@@ -193,6 +193,7 @@ namespace DW2Randomizer
             for (int i = 0xa93c; i <= 0xa987; i += 5)
                 romData[i] = 0x09;
 
+            // Beran
             for (int i = 0xa98d; i <= 0xa9e2; i += 5)
                 romData[i] = 0x09;
 
@@ -338,13 +339,13 @@ namespace DW2Randomizer
                 if (validPlot(y, x, 5, 5, islands.ToArray()) && reachable(y, x, true, midenX[1], midenY[1], maxLake))
                 {
                     map[y + 1, x + 1] = 0x05;
-                    map[y + 1, x + 2] = 0x05;
+                    map[y + 1, x + 2] = 0x0d;
                     map[y + 1, x + 3] = 0x05;
                     map[y + 2, x + 1] = 0x05;
                     map[y + 2, x + 2] = 0x03;
                     map[y + 2, x + 3] = 0x05;
                     map[y + 3, x + 1] = 0x05;
-                    map[y + 3, x + 2] = 0x03;
+                    map[y + 3, x + 2] = 0x05;
                     map[y + 3, x + 3] = 0x05;
                     // Also need to update the ROM to indicate the World Tree location.
                     romData[0x19f20] = (byte)(x + 2);
@@ -368,7 +369,7 @@ namespace DW2Randomizer
                     map[y + 2, x + 2] = 0x03;
                     map[y + 2, x + 3] = 0x13;
                     map[y + 3, x + 1] = 0x13;
-                    map[y + 3, x + 2] = 0x03;
+                    map[y + 3, x + 2] = 0x0d;
                     map[y + 3, x + 3] = 0x13;
                     // Also need to update the ROM to indicate the World Tree location.
                     romData[0x19f1c] = (byte)(x + 2);
@@ -384,16 +385,17 @@ namespace DW2Randomizer
             {
                 int x = r1.Next() % (chkSmallMap.Checked ? 121 : 249);
                 int y = r1.Next() % (chkSmallMap.Checked ? 122 : 250);
-                if (validPlot(y, x, 5, 6, new int[] { maxIsland[2] }) && reachable(y, x, false, midenX[2], midenY[2], maxLake))
+                if (validPlot(y, x, 5, 5, new int[] { maxIsland[2] }) && reachable(y, x, false, midenX[2], midenY[2], maxLake))
                 {
-                    for (int lnJ = 1; lnJ < 4; lnJ++)
-                        for (int lnK = 1; lnK < 5; lnK++)
-                        {
-                            if (lnJ == 1 || lnK == 1 || lnK == 4)
-                                map[y + lnJ, x + lnK] = 0x13;
-                            else
-                                map[y + lnJ, x + lnK] = 0x08;
-                        }
+                    map[y + 1, x + 1] = 0x04;
+                    map[y + 1, x + 2] = 0x04;
+                    map[y + 1, x + 3] = 0x04;
+                    map[y + 2, x + 1] = 0x04;
+                    map[y + 2, x + 2] = 0x08;
+                    map[y + 2, x + 3] = 0x09;
+                    map[y + 3, x + 1] = 0x04;
+                    map[y + 3, x + 2] = 0x04;
+                    map[y + 3, x + 3] = 0x04;
                     // Also need to update the ROM to indicate the new Mirror Of Ra search spot.
                     romData[0x19f18] = (byte)(x + 2);
                     romData[0x19f19] = (byte)(y + 2);
@@ -2522,6 +2524,14 @@ namespace DW2Randomizer
             romData[0x19db9] = 0xba;
             romData[0x19dba] = 0x9d;
 
+            // Move a bunch of NPCs to Beran's "jail".
+            int[] move = { 0xa98a, 0xa999, 0xa99e, 0xa9df };
+            for (int lnI = 0; lnI < move.Length; lnI++)
+            {
+                romData[move[lnI]] = (byte)(0x0f + lnI);
+                romData[move[lnI] + 1] = 0x01;
+            }            
+
             renamePrincePrincess();
             if (chkSpeedHacks.Checked)
                 speedUpBattles();
@@ -2928,8 +2938,8 @@ namespace DW2Randomizer
                 byte xp3 = (byte)(xp > 4095 ? 192 : ((xp / 1024)) * 64);
 
                 enemyStats[3] = xp1;
-                enemyStats[8] = (byte)(enemyStats[8] + xp2);
-                enemyStats[9] = (byte)(enemyStats[9] + xp3);
+                enemyStats[8] = (byte)((enemyStats[8] % 64) + xp2);
+                enemyStats[9] = (byte)((enemyStats[9] % 64) + xp3);
 
                 for (int lnJ = 0; lnJ < 15; lnJ++)
                     romData[byteValStart + lnJ] = enemyStats[lnJ];
@@ -3608,8 +3618,9 @@ namespace DW2Randomizer
             romData[0x19986] = 0xbc;
             romData[0x19987] = 0xbf;
             romData[0x19995] = 0x0f;
+			romData[0x19997] = 0xe1;
 
-            romData[0x1bfca] = 0x0f;
+			romData[0x1bfca] = 0x0f;
             romData[0x1bfcb] = 0x10;
             romData[0x1bfcc] = 0x04;
             romData[0x1bfcd] = 0x50;
@@ -3646,7 +3657,6 @@ namespace DW2Randomizer
                         legal = true;
                 }
 
-
                 // If legal = false, then the item was not found, so we'll have to place it in a treasure somewhere...
                 while (!legal)
                 {
@@ -3666,91 +3676,91 @@ namespace DW2Randomizer
                             // Set echoing flute locations if there's a crest involved.  0x40 = Sun(0x199A3-4), 0x43 = Water(0x1999D-E), 0x44 = Life(0x199A9-A)
                             if (keyItems[lnI] == 0x40 || keyItems[lnI] == 0x43 || keyItems[lnI] == 0x44)
                             {
-                                int crestByte = crestMarker; // (keyItems[lnI] == 0x40 ? 0x199a3 : keyItems[lnI] == 0x43 ? 0x1999d : 0x199a9);
-                                romData[crestByte + 2] = (byte)(keyItems[lnI] == 0x40 ? 0x01 : keyItems[lnI] == 0x43 ? 0x08 : 0x10);
+                                romData[crestMarker + 2] = (byte)(keyItems[lnI] == 0x40 ? 0x01 : keyItems[lnI] == 0x43 ? 0x08 : 0x10);
 
                                 if (new List<int> { 0x19eb9, 0x19ebd, 0x19ec1, 0x19ec5, 0x19ec9, 0x19ecd, 0x19ed1, 0x19ed5 }.Contains(allTreasure[tRand]))
                                 {
-                                    romData[crestByte] = 0x37;
-                                    romData[crestByte + 1] = 0x3f + 1;
+                                    romData[crestMarker] = 0x37;
+                                    romData[crestMarker + 1] = 0x3f + 1;
                                 }
                                 else if (new List<int> { 0x19e41, 0x19e45, 0x19e49, 0x19e4d, 0x19e51, 0x19e55 }.Contains(allTreasure[tRand]))
                                 {
-                                    romData[crestByte] = 0x02;
-                                    romData[crestByte + 1] = 0x04 + 1;
+                                    romData[crestMarker] = 0x02;
+                                    romData[crestMarker + 1] = 0x04 + 1;
                                 }
                                 else if (new List<int> { 0x19ed9, 0x19edd, 0x19ee1 }.Contains(allTreasure[tRand]))
                                 {
-                                    romData[crestByte] = 0x40;
-                                    romData[crestByte + 1] = 0x40 + 1;
+                                    romData[crestMarker] = 0x40;
+                                    romData[crestMarker + 1] = 0x40 + 1;
                                 }
                                 else if (new List<int> { 0x19e59 }.Contains(allTreasure[tRand]))
                                 {
-                                    romData[crestByte] = 0x06;
-                                    romData[crestByte + 1] = 0x06 + 1;
+                                    romData[crestMarker] = 0x06;
+                                    romData[crestMarker + 1] = 0x06 + 1;
                                 }
                                 else if (new List<int> { 0x19e79, 0x19e7d, 0x19e81, 0x19e85, 0x19e89, 0x19e8d, 0x19e91 }.Contains(allTreasure[tRand]))
                                 {
-                                    romData[crestByte] = 0x2c;
-                                    romData[crestByte + 1] = 0x2d + 1;
+                                    romData[crestMarker] = 0x2c;
+                                    romData[crestMarker + 1] = 0x2d + 1;
                                 }
                                 else if (new List<int> { 0x19f26 }.Contains(allTreasure[tRand]))
                                 {
-                                    romData[crestByte] = 0x07;
-                                    romData[crestByte + 1] = 0x08 + 1;
+                                    romData[crestMarker] = 0x07;
+                                    romData[crestMarker + 1] = 0x08 + 1;
                                 }
                                 else if (new List<int> { 0x19f2a }.Contains(allTreasure[tRand]))
                                 {
-                                    romData[crestByte] = 0x1e;
-                                    romData[crestByte + 1] = 0x1e + 1;
+                                    romData[crestMarker] = 0x1e;
+                                    romData[crestMarker + 1] = 0x1e + 1;
                                 }
                                 else if (new List<int> { 0x19f0d, 0x19f11, 0x19f15 }.Contains(allTreasure[tRand]))
                                 {
-                                    romData[crestByte] = 0x58;
-                                    romData[crestByte + 1] = 0x5f + 1;
+                                    romData[crestMarker] = 0x58;
+                                    romData[crestMarker + 1] = 0x5f + 1;
                                 }
                                 else if (new List<int> { 0x19f1a, 0x19f1e, 0x19f22 }.Contains(allTreasure[tRand]))
                                 {
-                                    romData[crestByte] = 0x01;
-                                    romData[crestByte + 1] = 0x01 + 1;
+                                    romData[crestMarker] = 0x01;
+                                    romData[crestMarker + 1] = 0x01 + 1;
                                 }
                                 else if (new List<int> { 0x19f32, 0x19e65 }.Contains(allTreasure[tRand]))
                                 {
-                                    romData[crestByte] = 0x10;
-                                    romData[crestByte + 1] = 0x10 + 1;
+                                    romData[crestMarker] = 0x10;
+                                    romData[crestMarker + 1] = 0x10 + 1;
                                 }
                                 else if (new List<int> { 0x19eb5, 0x19e69, 0x19e6d, 0x19e71, 0x19e75 }.Contains(allTreasure[tRand]))
                                 {
-                                    romData[crestByte] = 0x34;
-                                    romData[crestByte + 1] = 0x36 + 1;
-                                    crestByte += 3;
-                                    romData[crestByte] = 0x18;
-                                    romData[crestByte + 1] = 0x18 + 1;
-                                    romData[crestByte + 2] = (byte)(keyItems[lnI] == 0x40 ? 0x01 : keyItems[lnI] == 0x43 ? 0x08 : 0x10);
+                                    romData[crestMarker] = 0x34;
+                                    romData[crestMarker + 1] = 0x36 + 1;
+									// Charlock Castle demands three more bytes for the Flute to work properly due to split map ranges.
+									crestMarker += 3;
+									romData[crestMarker] = 0x18;
+									romData[crestMarker + 1] = 0x18 + 1;
+									romData[crestMarker + 2] = (byte)(keyItems[lnI] == 0x40 ? 0x01 : keyItems[lnI] == 0x43 ? 0x08 : 0x10);
 
-                                    romData[0x19995] += 3;
-                                }
+									romData[0x19995] += 3;
+								}
                                 else if (new List<int> { 0x19e5d, 0x19e61 }.Contains(allTreasure[tRand]))
                                 {
-                                    romData[crestByte] = 0x0f;
-                                    romData[crestByte + 1] = 0x0f + 1;
+                                    romData[crestMarker] = 0x0f;
+                                    romData[crestMarker + 1] = 0x0f + 1;
                                 }
                                 else if (new List<int> { 0x19ee5, 0x19ee9, 0x19eed, 0x19ef1, 0x19ef5 }.Contains(allTreasure[tRand]))
                                 {
-                                    romData[crestByte] = 0x49;
-                                    romData[crestByte + 1] = 0x4f + 1;
+                                    romData[crestMarker] = 0x49;
+                                    romData[crestMarker + 1] = 0x4f + 1;
                                 }
                                 else if (new List<int> { 0x19ef9, 0x19f01, 0x19f05, 0x19f09 }.Contains(allTreasure[tRand]))
                                 {
-                                    romData[crestByte] = 0x50;
-                                    romData[crestByte + 1] = 0x57 + 1;
+                                    romData[crestMarker] = 0x50;
+                                    romData[crestMarker + 1] = 0x57 + 1;
                                 }
                                 else if (new List<int> { 0x19e95, 0x19e99, 0x19e9d, 0x19ea1, 0x19ea5, 0x19ea9, 0x19ead, 0x19eb1 }.Contains(allTreasure[tRand]))
                                 {
-                                    romData[crestByte] = 0x2e;
-                                    romData[crestByte + 1] = 0x33 + 1;
+                                    romData[crestMarker] = 0x2e;
+                                    romData[crestMarker + 1] = 0x33 + 1;
                                 }
-                                crestByte += 3;
+								crestMarker += 3;
                             }
                         }
                     }
@@ -4207,10 +4217,6 @@ namespace DW2Randomizer
 
         private void saveRom(bool calcChecksum)
         {
-            //string options = (chkChangeStatsToRemix.Checked ? "r" : "");
-            //options += (chkHalfExpGoldReq.Checked ? "h" : "");
-            //options += (chkDoubleXP.Checked ? "d" : "");
-            //options += (radSlightIntensity.Checked ? "l1" : radModerateIntensity.Checked ? "l2" : radHeavyIntensity.Checked ? "l3" : "l4");
             string finalFile = Path.Combine(Path.GetDirectoryName(txtFileName.Text), "DW2Random_" + txtSeed.Text + "_" + txtFlags.Text + ".nes");
             File.WriteAllBytes(finalFile, romData);
             lblIntensityDesc.Text = "ROM hacking complete!  (" + finalFile + ")";
@@ -4271,7 +4277,7 @@ namespace DW2Randomizer
                     { 13, 16, 13, 9, 8, 4, 0, 1, 7, 0, 0, 0 }, // Babble
                     { 12, 19, 13, 8, 6, 7, 0, 2, 7, 1, 1, 0 }, // Army Ant (deliberatly changed from 4XP/2GP to 6XP/7GP to make it more in line with other monsters in its class)
                     { 15, 17, 11, 11, 10, 10, 0, 0, 0, 1, 1, 0 }, // Magician
-                    { 16, 19, 11, 15, 7, 50, 0, 0, 7, 1, 3, 0 }, // Big Rat
+                    { 16, 19, 11, 15, 7, 5, 0, 0, 7, 1, 3, 0 }, // Big Rat
                     { 14, 22, 10, 11, 9, 9, 0, 1, 7, 1, 0, 0 }, // Big Cobra
                     { 14, 18, 13, 18, 18, 8, 0, 1, 0, 0, 3, 0 }, // Magic Ant
                     { 12, 14, 10, 14, 12, 10, 0, 2, 3, 0, 2, 0 }, // Magidrakee
