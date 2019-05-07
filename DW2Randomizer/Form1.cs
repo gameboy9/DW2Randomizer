@@ -2532,7 +2532,6 @@ namespace DW2Randomizer
                 romData[move[lnI] + 1] = 0x01;
             }            
 
-            renamePrincePrincess();
             if (chkSpeedHacks.Checked)
                 speedUpBattles();
             if (chkSpeedWaitMusic.Checked)
@@ -2542,15 +2541,14 @@ namespace DW2Randomizer
             skipPrologue();
             reviveAllCharsOnCOD();
             saveRom(true);
-            if (chkAllDogs.Checked)
-            {
+			renamePrincePrincess();
+			if (chkAllDogs.Checked)
                 turnIntoDogs();
-                saveRom(false);
-            }
-            
-        }
+			saveRom(false);
 
-        private void renamePrincePrincess()
+		}
+
+		private void renamePrincePrincess()
         {
             // Rename the starting characters.
             for (int lnI = 0; lnI < 16; lnI++)
@@ -4236,10 +4234,9 @@ namespace DW2Randomizer
                 }
                 catch
                 {
-                    lblSHAChecksum.Text = "????????????????????????????????????????";
+					lblNewChecksum.Text = "????????????????????????????????????????";
                 }
             }
-
         }
 
         private void changeStatsToRemix()
@@ -4876,7 +4873,6 @@ namespace DW2Randomizer
                 compareComposeString("shieldcost (2.8)", writer, 0x1a00e + 54, 10);
                 compareComposeString("helmets", writer, 0x13efb + 32, 3);
                 compareComposeString("helmetcost (3.0)", writer, 0x1a00e + 64, 6);
-
             }
             lblIntensityDesc.Text = "Comparison complete!  (DW2Compare.txt)";
         }
@@ -4927,9 +4923,7 @@ namespace DW2Randomizer
             openFileDialog1.RestoreDirectory = true;
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
                 txtCompare.Text = openFileDialog1.FileName;
-            }
         }
 
         private void txtFlags_TextChanged(object sender, EventArgs e)
@@ -4939,6 +4933,7 @@ namespace DW2Randomizer
 
         private void flagLoad()
         {
+			loading = true;
             // set checkboxes based on flags entered.
             chkChangeStatsToRemix.Checked = (txtFlags.Text.Contains("R"));
             chkXPRandomize.Checked = (txtFlags.Text.Contains("X"));
@@ -4967,8 +4962,9 @@ namespace DW2Randomizer
             if (txtFlags.Text.Contains("r4")) radInsaneIntensity.Checked = true;
             cboGPReq.SelectedItem = (txtFlags.Text.Contains("g1") ? "75%" : txtFlags.Text.Contains("g2") ? "50%" : txtFlags.Text.Contains("g3") ? "33%" : "100%");
             cboXPReq.SelectedItem = (txtFlags.Text.Contains("x1") ? "75%" : txtFlags.Text.Contains("x2") ? "50%" : txtFlags.Text.Contains("x3") ? "33%" : "100%");
-            cboEncounterRate.SelectedItem = (txtFlags.Text.Contains("e1") ? "300%" : txtFlags.Text.Contains("e2") ? "200%" : txtFlags.Text.Contains("e3") ? "150%" : 
-                txtFlags.Text.Contains("e4") ? "75%" : txtFlags.Text.Contains("e5") ? "50%" : txtFlags.Text.Contains("e6") ? "33%" : txtFlags.Text.Contains("e7") ? "25%" : "100%");
+			cboEncounterRate.SelectedItem = (txtFlags.Text.Contains("e1") ? "300%" : txtFlags.Text.Contains("e2") ? "200%" : txtFlags.Text.Contains("e3") ? "150%" : 
+            txtFlags.Text.Contains("e4") ? "75%" : txtFlags.Text.Contains("e5") ? "50%" : txtFlags.Text.Contains("e6") ? "33%" : txtFlags.Text.Contains("e7") ? "25%" : "100%");
+			loading = false;
         }
 
         private void determineFlag()
@@ -5031,6 +5027,11 @@ namespace DW2Randomizer
         {
             determineFlag();
         }
+
+		private void determineChecks()
+		{
+
+		}
 
         private void btnUltraRando_Click(object sender, EventArgs e)
         {
